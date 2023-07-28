@@ -56,9 +56,9 @@
                     <p class="card-text" style="margin-top: -20px;"><b>Total Price: </b>₹{{ parseFloat(parseFloat(unit.price_per_sqft) * parseFloat(unit.sqft)).toFixed(2) }}</p>
                     <p class="card-text" style="margin-top: -20px;"><b>BHK: </b>{{ unit.bhk }}</p>
                     <p class="card-text" style="margin-top: -20px;"><b>Amenities: </b>{{ unit.amenities }}</p>
-                    <button class="btn btn-warning" :disabled="unit.status == 'BOOK'" @click.prevent="bookUnit(unit)"><i class="fa fa-bookmark mr-1"></i>{{unit.status == 'BOOK' ? "BOOKED" : 'BOOK'}}</button>
-                    <button class="btn btn-success" @click.prevent="() => {unit.status = 'BUY'}"><i class="fa fa-money mr-1"></i>BUY</button>
-                    <button :class="unit.status == 'BOOK' ? 'btn btn-danger' : 'btn btn-primary'" :disabled="unit.status == 'AVAILABLE'" @click.prevent="changeBookingToAvailable(unit)"><i :class="unit.status == 'BOOK' ? 'fa fa-ban mr-1' : 'fa fa-circle-o mr-1'"></i>{{unit.status == 'BOOK' ? "CANCEL BOOKING" : 'AVAILABLE'}}</button>
+                    <button class="btn btn-warning" v-if="unit.status != 'BUY'" :disabled="unit.status == 'BOOK' || unit.status == 'BUY'" @click.prevent="bookUnit(unit)"><i class="fa fa-bookmark mr-1"></i>{{unit.status == 'BOOK' ? "BOOKED" : 'BOOK'}}</button>
+                    <button class="btn btn-success" @click.prevent="buyUnit(unit)"><i class="fa fa-money mr-1"></i> {{unit.status == 'BUY' ? "BAUGHT" : 'BUY'}}</button>
+                    <button v-if="unit.status != 'BUY'" :class="unit.status == 'BOOK' ? 'btn btn-danger' : 'btn btn-primary'" :disabled="unit.status == 'AVAILABLE' || unit.status == 'BUY'" @click.prevent="changeBookingToAvailable(unit)"><i :class="unit.status == 'BOOK' ? 'fa fa-ban mr-1' : 'fa fa-circle-o mr-1'"></i>{{unit.status == 'BOOK' ? "CANCEL BOOKING" : 'AVAILABLE'}}</button>
                 </div>
                 <b-modal id="BookUnitModal" hide-footer hide-header no-close-on-backdrop>
                     <div>
@@ -73,11 +73,11 @@
                         </div>
                         <div class="d-flex align-items-center w-100 px-2">
                             <label class="col-4" >Total Price(₹): </label>
-                            <b-form-input type="number" class="col-8 ml-2 my-2" placeholder="Total Price" disabled v-model="booking.total_price"></b-form-input>
+                            <b-form-input type="number" class="col-8 ml-2 my-2" @input="changeTempTotal('book')" placeholder="Total Price" v-model="booking.total_price"></b-form-input>
                         </div>
                         <div class="d-flex align-items-center w-100 px-2">
-                            <b-form-checkbox  class="col-4"  @change="changeTotalPrice" v-model="booking.discount_checked">Apply discount</b-form-checkbox> 
-                            <b-form-input class="col-8 ml-2 my-2" placeholder="Discount" @input="changeTotalPrice" :disabled="!booking.discount_checked"  v-model="booking.discount_amount"></b-form-input>
+                            <b-form-checkbox  class="col-4"  @change="changeTotalPrice('book')" v-model="booking.discount_checked">Apply discount</b-form-checkbox> 
+                            <b-form-input class="col-8 ml-2 my-2" type="number" placeholder="Discount" @input="changeTotalPrice('book')" :disabled="!booking.discount_checked"  v-model="booking.discount_amount"></b-form-input>
                         </div>
                         <div class="d-flex align-items-center w-100 px-2">
                             <label class="col-4">Booking %: </label>
@@ -94,7 +94,45 @@
                     </div>
                     <div class="text-center">
                         <button class="btn btn-success mt-3" block @click.prevent="saveUnitToCustomer"><i class="fa fa-bookmark mr-1"></i>BOOK UNIT</button>
-                        <button class="btn btn-danger mt-3" block @click.prevent="$bvModal.hide('BookUnitModal')"><i class="fa fa-ban mr-1"></i>Close</button>
+                        <button class="btn btn-danger mt-3" block @click.prevent="closeBookModal"><i class="fa fa-ban mr-1"></i>Close</button>
+                    </div>
+                </b-modal>
+                <b-modal id="BuyUnitModal" hide-footer hide-header no-close-on-backdrop>
+                    <div>
+                        <h3 class="text-center">Buy an unit</h3>
+                        <!-- <pre>{{ buying }}</pre> -->
+                        <div class="d-flex align-items-center w-100 px-2">
+                            <label class="col-4" >Unit ID: </label>
+                            <b-form-input class="col-8 ml-2 my-2" placeholder="Unit ID" disabled v-model="buying.unit_id" type="text"></b-form-input>
+                        </div>
+                        <div class="d-flex align-items-center w-100 px-2">
+                            <label class="col-4" >Customer: </label>
+                            <b-form-select class="col-8 ml-2 my-2" placeholder="Customer" :disabled="buying.already_booked" v-model="buying.customer" :options="buying.customer_list" value-field="id" text-field="fullname"></b-form-select>
+                        </div>
+                        <div class="d-flex align-items-center w-100 px-2">
+                            <label class="col-4" >Total Price(₹): </label>
+                            <b-form-input type="number" class="col-8 ml-2 my-2" @input="changeTempTotal('buy')" placeholder="Total Price" v-model="buying.total_price"></b-form-input>
+                        </div>
+                        <div class="d-flex align-items-center w-100 px-2">
+                            <b-form-checkbox  class="col-4" @change="changeTotalPrice('buy')" v-model="buying.discount_checked">Apply discount</b-form-checkbox> 
+                            <b-form-input class="col-8 ml-2 my-2" placeholder="Discount" @input="changeTotalPrice('buy')" :disabled="!buying.discount_checked"  v-model="buying.discount_amount"></b-form-input>
+                        </div>
+                        <div class="d-flex align-items-center w-100 px-2">
+                            <label class="col-4">Remaining Amount (₹): </label>
+                            <b-form-input class="col-8 ml-2 my-2" placeholder="Paying Now" disabled v-model="buying.remaining_amount"></b-form-input>
+                        </div>
+                        <div class="d-flex align-items-center w-100 px-2">
+                            <label class="col-4">Paying Now (₹): </label>
+                            <b-form-input class="col-8 ml-2 my-2" placeholder="Paying Now" @input="changeRemainingAmount" :disabled="buying.full_payment" v-model="buying.payment_amount"></b-form-input>
+                        </div>
+                        <div class="d-flex align-items-center w-100 px-2">
+                            <label class="col-4" >Make Payment: </label>
+                            <b-form-checkbox  class="col-8" @change="payFull" v-model="buying.full_payment">Pay full amount</b-form-checkbox>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-success mt-3" block @click.prevent="buyUnitForCustomer"><i class="fa fa-money mr-1"></i>BUY UNIT</button>
+                        <button class="btn btn-danger mt-3" block @click.prevent="closeBuyModal"><i class="fa fa-ban mr-1"></i>Close</button>
                     </div>
                 </b-modal>
             </div>
@@ -114,6 +152,20 @@ export default {
     data() {
         return {
             loading: true,
+            buying: {
+                unit_id: null,
+                customer: null,
+                customer_list: [],
+                total_price: null,
+                tempTotalPrice: null,
+                already_booked: false,
+                discount_checked: false,
+                discount_amount: 0,
+                payment_amount: 0,
+                remaining_amount: 0,
+                full_payment: false,
+                payments_list: []
+            },
             booking: {
                 unit_id: null,
                 customer: null,
@@ -161,6 +213,112 @@ export default {
         this.fetchUserRoleList()
     },
     methods: {
+        async buyUnitForCustomer() { 
+            if (!this.buying.customer) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Select a customer.',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                return
+            }
+            if (!this.buying.payment_amount) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Enter the payment amount.',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                return
+            }
+            const payload = {
+                unit_id: this.buying.unit_id,
+                paid_amount: parseFloat(this.buying.payment_amount).toFixed(2),
+                applied_discount: parseFloat(this.buying.discount_amount).toFixed(2),
+                total_payable_amount: parseFloat(this.buying.total_price).toFixed(2),
+                customer_id: this.buying.customer
+            }
+            const response = await this.$axios.post('/buy-unit', payload)
+            this.$bvModal.hide('BuyUnitModal')
+            Swal.fire({
+                position: 'top-end',
+                icon: response.data.message.includes('success') ? 'success' : 'error',
+                title: response.data.message,
+                showConfirmButton: false,
+                timer: 1500
+            })
+            this.fetchUnits()
+        },
+        closeBuyModal() { 
+            this.buying = {
+                unit_id: null,
+                customer: null,
+                customer_list: [],
+                total_price: null,
+                tempTotalPrice: null,
+                already_booked: false,
+                discount_checked: false,
+                discount_amount: 0,
+                payment_amount: 0,
+                remaining_amount: 0,
+                full_payment: false,
+                payments_list: []
+            }
+            this.$bvModal.hide('BuyUnitModal')
+        },
+        closeBookModal() { 
+            this.booking = {
+                unit_id: null,
+                customer: null,
+                customer_list: [],
+                total_price: null,
+                tempTotalPrice: null,
+                discount_checked: false,
+                discount_amount: 0,
+                make_payment: false,
+                booking_price: null,
+                booking_amount_perccentage: 5,
+            }
+            this.$bvModal.hide('BookUnitModal')
+        },
+        changeTempTotal(type) { 
+            switch (type) {
+                case 'book':
+                    this.booking.tempTotalPrice = this.booking.total_price
+                    this.changeBookingPrice()
+                    break;
+                case 'buy':
+                    this.buying.tempTotalPrice = this.buying.total_price
+                    this.changeRemainingAmount()
+                    break;
+            }
+        },
+        payFull() {
+            this.buying.payment_amount = parseFloat(this.buying.total_price).toFixed(2)
+            this.changeRemainingAmount()
+        },
+        changeRemainingAmount() { 
+            // this.buying.tempTotalPrice = this.buying.total_price
+            this.buying.remaining_amount = parseFloat(parseFloat(this.buying.total_price ? this.buying.total_price : 0) - parseFloat(this.buying.payment_amount ? this.buying.payment_amount : 0)).toFixed(2)
+        },
+        async buyUnit(unit) {
+            this.buying.unit_id = unit.id
+            this.buying.customer_list = await this.fetchCustomerList()
+            this.buying.payments_list = unit.payments
+            this.buying.tempTotalPrice = parseFloat(parseFloat(unit.price_per_sqft) * parseFloat(unit.sqft)).toFixed(2)
+            this.buying.total_price = parseFloat(parseFloat(unit.price_per_sqft) * parseFloat(unit.sqft)).toFixed(2)
+            if (unit.status == 'BOOK') {
+                this.buying.customer = unit.payments.find(e => e.status == true).customer_id
+                this.buying.already_booked = true
+                this.buying.tempTotalPrice = parseFloat(parseFloat(this.buying.tempTotalPrice) - parseFloat(unit.payments.find(e => e.status == true).paid_amount)).toFixed(2)
+                this.buying.total_price = parseFloat(parseFloat(this.buying.tempTotalPrice) - parseFloat(unit.payments.find(e => e.status == true).paid_amount)).toFixed(2)
+            }
+            this.buying.remaining_amount = parseFloat(parseFloat(this.buying.total_price ? this.buying.total_price : 0) - parseFloat(this.buying.payment_amount ? this.buying.payment_amount : 0)).toFixed(2)
+            this.$bvModal.show('BuyUnitModal')
+        },
         changeBookingToAvailable(unit) {
             if (unit.status == 'BOOK') {
                 Swal.fire({
@@ -211,6 +369,11 @@ export default {
             }
             const response = await this.$axios.post('/book-unit', {
                 id: this.booking.unit_id,
+                paid_amount: parseFloat(this.booking.booking_price).toFixed(2),
+                total_payable_amount: parseFloat(this.booking.total_price).toFixed(2),
+                customer_id: this.booking.customer,
+                applied_discount: parseFloat(this.booking.discount_amount).toFixed(2),
+                book_amount_percentage: parseFloat(this.booking.booking_amount_perccentage).toFixed(2)
             })
             this.$bvModal.hide('BookUnitModal')
             Swal.fire({
@@ -222,18 +385,33 @@ export default {
             })
             this.fetchUnits()
         },
-        changeTotalPrice() { 
-            if (this.booking.discount_checked) {
-                this.booking.total_price = parseFloat(parseFloat(this.booking.tempTotalPrice) - (parseFloat(parseFloat(this.booking.tempTotalPrice) / 100) * parseFloat(this.booking.discount_amount ? this.booking.discount_amount : 0))).toFixed(2)
-                this.changeBookingPrice()
-            } else {
-                this.booking.discount_amount = 0
-                this.booking.total_price = parseFloat(parseFloat(this.booking.tempTotalPrice) - (parseFloat(parseFloat(this.booking.tempTotalPrice) / 100) * parseFloat(0))).toFixed(2)
-                this.changeBookingPrice()
+        changeTotalPrice(order_type) { 
+            switch (order_type) {
+                case 'book':
+                    if (this.booking.discount_checked) {
+                        this.booking.total_price = parseFloat(parseFloat(this.booking.tempTotalPrice) - (parseFloat(parseFloat(this.booking.tempTotalPrice) / 100) * parseFloat(this.booking.discount_amount ? this.booking.discount_amount : 0))).toFixed(2)
+                        this.changeBookingPrice()
+                    } else {
+                        this.booking.discount_amount = 0
+                        this.booking.total_price = parseFloat(parseFloat(this.booking.tempTotalPrice) - (parseFloat(parseFloat(this.booking.tempTotalPrice) / 100) * parseFloat(0))).toFixed(2)
+                        this.changeBookingPrice()
+                    }
+                    break;
+                case 'buy':
+                    if (this.buying.discount_checked) {
+                        this.buying.total_price = parseFloat(parseFloat(this.buying.tempTotalPrice) - (parseFloat(parseFloat(this.buying.tempTotalPrice) / 100) * parseFloat(this.buying.discount_amount ? this.buying.discount_amount : 0))).toFixed(2)
+                        this.changeRemainingAmount()
+                    } else {
+                        this.buying.discount_amount = 0
+                        this.buying.total_price = parseFloat(parseFloat(this.buying.tempTotalPrice) - (parseFloat(parseFloat(this.buying.tempTotalPrice) / 100) * parseFloat(0))).toFixed(2)
+                        this.changeRemainingAmount()
+                    }
+                    break;
             }
         },
         changeBookingPrice() {
-            this.booking.booking_price = parseFloat((parseFloat(this.booking.total_price) / 100 ) * parseFloat(this.booking.booking_amount_perccentage ? this.booking.booking_amount_perccentage : 0)).toFixed(2)
+            // this.booking.tempTotalPrice = this.booking.total_price
+            this.booking.booking_price = parseFloat((parseFloat(this.booking.total_price ? this.booking.total_price : 0) / 100 ) * parseFloat(this.booking.booking_amount_perccentage ? this.booking.booking_amount_perccentage : 0)).toFixed(2)
         },
         async fetchCustomerList() {
             const response = await this.$axios.get('/get-user-list', {
@@ -241,7 +419,7 @@ export default {
                     user_role_id: this.customer_role_id
                 },
             })
-            let customerList = response.data.data
+            let customerList = response.data.data.customer
             customerList.unshift({
                 id: null,
                 fullname: 'Select a customer',
@@ -254,7 +432,6 @@ export default {
             this.customer_role_id = user_role_list.find(e => e.role_name == 'CUSTOMER').id           
         },
         async bookUnit(unit) { 
-            console.log(unit);
             this.booking.unit_id = unit.id
             this.booking.customer_list = await this.fetchCustomerList()
             this.booking.tempTotalPrice = parseFloat(parseFloat(unit.price_per_sqft) * parseFloat(unit.sqft)).toFixed(2)

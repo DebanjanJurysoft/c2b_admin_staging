@@ -5,8 +5,16 @@
                 <h3>Filter Units</h3>
                 <label>Apartment</label>
                 <b-form-select class="my-2" v-model="selectedApartment" @change="selectApartment(selectedApartment)" :options="apartmentList" value-field="id" text-field="name"></b-form-select>
+                <button v-if="selectedApartment" class="btn btn-success w-100" @click.prevent="$bvModal.show('bulkUpload')">Bulk Upload</button>
                 <label v-if="selectedApartment">Floor</label>
                 <b-form-select class="my-2" v-model="selectedFloor" @change="getUnitList" v-if="selectedApartment" :options="floorList" value-field="value" text-field="text"></b-form-select>
+                <b-modal id="bulkUpload" size="lg" hide-footer hide-header no-close-on-backdrop>
+                    <div class="text-center">
+                        <h3>Upload Units Data File</h3>
+                        <span class="text-danger">* Only accepts .csv file.</span>
+                        <BulkUpload :apartment_details="apartment_details" @closeModal="closeBulkUploadModal"/>
+                    </div>
+                </b-modal>
             </div>
             <div class="p-3 text-center" v-if="selectedApartment">
                 <h3>Apartment details</h3>
@@ -27,7 +35,7 @@
         <div class="viewApartment" style="height: 600px; padding: 10px; overflow-y: scroll; width: 30%;">
             <div class="card my-2" style="text-align: center; width: 100%;" v-if="selectedApartment" v-for="(unit, index) in unitList" :key="index">
                 <div class="card-body">
-                    <h5 class="card-title">{{ unit.id }}</h5>
+                    <h5 class="card-title">{{ unit.text }}</h5>
                     <button class="btn btn-warning" @click.prevent="selectUnit(unit.id)"><i class="fa fa-pencil"></i> EDIT</button>
                     <!-- <button class="btn btn-danger"><i class="fa fa-trash"></i> DELETE</button> -->
                 </div>
@@ -35,8 +43,11 @@
         </div>
         <div class="unitDetails" v-if="selectedUnitId" style="height: 600px; padding: 10px; overflow-y: scroll; overflow-x: hidden;">
             <div style="text-align: center;">
-                <h3>Unit Details ({{ selectedUnitId }})</h3>
+                <h3>Unit Details ({{ unitDetailsForm.text }})</h3>
                 <!-- <pre>{{ unitDetailsForm }}</pre> -->
+                <div class="p-1">
+                    <input type="text" class="form-control" v-model="unitDetailsForm.unit_id" placeholder="Unit ID">
+                </div>
                 <div class="p-1">
                     <input type="number" class="form-control" v-model="unitDetailsForm.sqft" placeholder="Square Feet">
                 </div>
@@ -79,9 +90,11 @@
 </template>
 
 <script>
+import BulkUpload from '~/components/bulkUpload.vue'
 import Swal from 'sweetalert2'
 import { watch } from 'vue'
 export default {
+    components: { BulkUpload },
     data() {
         return {
             facing_option_list: [
@@ -108,6 +121,7 @@ export default {
             ],
             unitDetailsForm: {
                 id: null,
+                unit_id: null,
                 apt_id: null,
                 floor_no: null,
                 sqft: null,
@@ -134,14 +148,19 @@ export default {
             selectedApartment: null,
             unitList: [],
             floorList: [],
-            apartmentList: [
-            ]
+            apartmentList: [],
+            apartment_details: {},
         }
     },
     mounted() {
         this.fetchApartments()
     },
     methods: {
+        async closeBulkUploadModal() {
+            await this.fetchApartments()
+            await this.selectApartment(this.selectedApartment)
+            this.$bvModal.hide('bulkUpload')
+        },
         async fetchApartments() { 
             const response = await this.$axios.get('/get-apartments')
             this.apartmentList = response.data.data
@@ -155,23 +174,24 @@ export default {
             this.resetDetailsForm()
             this.unitDetailsForm.apt_id = this.selectedApartment
             let floor = null
-            const user_details = await this.getUnitDetails()
-            if (user_details) {
-                this.unitDetailsForm.floor_no = user_details.floor_no
+            const unitDetails = await this.getUnitDetails()
+            if (unitDetails) {
+                this.unitDetailsForm.floor_no = unitDetails.floor_no
             } else if (this.selectedFloor) {
                 this.unitDetailsForm.floor_no = this.selectedFloor.num + 1
             } else {
                 floor = parseInt(this.selectedUnitId.split(',')[1].replace('FL', ''))
                 this.unitDetailsForm.floor_no = floor
             }
-            this.unitDetailsForm.id = user_details ? user_details.id : null
-            this.unitDetailsForm.sqft = user_details ? user_details.sqft : null
-            this.unitDetailsForm.sba = user_details ? user_details.sba : null
-            this.unitDetailsForm.price_per_sqft = user_details ? user_details.price_per_sqft : null
-            this.unitDetailsForm.facing = user_details ? user_details.facing : null
-            this.unitDetailsForm.bhk = user_details ? user_details.bhk : null
-            this.unitDetailsForm.amenities = user_details ? user_details.amenities : null
-            this.unitDetailsForm.specification = user_details ? user_details.specification : [{
+            this.unitDetailsForm.id = unitDetails ? unitDetails.id : null
+            this.unitDetailsForm.unit_id = unitDetails && unitDetails.unit_id ? unitDetails.unit_id : null
+            this.unitDetailsForm.sqft = unitDetails ? unitDetails.sqft : null
+            this.unitDetailsForm.sba = unitDetails ? unitDetails.sba : null
+            this.unitDetailsForm.price_per_sqft = unitDetails ? unitDetails.price_per_sqft : null
+            this.unitDetailsForm.facing = unitDetails ? unitDetails.facing : null
+            this.unitDetailsForm.bhk = unitDetails ? unitDetails.bhk : null
+            this.unitDetailsForm.amenities = unitDetails ? unitDetails.amenities : null
+            this.unitDetailsForm.specification = unitDetails && unitDetails.specification.length > 0 ? unitDetails.specification : [{
                 key: null,
                 value: null
             }]
@@ -185,6 +205,7 @@ export default {
             const response = await this.$axios.get('/get-units', {
                 params: query
             })
+            console.log(response);
             if (response.data.message.includes('success')) {
                 const unit_details = response.data.data[0]
                 return unit_details
@@ -193,25 +214,51 @@ export default {
         getUnitList() {
             if (this.selectedApartment) {
                 const apartment = this.apartmentList.find(e => e.id == this.selectedApartment)
-                if (!this.selectedFloor) {
-                    this.unitList = []
-                    for (let floor = 0; floor < apartment.floor_no; floor++) {
-                        for (let unit = 0; unit < apartment.unit_per_floor; unit++) {
-                            const unitValue = `AP${this.selectedApartment},FL${floor+1},UN${unit+1}`
+                this.unitList = []
+                if (apartment.units.length > 0) {
+                    if (this.selectedFloor) {
+                        this.unitList = apartment.units.filter(e => e.floor_no == this.selectedFloor.num).map(e => {
+                            return {
+                                id: e.id,
+                                text: e.unit_id
+                            }
+                        })    
+                    } else {
+                        this.unitList = apartment.units.map(e => {
+                            return {
+                                id: e.id,
+                                text: e.unit_id
+                            }
+                        })
+                    }
+                } else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: 'Upload csv file of the unit details.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return
+                    if (!this.selectedFloor) {
+                        for (let floor = 0; floor < apartment.floor_no; floor++) {
+                            for (let unit = 0; unit < apartment.floors[floor].units; unit++) {
+                                const unitValue = `AP${this.selectedApartment},FL${floor + 1},UN${unit + 1}`
+                                this.unitList.push({
+                                    id: unitValue,
+                                    text: unitValue
+                                })
+                            }
+                        }
+                    } else {
+                        this.unit_per_floor = this.selectedFloor.e.units
+                        for (let unit = 0; unit < this.selectedFloor.e.units; unit++) {
+                            const unitValue = `AP${this.selectedApartment},FL${this.selectedFloor.num},UN${unit + 1}`
                             this.unitList.push({
                                 id: unitValue,
                                 text: unitValue
                             })
                         }
-                    }
-                } else {
-                    this.unitList = []
-                    for (let unit = 0; unit < apartment.unit_per_floor; unit++) {
-                        const unitValue = `AP${this.selectedApartment},FL${this.selectedFloor.num+1},UN${unit+1}`
-                        this.unitList.push({
-                            id: unitValue,
-                            text: unitValue
-                        })
                     }
                 }
             }
@@ -246,17 +293,18 @@ export default {
         },
         selectApartment(id) {
             const apartment = this.apartmentList.find(e => e.id == id)
-            this.apartment_name = apartment.name
+            this.apartment_details = apartment
             this.no_of_floor = apartment.floor_no
-            this.unit_per_floor = apartment.unit_per_floor
-            const floorNumbers = Array.from(Array(apartment.floor_no).keys())
+            this.apartment_name = apartment.name
+            const floorNumbers = apartment.floors
             this.floorList = floorNumbers.map(e => {
                 return {
                     value: {
-                        num: e,
+                        num: e.floors,
+                        e,
                         id
                     },
-                    text: e + 1
+                    text: e.floors
                 }
             })
             this.floorList.unshift({
@@ -268,6 +316,7 @@ export default {
         async saveForm() {
             this.unitDetailsForm = this.unitDetailsForm.id ? {
                 id: this.unitDetailsForm.id,
+                unit_id: this.unitDetailsForm.unit_id,
                 apt_id: this.unitDetailsForm.apt_id,
                 floor_no: this.unitDetailsForm.floor_no,
                 sqft: this.unitDetailsForm.sqft,
@@ -284,7 +333,7 @@ export default {
                     }
                 }),
             } : {
-                unit_id: this.selectedUnitId,
+                unit_id: this.unitDetailsForm.unit_id,
                 apt_id: this.unitDetailsForm.apt_id,
                 floor_no: this.unitDetailsForm.floor_no,
                 sqft: this.unitDetailsForm.sqft,
@@ -309,6 +358,27 @@ export default {
                 showConfirmButton: false,
                 timer: 1500
             })
+            if (this.unitDetailsForm.id) {
+                const query = {
+                    unit_id: this.selectedUnitId,
+                    apt_id: this.selectedApartment,
+                    floor_no: this.selectedFloor ? this.selectedFloor.num + 1 : null
+                }
+                const response_unit = await this.$axios.get('/get-units', { params: query })
+                const data = this.unitList.map(e => {
+                    if (e.id == this.unitDetailsForm.id) {
+                        return {
+                            id: response_unit.data.data[0].id,
+                            text: response_unit.data.data[0].unit_id
+                        }
+                    } else {
+                        return e
+                    }
+                })
+                this.unitList = await Promise.all(data)
+            } else {
+
+            }
         }
     },
 }

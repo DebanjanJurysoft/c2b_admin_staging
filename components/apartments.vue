@@ -7,10 +7,16 @@
                     <input type="text" class="form-control" v-model="apartment_name" placeholder="Apartment Name">
                 </div>
                 <div class="p-3">
-                    <input type="text" class="form-control" v-model="no_of_floor" placeholder="Floors In The Appartment">
+                    <input type="number" class="form-control" @input="() => {floor_list = Array.from(Array(parseInt(no_of_floor ? no_of_floor : 0)).keys()).map(e => { return {floors: e+1, units: 0, disabled: false}})}" v-model="no_of_floor" placeholder="Floors In The Appartment">
                 </div>
-                <div class="p-3">
-                    <input type="text" class="form-control" v-model="unit_per_floor" placeholder="Units Per Floors">
+                <div style="height: 300px; overflow-x: hidden; overflow: auto;">
+                    <div class="p-3 d-flex" v-if="floor_list.length > 0" v-for="(floor, index) in floor_list">
+                        <label class="col-6">Units (FL-{{ floor.floors}})</label>
+                        <input class="col-4 form-control" @input="changeAll" :disabled="floor.disabled" type="number" v-model="floor.units">
+                    </div>
+                </div>
+                <div>
+                    <b-checkbox v-model="same_for_all" @change="sameForAll" v-if="floor_list.length > 0">Same For All</b-checkbox>
                 </div>
                 <div class="p-3">
                     <button class="btn btn-danger" @click.prevent="resetForm()" v-if="updateApartment"><i class="fa fa-ban"></i> CANCEL</button>
@@ -23,7 +29,7 @@
                 <div class="card-body"> 
                     <h5 class="card-title">{{ apartment.name }}</h5>
                     <p class="card-text">Number of floors: {{ apartment.floor_no }}</p>
-                    <p class="card-text">Units per floor: {{ apartment.unit_per_floor }}</p>
+                    <p class="card-text">Total units: {{ apartment.total_units }}</p>
                     <button class="btn btn-warning" @click.prevent="editApartment(apartment.id)"><i class="fa fa-pencil"></i> EDIT</button>
                     <button class="btn btn-danger" @click.prevent="deleteApartment(apartment.id)"><i class="fa fa-trash"></i> DELETE</button>
                 </div>
@@ -45,22 +51,56 @@ export default {
     data() {
         return {
             addApartment: true,
+            same_for_all: false,
             viewApartment: true,
             updateApartment: false,
             apartment_name: null,
             no_of_floor: null,
             unit_per_floor: null,
             edit_id: null,
-            apartmentList: []
+            apartmentList: [],
+            floor_list: []
         }
     },
     mounted() { 
         this.fetchApartments()
     },
     methods: {
+        changeAll() { 
+            if (this.same_for_all) {
+                this.floor_list.forEach((e, i) => {
+                    e.units = this.floor_list[0].units ? this.floor_list[0].units : 0
+                })
+            }
+        },
+        sameForAll() { 
+            if (this.same_for_all) {
+                this.floor_list.forEach((e, i) => {
+                    if (this.floor_list[0].units) {
+                        e.units = this.floor_list[0].units
+                    }
+                    if (i != 0) {
+                        e.disabled = true
+                    }
+                })
+            } else {
+                this.floor_list.forEach(e => {
+                    e.disabled = false
+                })
+            }
+        },
         async fetchApartments() { 
             const response = await this.$axios.get('/get-apartments')
-            this.apartmentList = response.data.data
+            this.apartmentList = response.data.data.map(e => { 
+                let  totalUnits = 0
+                e.floors.forEach(elm => {
+                    totalUnits += parseInt(elm.units)
+                })
+                return {
+                    ...e, 
+                    total_units: totalUnits
+                }
+            })
         },
         deleteApartment(id) {
             Swal.fire({
@@ -94,13 +134,16 @@ export default {
             this.unit_per_floor = null
             this.updateApartment = false
             this.addApartment = true
+            this.floor_list = []
         },
         editApartment(id) {
             const selectedApartment = this.apartmentList.find(e => e.id == id)
+            console.log(selectedApartment);
             this.edit_id = id
             this.apartment_name = selectedApartment.name
             this.no_of_floor = selectedApartment.floor_no
             this.unit_per_floor = selectedApartment.unit_per_floor
+            this.floor_list = selectedApartment.floors
             this.updateApartment = true
             this.addApartment = false
         },
@@ -125,11 +168,11 @@ export default {
                 })
                 return
             }
-            if (!this.unit_per_floor || !`${this.unit_per_floor}`.trim()) {
+            if (!this.floor_list.length > 0 || this.floor_list.filter(e => e.units == 0).length > 0 ) {
                 Swal.fire({
                     position: 'top-end',
                     icon: 'error',
-                    title: 'Enter unit per floor.',
+                    title: 'Enter unit no for each floor.',
                     showConfirmButton: false,
                     timer: 1500
                 })
@@ -141,7 +184,13 @@ export default {
                     id: this.edit_id,
                     name: this.apartment_name,
                     floor_no: this.no_of_floor,
-                    unit_per_floor: this.unit_per_floor
+                    unit_per_floor_data: this.floor_list.map(e => {
+                        return {
+                            id: e.id,
+                            floor_no: parseInt(e.floors),
+                            unit_no: parseInt(e.units)
+                        }
+                    })
                 }
                 const response = await this.$axios.post('/update-apartment', payload)
                 Swal.fire({
@@ -157,8 +206,14 @@ export default {
                 payload = {
                     name: this.apartment_name,
                     floor_no: this.no_of_floor,
-                    unit_per_floor: this.unit_per_floor
+                    unit_per_floor_data: this.floor_list.map(e => {
+                        return {
+                            floor_no: e.floors,
+                            unit_no: parseInt(e.units)
+                        }
+                    })
                 }
+                // console.log(payload);
                 const response = await this.$axios.post('/add-apartment', payload)
                 Swal.fire({
                     position: 'top-end',

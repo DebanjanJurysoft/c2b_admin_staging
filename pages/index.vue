@@ -42,6 +42,11 @@
           <Unit_details />
         </div>
         <!-- user details end  -->
+        <!-- user details  -->
+        <div class="col-12 card" v-if="selectedMenu.name == 'PAYMENTS'">
+          <Payment />
+        </div>
+        <!-- user details end  -->
       </div>
     </div>
   </div>
@@ -52,6 +57,7 @@ import Units from '../components/units.vue';
 import Apartments from '../components/apartments.vue';
 import User from '../components/users.vue';
 import Unit_details from "../components/unit_details.vue";
+import Payment from "../components/payments.vue";
 export default {
     name: "IndexPage",
     data() {
@@ -81,6 +87,11 @@ export default {
                 {
                     name: "USERS",
                     page_link: "/users",
+                    role_id_list: [1, 2, 3],
+                },
+                {
+                    name: "PAYMENTS",
+                    page_link: "/payments",
                     role_id_list: [1, 2],
                 },
             ],
@@ -111,6 +122,6 @@ export default {
       this.selectedMenu = menu;
     },
   },
-  components: { Apartments, Units, User, Unit_details }
+  components: { Apartments, Units, User, Unit_details, Payment }
 };
 </script>
