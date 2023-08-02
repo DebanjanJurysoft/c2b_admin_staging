@@ -5,18 +5,18 @@
             <div v-if="fields.length > 0" v-for="(field, index) in fields" :key="index" class="row align-items-center py-1">
                 <h5 class="col-5">{{ field.e }}</h5>
                 <i class="col-2 fa fa-arrow-right"></i>
-                <b-form-select class="col-5" v-model="field.selected_field" :options="field_list"></b-form-select>
+                <b-form-select class="select-box col-5" v-model="field.selected_field" :options="field_list"></b-form-select>
             </div>
         </div>
 
         <div class="text-center">
-            <button class="btn btn-success" @click.prevent="saveData">
-                <i class="fa fa-save mr-1"></i>Save Data
+            <button class="btn2" @click.prevent="saveData">
+                <i class="fa fa-save mr-1"></i>Save
             </button>
-            <button class="btn btn-primary" @click.prevent="$bvModal.show('preview_data')">
-                <i class="fa fa-eye mr-1"></i>Preview Data
+            <button class="btn2" @click.prevent="$bvModal.show('preview_data')">
+                <i class="fa fa-eye mr-1"></i>Preview
             </button>
-            <button class="btn btn-danger" @click.prevent="$emit('closeModal')">
+            <button class="btn2" @click.prevent="$emit('closeModal')">
                 <i class="fa fa-ban mr-1"></i>Close
             </button>
         </div>
@@ -43,8 +43,8 @@
                 Please select a file.
             </div>
             <div class="text-center"> 
-                <button class="btn btn-danger" @click.prevent="$bvModal.hide('preview_data')">
-                    <i class="fa fa-eye-slash mr-1"></i>Close Data Preview
+                <button class="btn2" @click.prevent="$bvModal.hide('preview_data')">
+                    <i class="fa fa-eye-slash mr-1"></i>Close
                 </button>
             </div>
         </b-modal>
@@ -120,13 +120,13 @@ export default {
                 total_units_in_apartment += e.units
             })
             if (data.length == total_units_in_apartment) {
-                const response = this.$axios.post('/bulk-add-unit', {
+                const response = await this.$axios.post('/bulk-add-unit', {
                    units_data: data
                 });
                 Swal.fire({
                     position: 'top-end',
-                    icon: 'success',
-                    title: `unit data saved successfully.`,
+                    icon: response.data.message.includes('success') ? 'success' : 'error',
+                    title: response.data.message,
                     showConfirmButton: false,
                     timer: 1500
                 })

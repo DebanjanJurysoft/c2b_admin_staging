@@ -5,52 +5,52 @@
         </div>
     </div>
     <div class="w-100 apartmentHolder" v-else>
-        <div class="addApartment">
+        <div class="addApartment card" style="height: 750px;">
             <div class="p-3 text-center">
                 <h3>{{ selected_user ? 'Update' : 'Add' }} User</h3>
                 <div class="p-3">
-                    <input type="text" v-model="full_name" class="form-control" placeholder="Full Name">
+                    <input type="text" v-model="full_name" class="" placeholder="Full Name">
                 </div>
                 <div class="p-3">
-                    <b-form-select class="my-2" v-model="selected_user_role" :options="user_role_list" value-field="id" text-field="role_name"></b-form-select>
+                    <b-form-select class="select-box my-2" v-model="selected_user_role" :options="user_role_list" value-field="id" text-field="role_name"></b-form-select>
                 </div>
                 <div class="p-3">
-                    <input type="text" v-model="username" class="form-control" placeholder="Email">
+                    <input type="text" v-model="username" class="" placeholder="Email">
                 </div>
                 <div class="p-3" v-if="!selected_user && selected_user_role && user_role_list.find(e => e.id == selected_user_role).role_name != 'CUSTOMER'">
-                    <input type="text" v-model="password" class="form-control" placeholder="Password">
+                    <input type="text" v-model="password" class="" placeholder="Password">
                 </div>
                 <div class="p-3" v-if="selected_user_role && user_role_list.find(e => e.id == selected_user_role).role_name == 'CUSTOMER'">
-                    <input type="text" @input="() => {pancard = pancard.toUpperCase()}" v-model="pancard" class="form-control" placeholder="PANCARD">
+                    <input type="text" @input="() => {pancard = pancard.toUpperCase()}" v-model="pancard" class="" placeholder="PANCARD">
                 </div>
                 <div class="p-3">
-                    <button class="btn btn-danger" v-if="selected_user" @click.prevent="resetForm"><i class="fa fa-ban"></i> Cancel</button>
-                    <button class="btn btn-success" @click.prevent="saveUser"><i class="fa fa-save"></i> Save</button>
+                    <button class="btn2" v-if="selected_user" @click.prevent="resetForm"><i class="fa fa-ban"></i> Cancel</button>
+                    <button class="btn2" @click.prevent="saveUser"><i class="fa fa-save"></i> Save</button>
                 </div>
             </div>
         </div>
-        <div v-if="user_list.length > 0 || customer_list.length > 0" style="width: 60%;">
-            <div class="viewApartment" style="height: 500px; padding: 30px; width: 50%; overflow-y: scroll; text-align: center;" v-if="user_list.length > 0">
+        <div v-if="user_list.length > 0 || customer_list.length > 0" style="width: 60%; display: flex; justify-content: space-between;">
+            <div class="viewApartment card" style="height: 750px; padding: 30px; width: 47%; overflow-y: scroll; text-align: center;" v-if="user_list.length > 0">
                 <h3>USERS</h3>
                 <div class="card my-2" style="width: 100%;" v-for="(user, index) in user_list" :key="index">
                     <div class="card-body">
                         <h5 class="card-title">{{ user.fullname }}</h5>
                         <p class="card-text">User ID: {{ user.id }}</p>
                         <p class="card-text">Role: {{ user.user_role.role_name }}</p>
-                        <button class="btn btn-warning" @click.prevent="editUser(user)"><i class="fa fa-pencil"></i> EDIT</button>
-                        <button class="btn btn-danger" @click.prevent="deleteUser(user)"><i class="fa fa-trash"></i> DELETE</button>
+                        <button class="btn2" @click.prevent="editUser(user)"><i class="fa fa-pencil"></i> EDIT</button>
+                        <button class="btn2" @click.prevent="deleteUser(user)"><i class="fa fa-trash"></i> DELETE</button>
                     </div>
                 </div>
             </div>
-            <div class="viewApartment" style="height: 500px; padding: 30px; width: 50%; overflow-y: scroll; text-align: center;" v-if="customer_list.length > 0">
+            <div class="viewApartment card" style="height: 750px; padding: 30px; width: 47%; overflow-y: scroll; text-align: center;" v-if="customer_list.length > 0">
                 <h3>CUSTOMERS</h3>
                 <div class="card my-2" style="width: 100%;" v-for="(user, index) in customer_list" :key="index">
                     <div class="card-body">
                         <h5 class="card-title">{{ user.fullname }}</h5>
                         <p class="card-text">User ID: {{ user.id }}</p>
                         <p class="card-text">Role: CUSTOMER</p>
-                        <button class="btn btn-warning" @click.prevent="editUser(user)"><i class="fa fa-pencil"></i> EDIT</button>
-                        <!-- <button class="btn btn-danger" @click.prevent="deleteUser(user)"><i class="fa fa-trash"></i> DELETE</button> -->
+                        <button class="btn2" @click.prevent="editUser(user)"><i class="fa fa-pencil"></i> EDIT</button>
+                        <!-- <button class="btn2" @click.prevent="deleteUser(user)"><i class="fa fa-trash"></i> DELETE</button> -->
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@ export default {
                     const response = await this.$axios.post('/delete-user', {
                         id: user.id
                     })
-                    console.log(response);
+                    // console.log(response);
                     Swal.fire({
                         position: 'top-end',
                         icon: response.data.message.includes('success') ? 'success' : 'error',

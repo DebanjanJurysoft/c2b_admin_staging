@@ -1,65 +1,96 @@
 <template>
     <div class="apartmentHolder">
-        <div class="addApartment">
+        <div class="addApartment card" style="width: 30%;">
             <div class="p-3 text-center">
                 <h3>Filter Units</h3>
                 <div class="d-flex flex-column align-items-center">
-                    <div class="d-flex align-items-center w-100">
-                        <label class="col-6">Apartment:</label>
-                        <b-form-select class="col-6 ml-2 my-2" v-model="selectedApartment" @change="selectApartment()" :options="apartmentList" value-field="id" text-field="name"></b-form-select>
+                    <div class="d-flex align-items-center flex-column w-100">
+                        <label>Block:</label>
+                        <b-form-select class="select-box my-2" v-model="selectedApartment" @change="selectApartment()" :options="apartmentList" value-field="id" text-field="name"></b-form-select>
                     </div>
                     <div class="d-flex align-items-center w-100">
-                        <label class="col-6" v-if="selectedApartment">Floor: </label>
-                        <b-form-select class="col-6 ml-2 my-2" v-model="selected_floor" v-if="selectedApartment" :options="floor_list" value-field="value" text-field="text"></b-form-select>
+                        <label class="col-5" v-if="selectedApartment">Floor: </label>
+                        <b-form-select class="select-box col-7 ml-2 my-2" v-model="selected_floor" v-if="selectedApartment" :options="floor_list" value-field="value" text-field="text"></b-form-select>
                     </div>
                     <div class="d-flex align-items-center w-100">
-                        <label class="col-6" v-if="selectedApartment">BHK: </label>
-                        <b-form-select class="col-6 ml-2 my-2" v-model="selected_bhk" v-if="selectedApartment" :options="bhk_list" value-field="value" text-field="text"></b-form-select>
+                        <label class="col-5" v-if="selectedApartment">BHK: </label>
+                        <b-form-select class="select-box col-7 ml-2 my-2" v-model="selected_bhk" v-if="selectedApartment" :options="bhk_list" value-field="value" text-field="text"></b-form-select>
                     </div>
                     <div class="d-flex align-items-center w-100">
-                        <label class="col-6" v-if="selectedApartment">Facing: </label>
-                        <b-form-select class="col-6 ml-2 my-2" v-model="selected_facing" v-if="selectedApartment" :options="facing_option_list" value-field="value" text-field="text"></b-form-select>
+                        <label class="col-5" v-if="selectedApartment">Facing: </label>
+                        <b-form-select class="select-box col-7 ml-2 my-2" v-model="selected_facing" v-if="selectedApartment" :options="facing_option_list" value-field="value" text-field="text"></b-form-select>
+                    </div>
+                    <!-- <div class="d-flex align-items-center w-100">
+                        <label class="col-5" v-if="selectedApartment">Sort By Price: </label>
+                        <b-form-select class="select-box col-7 ml-2 my-2" v-model="selected_sort" v-if="selectedApartment" :options="sort_option" value-field="value" text-field="text"></b-form-select>
                     </div>
                     <div class="d-flex align-items-center w-100">
-                        <label class="col-6" v-if="selectedApartment">Sort By Price: </label>
-                        <b-form-select class="col-6 ml-2 my-2" v-model="selected_sort" v-if="selectedApartment" :options="sort_option" value-field="value" text-field="text"></b-form-select>
+                        <label class="col-5" v-if="selectedApartment">Max Price: </label>
+                        <b-form-input class="col-7 ml-2 my-2" v-if="selectedApartment" placeholder="Max Price" v-model="max_price" type="number"></b-form-input>
                     </div>
                     <div class="d-flex align-items-center w-100">
-                        <label class="col-6" v-if="selectedApartment">Max Price: </label>
-                        <b-form-input class="col-6 ml-2 my-2" v-if="selectedApartment" placeholder="Max Price" v-model="max_price" type="number"></b-form-input>
-                    </div>
-                    <div class="d-flex align-items-center w-100">
-                        <label class="col-6" v-if="selectedApartment">Squarefeet: </label>
-                        <b-form-input class="col-6 ml-2 my-2" v-if="selectedApartment" placeholder="Max Squarefeet" v-model="max_sqft" type="number"></b-form-input>
-                    </div>
+                        <label class="col-5" v-if="selectedApartment">Squarefeet: </label>
+                        <b-form-input class="col-7 ml-2 my-2" v-if="selectedApartment" placeholder="Max Squarefeet" v-model="max_sqft" type="number"></b-form-input>
+                    </div> -->
                     <div class="my-2" v-if="selectedApartment">
-                        <button class="btn btn-success" @click.prevent="fetchUnits()"><i class="fa fa-filter mr-2"></i>FILTER</button>
-                        <button class="btn btn-danger" @click.prevent="resetFilter()"><i class="fa fa-ban mr-2"></i>CLEAR FILTER</button>
+                        <button class="btn2" @click.prevent="fetchUnits()"><i class="fa fa-filter mr-2"></i>FILTER</button>
+                        <button class="btn2" @click.prevent="resetFilter()"><i class="fa fa-ban mr-2"></i>CLEAR</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="viewApartment" style="height: 600px; padding: 10px; overflow-y: scroll; width: 60%;">
+        <div class="viewApartment card" style="height: 750px; padding: 10px; overflow-y: scroll; width: 70%; padding-left: 30px; padding-right: 30px;">
             <div class="h-100 w-100" v-if="loading">
                 <div class="text-center">
                     <b-spinner variant="primary" label="Text Centered"></b-spinner>
                 </div>
             </div>
-            <div class="card my-2" :class="fetchClass(unit)" style="text-align: center; width: 100%;" v-else-if="!loading && units_list.length > 0" v-for="(unit, index) in units_list" :key="index">
-                <div class="card-body">
-                    <h5 class="card-title">Unit ID: <b>{{ unit.unit_id }}</b></h5>
-                    <p class="card-text" style="margin-top: -10px;"><b>Floor No: </b>{{ unit.floor_no }}</p>
-                    <p class="card-text" style="margin-top: -20px;"><b>Facing: </b>{{ unit.facing }}</p>
-                    <p class="card-text" style="margin-top: -20px;"><b>Squarefeet: </b>{{ unit.sqft }}</p>
-                    <p class="card-text" style="margin-top: -20px;"><b>Super Base Area: </b>{{ unit.sba }}</p>
-                    <p class="card-text" style="margin-top: -20px;"><b>Price Per Squarefeet: </b>₹{{ parseFloat(unit.price_per_sqft).toFixed(2) }}</p>
-                    <p class="card-text" style="margin-top: -20px;"><b>Total Price: </b>₹{{ parseFloat(parseFloat(unit.price_per_sqft) * parseFloat(unit.sqft)).toFixed(2) }}</p>
-                    <p class="card-text" style="margin-top: -20px;"><b>BHK: </b>{{ unit.bhk }}</p>
-                    <p class="card-text" style="margin-top: -20px;"><b>Amenities: </b>{{ unit.amenities }}</p>
-                    <button class="btn btn-warning" v-if="unit.status != 'BUY'" :disabled="unit.status == 'BOOK' || unit.status == 'BUY'" @click.prevent="bookUnit(unit)"><i class="fa fa-bookmark mr-1"></i>{{unit.status == 'BOOK' ? "BOOKED" : 'BOOK'}}</button>
-                    <button class="btn btn-success" @click.prevent="buyUnit(unit)"><i class="fa fa-money mr-1"></i> {{unit.status == 'BUY' ? "BAUGHT" : 'BUY'}}</button>
-                    <button v-if="unit.status != 'BUY'" :class="unit.status == 'BOOK' ? 'btn btn-danger' : 'btn btn-primary'" :disabled="unit.status == 'AVAILABLE' || unit.status == 'BUY'" @click.prevent="changeBookingToAvailable(unit)"><i :class="unit.status == 'BOOK' ? 'fa fa-ban mr-1' : 'fa fa-circle-o mr-1'"></i>{{unit.status == 'BOOK' ? "CANCEL BOOKING" : 'AVAILABLE'}}</button>
+            <div class="card my-2" style="text-align: center; width: 100%;" v-else-if="!loading && units_list.length > 0">
+                <div class="apartment d-flex flex-column-reverse">
+                    <div class="floor noscrollbarcard align-items-center d-flex flex-row" v-for="(floors, i1) in units_list" :key="i1">
+                        <div class="align-items-center">
+                            <span style="cursor: pointer" @click.prevent="() => {
+                                if (selected_floor == floors.floor_no) {
+                                    selected_floor = null
+                                } else {
+                                    selected_floor = floors.floor_no
+                                }
+                                fetchUnits()
+                            }" class="floor_no">
+                                <p>{{ floors.floor }}</p>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            <span  @click.prevent="select_unit(units)" class="units" :class="units.status" v-for="(units, i2) in floors.units" style="cursor: pointer;">
+                                <h5>{{units.unit_id}}</h5>
+                            </span>
+                        </div>
+                    </div>
                 </div>
+                <b-modal id="unitDetailsModal" size="xl" hide-footer hide-header > 
+                    <div class="row px-5">
+                        <img class="card col-6 p-0" height="400" width="400" src="~/static/unit.jpeg" alt="">
+                        <div class="col-6 py-3 px-5">
+                            <div class="row">
+                                <p style="text-transform: uppercase; font-size: 20px; font-weight: 600;" class="col-12 navItems">Flat Name / No: {{ selected_unit.unit_id }}</p>
+                            </div>
+                            <div class="row">
+                                <p style="text-transform: uppercase;" class="col-12 btn3">Price: ₹ {{ selected_unit.total_price }} (₹ {{selected_unit.price_per_sqft}}/SQFT)</p>
+                            </div>
+                            <div class="d-flex flex-wrap" style="width: 100%;">
+                                <div class="m-1" v-for="(element, index) in Object.keys(selected_unit)" :key="index" v-if="unit_details_options.includes(element) && selected_unit[element]">
+                                    <p class="btn3 " style="text-transform: uppercase; width: max-content;">{{ `${element}: ${selected_unit[element]}` }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-100 text-center pt-2">
+                            <button class="btn2" v-if="selected_unit.status != 'BUY'" :disabled="selected_unit.status == 'BOOK' || selected_unit.status == 'BUY'" @click.prevent="bookUnit(selected_unit)"><i class="fa fa-bookmark"></i>{{selected_unit.status == 'BOOK' ? "BOOKED" : 'BOOK'}}</button>
+                            <button class="btn2" @click.prevent="buyUnit(selected_unit)"><i class="fa fa-money"></i> {{selected_unit.status == 'BUY' ? "BAUGHT" : 'BUY'}}</button>
+                            <button v-if="selected_unit.status != 'BUY'" :class="selected_unit.status == 'BOOK' ? 'btn2' : 'btn2'" :disabled="selected_unit.status == 'AVAILABLE' || selected_unit.status == 'BUY'" @click.prevent="changeBookingToAvailable(selected_unit)"><i :class="selected_unit.status == 'BOOK' ? 'fa fa-ban' : 'fa fa-circle-o'"></i>{{selected_unit.status == 'BOOK' ? "CANCEL" : 'VACANT'}}</button>
+                            <button class="btn2" @click.prevent="$bvModal.hide('unitDetailsModal')"><i class="fa fa-ban"></i>Close</button>
+                        </div>
+                    </div>
+                </b-modal>
                 <b-modal id="BookUnitModal" hide-footer hide-header no-close-on-backdrop>
                     <div>
                         <h3 class="text-center">Book an unit</h3>
@@ -69,7 +100,7 @@
                         </div>
                         <div class="d-flex align-items-center w-100 px-2">
                             <label class="col-4" >Customer: </label>
-                            <b-form-select class="col-8 ml-2 my-2" placeholder="Customer" v-model="booking.customer" :options="booking.customer_list" value-field="id" text-field="fullname"></b-form-select>
+                            <b-form-select class="select-box col-8 ml-2 my-2" placeholder="Customer" v-model="booking.customer" :options="booking.customer_list" value-field="id" text-field="fullname"></b-form-select>
                         </div>
                         <div class="d-flex align-items-center w-100 px-2">
                             <label class="col-4" >Total Price(₹): </label>
@@ -93,8 +124,8 @@
                         </div>
                     </div>
                     <div class="text-center">
-                        <button class="btn btn-success mt-3" block @click.prevent="saveUnitToCustomer"><i class="fa fa-bookmark mr-1"></i>BOOK UNIT</button>
-                        <button class="btn btn-danger mt-3" block @click.prevent="closeBookModal"><i class="fa fa-ban mr-1"></i>Close</button>
+                        <button class="btn2 mt-3" block @click.prevent="saveUnitToCustomer"><i class="fa fa-bookmark"></i>BOOK</button>
+                        <button class="btn2 mt-3" block @click.prevent="closeBookModal"><i class="fa fa-ban"></i>Close</button>
                     </div>
                 </b-modal>
                 <b-modal id="BuyUnitModal" hide-footer hide-header no-close-on-backdrop>
@@ -107,7 +138,7 @@
                         </div>
                         <div class="d-flex align-items-center w-100 px-2">
                             <label class="col-4" >Customer: </label>
-                            <b-form-select class="col-8 ml-2 my-2" placeholder="Customer" :disabled="buying.already_booked" v-model="buying.customer" :options="buying.customer_list" value-field="id" text-field="fullname"></b-form-select>
+                            <b-form-select class="select-box col-8 ml-2 my-2" placeholder="Customer" :disabled="buying.already_booked" v-model="buying.customer" :options="buying.customer_list" value-field="id" text-field="fullname"></b-form-select>
                         </div>
                         <div class="d-flex align-items-center w-100 px-2">
                             <label class="col-4" >Total Price(₹): </label>
@@ -131,8 +162,8 @@
                         </div>
                     </div>
                     <div class="text-center">
-                        <button class="btn btn-success mt-3" block @click.prevent="buyUnitForCustomer"><i class="fa fa-money mr-1"></i>BUY UNIT</button>
-                        <button class="btn btn-danger mt-3" block @click.prevent="closeBuyModal"><i class="fa fa-ban mr-1"></i>Close</button>
+                        <button class="btn2 mt-3" block @click.prevent="buyUnitForCustomer"><i class="fa fa-money"></i>BUY</button>
+                        <button class="btn2 mt-3" block @click.prevent="closeBuyModal"><i class="fa fa-ban"></i>Close</button>
                     </div>
                 </b-modal>
             </div>
@@ -151,7 +182,15 @@ import { watch } from 'vue'
 export default {
     data() {
         return {
+            unit_details_options: [
+                'floor_no',
+                'facing',
+                'sba',
+                'sqft',
+                'amenities'
+            ],
             loading: true,
+            selected_unit: {},
             buying: {
                 unit_id: null,
                 customer: null,
@@ -207,12 +246,17 @@ export default {
             customer_role_id: null
         }
     },
-    mounted() {
-        this.fetchApartments()
-        this.fetchUnits()
-        this.fetchUserRoleList()
+    async mounted() {
+        await this.fetchApartments()
+        // this.fetchUnits()
+        await this.fetchUserRoleList()
+        this.loading = false
     },
     methods: {
+        select_unit(units) {
+            this.selected_unit = units
+            this.$bvModal.show('unitDetailsModal')
+        },
         async buyUnitForCustomer() { 
             if (!this.buying.customer) {
                 Swal.fire({
@@ -456,7 +500,8 @@ export default {
             this.selected_facing = null
             this.max_price = null
             this.selected_bhk = null
-            this.fetchUnits()
+            this.units_list = []
+            // this.fetchUnits()
         },
         async fetchUnits() {
             this.loading = true
@@ -471,7 +516,26 @@ export default {
             const response = await this.$axios.get('/get-unit-for-sales', {
                 params,
             })
-            this.units_list = response.data.data
+            this.units_list = []
+            response.data.data.forEach(element => {
+                const floor = `Floor${element.floor_no}`
+                const total_price = parseFloat(parseFloat(element.sba) * parseFloat(element.price_per_sqft)).toFixed(2)
+                if (this.units_list.find(e => e.floor == floor)) {
+                    let index = -1
+                    this.units_list.forEach((e, i) => {
+                        if (e.floor == floor) {
+                            index = i
+                        }
+                    })
+                    this.units_list[index].units.push({...element, total_price})
+                } else {
+                    this.units_list.push({
+                        floor,
+                        floor_no: element.floor_no,
+                        units: [{...element, total_price}]
+                    })
+                }
+            })
             this.loading = false
         },
         async fetchApartments() {
@@ -479,7 +543,7 @@ export default {
             this.apartmentList = response.data.data
             this.apartmentList.unshift({
                 id: null,
-                name: 'Select a apartment',
+                name: 'Select a block',
             })
         },
         async fetchFilters(apt_id) { 
@@ -522,6 +586,7 @@ export default {
                 text: 'Select the floor.'
             })
             await this.fetchFilters(this.selectedApartment)
+            await this.fetchUnits()
         }
     },
 }
@@ -534,15 +599,94 @@ export default {
     display: flex;
 }
 .addApartment {
-    width: 40%;
+    width: 30%;
     float: left;
 }
 
 .viewApartment {
+    width: 30%;
     float: left;
 }
 .unitDetails {
     width: 30%;
     float: left;
+}
+
+.apartment {
+    justify-content: space-evenly;
+}
+
+.floor_no { 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 10px;
+    padding-bottom: 0px;
+    border-radius: 20px;
+    border: 1px solid var(--grays-gray-4, #D1D1D6);
+    background: var(--grays-gray-4, #D1D1D6);
+    box-shadow: 1px 3px #000;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+.floor_no:hover { 
+    background: #F5C245;
+}
+.units {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 10px;
+    padding-bottom: 0px;
+    border-radius: 20px;
+    border: 1px solid var(--grays-gray-4, #D1D1D6);
+    box-shadow: 1px 3px #E0E9FF;
+    /* background: var(--grays-gray-4, #D1D1D6); */
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+.floor {
+    margin-bottom: 10px;
+    overflow-x: scroll;
+    /* -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.floor::-webkit-scrollbar { 
+    display: none; */
+}
+.AVAILABLE {
+    background: #fff;
+    color: #000;
+    border-radius: 20px;
+    border: 1px solid var(--grays-black, #000); 
+}
+.AVAILABLE:hover {
+    opacity: 1; 
+    background: #D1D1D6;
+}
+.BOOK {
+    background: #205CFF;
+    opacity: 0.5;
+    color: #000;
+    border-radius: 20px;
+    border: 1px solid var(--grays-black, #000); 
+}
+
+.BOOK:hover {
+    opacity: 1; 
+}
+.BUY {
+    background: #34C759;
+    opacity: 0.5;
+    color: #000;
+    border-radius: 20px;
+    border: 1px solid var(--grays-black, #000); 
+}
+.BUY:hover {
+    opacity: 1; 
 }
 </style>

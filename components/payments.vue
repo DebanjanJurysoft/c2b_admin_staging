@@ -1,25 +1,25 @@
 <template>
-    <div>
-        <div class="w-100 row">
+    <div class="card" style="height: 750px;">
+        <!-- <div class="w-100 row">
             <div class="col-3 d-flex align-items-center py-2 mx-2">
-                <label class="mr-2 mt-1">UNIT: </label>
-                <b-select v-model="selected_unit" @change="fetchPayments" :options="units_list"></b-select>
+                <label class="mr-2 mt-2">UNIT: </label>
+                <b-select class="select-box" v-model="selected_unit" @change="fetchPayments" :options="units_list"></b-select>
             </div>
             <div class="col-3 d-flex align-items-center py-2 mx-2">
-                <label class="mr-2 mt-1">CUSTOMER: </label>
-                <b-select v-model="selected_customer" @change="fetchPayments" :options="customer_list"></b-select>
+                <label class="mr-2 mt-2">CUSTOMER: </label>
+                <b-select class="select-box" v-model="selected_customer" @change="fetchPayments" :options="customer_list"></b-select>
             </div>
             <div class="col-3 d-flex align-items-center py-2 mx-2">
-                <label class="mr-2 mt-1">STATUS: </label>
-                <b-select v-model="selected_status" @change="fetchPayments" :options="status_list"></b-select>
+                <label class="mr-2 mt-2">STATUS: </label>
+                <b-select class="select-box" v-model="selected_status" @change="fetchPayments" :options="status_list"></b-select>
             </div>
-        </div>
+        </div> -->
         <div v-if="loader" class="p-5">
             <div class="text-center p-5" style="border: none;">
                 <b-spinner></b-spinner>
             </div>
         </div>
-        <div v-else-if="!loader && payment_list.length > 0" class="w-100 p-2">
+        <div v-else-if="!loader && payment_list.length > 0" class="w-100 noscrollbarcard p-2" style="overflow-y: scroll;">
             <table class="table table-striped">
                 <thead style="background: #2c2c2c;">
                     <tr style="font-weight: 700; color: white; text-align: center;">
@@ -59,7 +59,7 @@
                                 <label>Total Amount: </label>
                             </div>
                             <div class="col-7">
-                                <input class="form-control" v-model="remaining_pay.total_amount" disabled type="text">
+                                <input class="" v-model="remaining_pay.total_amount" disabled type="text">
                             </div>
                         </div>
                         <div class="row py-2 align-items-center">
@@ -67,7 +67,7 @@
                                 <label>Remaining Amount: </label>
                             </div>
                             <div class="col-7">
-                                <input class="form-control" v-model="remaining_pay.remaining_amount" disabled type="text">
+                                <input class="" v-model="remaining_pay.remaining_amount" disabled type="text">
                             </div>
                         </div>
                         <div class="row py-2 align-items-center">
@@ -75,7 +75,7 @@
                                 <label>Paying Amount: </label>
                             </div>
                             <div class="col-7">
-                                <input class="form-control" @input="changeRemainingAmount" v-model="remaining_pay.paying_amount" type="number">
+                                <input class="" @input="changeRemainingAmount" v-model="remaining_pay.paying_amount" type="number">
                             </div>
                         </div>
                         <div class="row py-2 align-items-center">
@@ -92,8 +92,8 @@
                         </div>
                     </div>
                     <div class="text-center">
-                        <button class="btn btn-success mt-3" block @click.prevent="PayInstallment"><i class="fa fa-money mr-1"></i>PAY</button>
-                        <button class="btn btn-danger mt-3" block @click.prevent="closeModal"><i class="fa fa-ban mr-1"></i>Close</button>
+                        <button class="btn2 mt-3" block @click.prevent="PayInstallment"><i class="fa fa-money mr-1"></i>PAY</button>
+                        <button class="btn2 mt-3" block @click.prevent="closeModal"><i class="fa fa-ban mr-1"></i>Close</button>
                     </div>
                 </div>
             </b-modal>
@@ -266,7 +266,7 @@ export default {
                     customer: e.customer.fullname,
                     status: e.status == 1 ? 'AVAILABLE' : 'DELETED',
                     date: new Date(e.createdAt).toLocaleDateString(),
-                    remaining_amount: parseFloat(parseFloat(e.total_payable_amount) - parseFloat(e.total_paid_till_now[0].total_paid_till_now)).toFixed(2)
+                    remaining_amount: e.payment_type == 'BOOKING' ? 0 : parseFloat(parseFloat(e.total_payable_amount) - parseFloat(e.total_paid_till_now[0].total_paid_till_now)).toFixed(2)
                 }
             })
         }

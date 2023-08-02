@@ -21,7 +21,7 @@
                 <i id="eyeButton2" @click.prevent="changePasswordType('cpassword', 2)" class="fa fa-eye-slash"></i>
             </div>
             <div class="p3">
-                <button class="btn btn-success">Register</button>
+                <button class="btn2">Register</button>
                 <p>Already have acount? <a href="/login">Sign in.</a></p>
                 <!-- <a href="/forgot">Forgot password?</a> -->
             </div>

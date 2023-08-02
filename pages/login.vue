@@ -1,20 +1,22 @@
 <template>
     <div class="align-items-center container-fluid vertical-center" >
-        <div class="p-5 card text-center" style="height: 500px;">
+        <div class="p-5 card text-center" style="height: 500px; width: 50% !important;">
             <h3>Login</h3>
-            <div class="p-3">
-                <label for="Email">Email</label>
-                <input type="text" name="Email" v-model="email" placeholder="Email">
+            <div class="row align-items-center p-3">
+                <label class="col-3" for="Email">Email</label>
+                <input class="col-9" type="text" name="Email" v-model="email" placeholder="Email">
             </div>
-            <div class="p-3">
-                <label for="password">Password</label>
-                <input type="password" name="password" v-model="password" id="password" placeholder="password">
-                <i id="eyeButton" @click.prevent="changePasswordType" class="fa fa-eye-slash"></i>
+            <div class="row align-items-center p-3">
+                <label class="col-3" for="password">Password</label>
+                <input class="col-9" type="password" name="password" v-model="password" id="password" placeholder="password">
             </div>
-            <div class="p3">
-                <button class="btn btn-success" @click.prevent="loginUser">Login</button>
+            <a style="cursor: pointer;" @click.prevent="changePasswordType"><i id="eyeButton" class="fa fa-eye-slash"></i> Show password</a>
+            <div class="p-3">
+                <button class="btn2" @click.prevent="loginUser">Login</button>
                 <!-- <p>Create acount? <a href="/register">Sign up.</a></p> -->
-                <!-- <a href="/forgot">Forgot password?</a> -->
+            </div>
+            <div>
+                <a href="/forgot">Forgot password?</a>
             </div>
         </div>
     </div>
@@ -68,7 +70,7 @@ export default {
                         timer: 1500
                     })
                 } else {
-                    console.log(this.$auth);
+                    // console.log(this.$auth);
                     Swal.fire({
                         position: 'top-end',
                         icon: 'error',
