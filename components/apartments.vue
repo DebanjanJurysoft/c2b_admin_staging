@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div class="viewApartment card" style="height: 750px; padding: 30px; overflow-y: scroll;" v-if="apartmentList.length > 0">
+        <div class="viewApartment card" style="width: 70%; height: 750px; padding: 30px; overflow-y: scroll;" v-if="apartmentList.length > 0">
             <table class="table table-striped">
                 <thead style="background: #2c2c2c;">
                     <tr style="font-weight: 700; color: white; text-align: center;">
@@ -336,6 +336,8 @@ export default {
 </script>
 
 <style>
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+
 .apartmentHolder {
     width: 100%;
     height: max-content;

@@ -3,13 +3,13 @@
         <div class="addApartment card" style="height: 750px;">
             <div class="p-3 text-center">
                 <h3>{{ `${!project_id ? 'Add' : 'Update'} Project` }}</h3>
-                <div class="p-3">
+                <div class="p-1">
                     <div class="row align-items-center">
                         <label class="col-4">Project</label>
                         <input type="text" class="col-8" v-model="project_name" placeholder="Project Name">
                     </div>
                 </div>
-                <div class="p-3">
+                <div class="p-1">
                     <div class="row align-items-center">
                         <label class="col-4">Blocks</label>
                         <input type="number" class="col-8" v-model="blocks" placeholder="Blocks In The Projects">
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="viewApartment card" style="height: 750px; padding: 30px; overflow-y: scroll;" v-if="!loader && project_list.length > 0">
+        <div class="viewApartment card" style="width: 70%; height: 750px; padding: 30px; overflow-y: scroll;" v-if="!loader && project_list.length > 0">
             <div class="card my-2" style="width: 100%;" v-for="(project, index) in project_list" :key="index">
                 <div class="card-body"> 
                     <h5 class="card-title">{{ project.project_name }}</h5>
@@ -146,6 +146,7 @@ export default {
 </script>
 
 <style>
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
 .apartmentHolder {
     width: 100%;
     height: max-content;
