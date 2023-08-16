@@ -165,7 +165,7 @@ export default {
   methods: {
     enableDropDown(menu) {
       const user = this.$auth.user
-      if (menu.name == 'UNIT DETAILS' && this.selectedMenu.name == 'UNIT DETAILS') {
+      if (menu.name == 'UNIT DETAILS') {
         if (this.menu.find(e => e.name == 'USERS')) {
           this.menu = this.otherMenu.filter(e => e.role_id_list.includes(user.role.id))
         } else {
