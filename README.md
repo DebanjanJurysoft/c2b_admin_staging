@@ -1,4 +1,4 @@
-# trendsquare
+# Close2Buy
 
 ## Build Setup
 
