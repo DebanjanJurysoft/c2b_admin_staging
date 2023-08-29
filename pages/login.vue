@@ -1,22 +1,42 @@
 <template>
-    <div class="align-items-center container-fluid vertical-center" >
-        <div class="p-5 card text-center" style="height: 500px; width: 50% !important;">
-            <h3>Login</h3>
-            <div class="row align-items-center p-3">
-                <label class="col-3" for="Email">Email</label>
-                <input class="col-9" type="text" name="Email" v-model="email" placeholder="Email">
-            </div>
-            <div class="row align-items-center p-3">
-                <label class="col-3" for="password">Password</label>
-                <input class="col-9" type="password" name="password" v-model="password" id="password" placeholder="password">
-            </div>
-            <a style="cursor: pointer;" @click.prevent="changePasswordType"><i id="eyeButton" class="fa fa-eye-slash"></i> Show password</a>
-            <div class="p-3">
-                <button class="btn2" @click.prevent="loginUser">Login</button>
-                <!-- <p>Create acount? <a href="/register">Sign up.</a></p> -->
-            </div>
-            <div>
-                <a href="/forgot">Forgot password?</a>
+    <div>
+        <div class="logo" >
+            <img src="~/static/images/small-logo.png" width="80" style="padding: 10px;" alt="illustration">
+        </div>
+        <div class="login-container">
+            <div class="row vertical-center-login">
+                <div class="col-6 col-md-6 col-sm-12">
+                    <img src="~/static/images/login-illustration.svg" alt="image">
+                </div>
+                <div class="col-6 col-md-6 col-sm-12">
+                    <div class="login-input-container">
+                        <span class="login-input-label">Email*</span>
+                        <div class="login-input-field">
+                            <i class="fa fa-envelope-o"></i>
+                            <input type="text" v-model="email" name="email"  placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="login-input-container">
+                        <label class="login-input-label" for="password">Password*</label>
+                        <div class="login-input-field">
+                            <i class="fa fa-key"></i>
+                            <input type="password" id="password" v-model="password" name="password"  placeholder="Password">
+                            <i @click.prevent="changePasswordType" id="eyeButton" class="fa fa-eye-slash"></i>
+                        </div>
+                    </div>
+                    <button class="login-button" @click.prevent="loginUser"><span>Continue</span></button>
+                    <!-- social media logins -->
+                    <!-- <div class="break">
+                        <div class="line"></div>
+                        <span>or</span>
+                        <div class="line"></div>
+                    </div>
+                    <div class="social-media-login">
+                        <button class="google-button"><img src="~/static/icons/google.svg" alt="Sign in with Google"><span>Sign in with Google</span></button>
+                        <button class="facebook-button"><img src="~/static/icons/facebook.svg" alt="Sign in with Facebook"><span>Sign in with Facebook</span></button>
+                        <button class="apple-button"><img src="~/static/icons/apple.svg" alt="Sign in with Apple"><span>Sign in with Apple</span></button>
+                    </div> -->
+                </div>
             </div>
         </div>
     </div>
@@ -55,7 +75,7 @@ export default {
                     })
                     return
                 }
-                await this.$auth.loginWith('local', {
+                const resp = await this.$auth.loginWith('local', {
                     data: {
                         email: this.email,
                         password: this.password
@@ -70,17 +90,17 @@ export default {
                         timer: 1500
                     })
                 } else {
-                    // console.log(this.$auth);
                     Swal.fire({
                         position: 'top-end',
                         icon: 'error',
-                        title: 'Check your credentials.',
+                        title: resp.data.message,
                         showConfirmButton: false,
                         timer: 1500
                     })
                 }
             } catch (error) {
                 console.log(error);
+                console.log(error.message);
                 Swal.fire({
                     position: 'top-end',
                     icon: 'error',
@@ -106,11 +126,4 @@ export default {
 </script>
 
 <style>
-.vertical-center {
-  min-height: 100%;
-  min-height: 100vh; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 </style>

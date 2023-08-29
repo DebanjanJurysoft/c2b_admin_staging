@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'trendsquare',
+    title: 'Close2Buy',
     htmlAttrs: {
       lang: 'en'
     },
@@ -12,13 +12,13 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/images/small-logo.png' }
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    '~/static/style.css',
+    '~/static/css/style.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -46,12 +46,12 @@ export default {
       local: {
         endpoints: {
           login: {
-            url: '/login',
+            url: '/login-admin',
             method: 'post',
             propertyName: 'token'
           },
           logout: {
-            url: '/logout',
+            url: '/logout-user',
             method: 'post'
           },
           user: {
@@ -67,7 +67,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'https://trendsquareinventoryapi.jurysoftprojects.com/api',
+    baseURL: 'http://localhost:3030/api',
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
