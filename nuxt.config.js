@@ -1,4 +1,5 @@
 export default {
+  devtools: { enabled: true },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Close2Buy',
@@ -19,6 +20,8 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '~/static/css/style.css',
+    '~/static/css/sidebar.css',
+    '~/static/css/loginpage.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

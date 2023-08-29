@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="logo" >
+        <div>
             <img src="~/static/images/small-logo.png" width="80" style="padding: 10px;" alt="illustration">
         </div>
         <div class="login-container">
