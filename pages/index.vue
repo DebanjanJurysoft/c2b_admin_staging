@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <Sidebar @setNewActive="setNewActive" :menues="menues" :selectedMenu="selectedMenu" />
+        <Sidebar @setNewActive="setNewActive" :selectedMenu="selectedMenu" />
         <div class="pages-container">
         </div>
     </div>
