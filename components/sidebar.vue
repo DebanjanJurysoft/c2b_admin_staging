@@ -7,7 +7,7 @@
             <div class="nav-items-container">
                 <div class="nav-items" :class="nav.id == selectedMenu.id ? 'nav-items-active' : ''" v-for="(nav, ind) in menues" :key="ind" @click.prevent="setActive(ind)">
                     <img :src="`${nav.id == selectedMenu.id ? nav.active_img : nav.normal_img}`" alt="image">
-                    <span>{{ nav.text }}</span>
+                    <span>{{ nav.name }}</span>
                 </div>
             </div>
         </div>
@@ -24,37 +24,37 @@ export default {
             menues: [
                 {
                     id: 1,
-                    text: 'home',
+                    name: 'home',
                     normal_img: '/icons/home-black.svg',
                     active_img: '/icons/home-white.svg'
                 },
                 {
                     id: 2,
-                    text: 'vendors',
+                    name: 'vendors',
                     normal_img: '/icons/vendor-black.svg',
                     active_img: '/icons/vendor-white.svg'
                 },
                 {
                     id: 3,
-                    text: 'products',
+                    name: 'products',
                     normal_img: '/icons/product-black.svg',
                     active_img: '/icons/product-white.svg'
                 },
                 {
                     id: 4,
-                    text: 'orders',
+                    name: 'orders',
                     normal_img: '/icons/order-black.svg',
                     active_img: '/icons/order-white.svg'
                 },
                 {
                     id: 5,
-                    text: 'Payments',
+                    name: 'Payments',
                     normal_img: '/icons/order-black.svg',
                     active_img: '/icons/order-white.svg'
                 },
                 {
                     id: 6,
-                    text: 'acount',
+                    name: 'account',
                     normal_img: '/icons/profile-black.svg',
                     active_img: '/icons/profile-white.svg'
                 },

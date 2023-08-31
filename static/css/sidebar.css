@@ -99,7 +99,7 @@
     font-feature-settings: 'clig' off, 'liga' off;
     /* Headline/Regular */
     font-family: 'poppins';
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-style: normal;
     font-weight: 300;
     line-height: 22px; /* 129.412% */
@@ -121,7 +121,7 @@
     font-feature-settings: 'clig' off, 'liga' off;
     /* Headline/Regular */
     font-family: 'poppins';
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-style: normal;
     font-weight: 300;
     line-height: 22px; /* 129.412% */

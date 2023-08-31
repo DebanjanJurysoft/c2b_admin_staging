@@ -1,0 +1,96 @@
+.topbar-container {
+    width: 100%;
+    padding: 20px 20px;
+    margin-bottom: 15px;
+    display: flex;
+    box-shadow: rgba(0, 0, 0, 0.45) 0px 15px 20px -20px;
+    flex-direction: row;
+}
+
+
+.search-container {
+    width: 95%;
+    display: flex;
+    border-radius: 50px;
+    padding: 10px 14px;
+    border: 1px solid var(--gray-300, #D0D5DD);
+    background: var(--white, #FFF);
+    /* Shadow/xs */
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+    color: var(--grays-gray-2-dark, #636366);
+    font-feature-settings: 'clig' off, 'liga' off;
+    /* Callout/Regular */
+    font-family: 'poppins';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 21px; /* 131.25% */
+    letter-spacing: -0.4px;
+    align-items: center;
+}
+.search-container > input {
+    width: 95%;
+    border: none;
+    outline: none;
+}
+.search-container > i {
+    margin-right: 10px;
+}
+
+.search-container:hover {
+    border: 1px solid var(--foundation-pri-light-hover, #FBE4E2);
+    background: var(--white, #FFF);
+    box-shadow: 0px 0px 0px 4px rgba(251, 228, 226, 0.25), 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+}
+/* 
+.faq-container {
+    width: 5%;
+    display: flex;
+    justify-content: center;
+}
+.faq-button {
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50%;
+    border: 1px solid var(--gray-300, #D0D5DD);
+}
+.faq-button:hover {
+    border: 1px solid var(--foundation-pri-light-hover, #FBE4E2);
+    background: var(--white, #FFF);
+    box-shadow: 0px 0px 0px 4px rgba(251, 228, 226, 0.25), 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+} */
+
+.notification-container {
+    width: 5%;
+    display: flex;
+    justify-content: center;
+}
+
+.notification-button {
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50%;
+    padding: 4px 10px;
+    cursor: pointer;
+    /* border: 1px solid var(--gray-300, #D0D5DD); */
+}
+
+.notification-button > img {
+    width: 100%;
+    height: 100%;
+}
+
+
+.notification-button > img:hover {
+    background: var(--white, #FFF);
+    animation: ring 0.5s;
+}
+
+@keyframes ring {
+    0% { transform: rotate(0); }
+    20% { transform: rotate(30deg); }
+    40% { transform: rotate(-28deg); }
+    60% { transform: rotate(34deg); }
+    80% { transform: rotate(-32deg); }
+    100% { transform: rotate(0); }
+}

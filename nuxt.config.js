@@ -19,9 +19,13 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '~/static/css/topbar.css',
+    '~/static/css/dashboard.css',
     '~/static/css/style.css',
     '~/static/css/sidebar.css',
     '~/static/css/loginpage.css',
+    '~/static/css/vendors.css',
+    '~/static/css/table.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -42,6 +46,7 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/auth',
+    '@nuxtjs/toast',
   ],
 
   auth: {

@@ -56,22 +56,20 @@ export default {
             try {
                 const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
                 if (!this.email.trim().match(emailRegex)) {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'Enter a valid email.',
-                        showConfirmButton: false,
-                        timer: 1500
+                    this.$toast.show('Enter a valid email.', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'info'
                     })
                     return
                 }
                 if (!this.password.trim()) {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'Enter a valid password.',
-                        showConfirmButton: false,
-                        timer: 1500
+                    this.$toast.show('Enter a valid password.', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'info'
                     })
                     return
                 }
@@ -82,31 +80,26 @@ export default {
                     }
                 })
                 if (this.$auth.loggedIn) {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Logged in.',
-                        showConfirmButton: false,
-                        timer: 1500
+                    this.$toast.show('Logged in.', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'success'
                     })
                 } else {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: resp.data.message,
-                        showConfirmButton: false,
-                        timer: 1500
+                    this.$toast.show(resp.data.message, {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'error'
                     })
                 }
             } catch (error) {
-                console.log(error);
-                console.log(error.message);
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'error',
-                    title: error.message,
-                    showConfirmButton: false,
-                    timer: 1500
+                this.$toast.show(error.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: 'error'
                 })
             }
         },
