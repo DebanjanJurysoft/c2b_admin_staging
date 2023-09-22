@@ -51,6 +51,11 @@ export default {
             password: null,
         } 
     },
+    mounted() {
+        if (this.$auth.state.loggedIn) {
+            this.$router.push('/')
+        }
+    },
     methods: {
         async loginUser() {
             try {

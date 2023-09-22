@@ -2,7 +2,7 @@
     <div class="topbar-container">
         <div class="search-container" :style="selectedMenu.name == 'home' ? 'visibility: hidden' : ''">
             <i class="fa fa-search"></i>
-            <input type="text" :placeholder="`Search ${selectedMenu.name}`">
+            <input type="text" @input.prevent="changeSearchData" v-model="selectedMenu.searchText" :placeholder="`Search ${selectedMenu.name}`">
         </div>
         <div class="faq-container">
             <div class="faq-button"></div>
@@ -20,7 +20,19 @@
 export default {
     data() { 
         return {
-            notification: []
+            notification: [],
+            timer: null,
+        }
+    },
+    methods: {
+        emitSearchText() { 
+            this.$emit('updateNewActive', this.selectedMenu)
+        },
+        changeSearchData() {
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+                this.emitSearchText()
+            }, 300);
         }
     },
     props: ['selectedMenu']
