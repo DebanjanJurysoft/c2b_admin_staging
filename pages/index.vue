@@ -6,12 +6,18 @@
             <Dashboard v-if="selectedMenu.name == 'home'"/>
             <Vendors :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'vendors'" />
             <Products :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'products'" />
+            <Orders :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'orders'"/>
+            <Payments :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'payments'"/>
+            <Customers :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'customers'"/>
         </div>
     </div>
 </template>
 
 <script>
+import Customers from '../components/customers.vue';
 import Dashboard from '../components/dashboard.vue';
+import Orders from '../components/orders.vue';
+import Payments from '../components/payments.vue';
 import Products from '../components/products.vue';
 import Sidebar from '../components/sidebar.vue';
 import Topbar from '../components/topbar.vue';
@@ -26,11 +32,10 @@ export default {
     data() {
         return {
             selectedMenu: {
-                id: 2,
-                name: 'vendors',
-                searchText: null,
-                normal_img: '/icons/vendor-black.svg',
-                active_img: '/icons/vendor-white.svg'
+                id: 1,
+                name: 'home',
+                normal_img: '/icons/home-black.svg',
+                active_img: '/icons/home-white.svg'
             },
         };
     },
@@ -42,7 +47,7 @@ export default {
             this.selectedMenu = selected;
         }
     },
-    components: { Sidebar, Topbar, Dashboard, Vendors, Products }
+    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers }
 }
 </script>
 

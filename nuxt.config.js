@@ -26,6 +26,11 @@ export default {
     '~/static/css/loginpage.css',
     '~/static/css/vendors.css',
     '~/static/css/table.css',
+    '~/static/css/sidebarComponent.css',
+    '~/static/css/products.css',
+    '~/static/css/orders.css',
+    '~/static/css/payments.css',
+    '~/static/css/customer.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

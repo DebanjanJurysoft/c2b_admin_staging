@@ -340,18 +340,17 @@ export default {
         },
         async checkWhatIsCalled(passedData) {
             try {
-                const { emitMethod, id } = passedData
+                const { emitMethod, data } = passedData
                 switch (emitMethod) {
                     case "approve":
-                        this.selected_vendor_id = id
+                        this.selected_vendor_id = data.id
                         this.vendor_status = true
                         await this.approveVendor()
                         break;
                     case "disapprove":
-                        this.selected_vendor_id = id
+                        this.selected_vendor_id = data.id
                         this.vendor_status = false
-                        const vendor = this.waiting_vendor_list.find(e => e.id == id)
-                        console.log(vendor);
+                        const vendor = this.waiting_vendor_list.find(e => e.id == data.id)
                         this.modal_title = `Rejecting of ${vendor['vendor name']}`
                         this.showModal('rejectVendorModal')
                         break;
@@ -386,6 +385,10 @@ export default {
             this.selected_tab = this.tabs[index]
             this.loader = false
         },
+        async logout() {
+            await this.$auth.logout()
+            this.$router.push('/login')
+        },
         async fetchApprovedVendors() {
             try {
                 let query = `/approved-vendor?page=${this.page ? this.page : 1}&per_page=${this.per_page}`
@@ -393,6 +396,9 @@ export default {
                     query = query + `&vendor_name=${this.searchText}`
                 }
                 const response = await this.$axios.get(query)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.approved_vendor_list = response.data.vendors.map(e => {
                     return {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
@@ -425,6 +431,9 @@ export default {
                     query = query + `&vendor_name=${this.searchText}`
                 }
                 const response = await this.$axios.get(query)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.rejected_vendor_list = response.data.vendors.map(e => {
                     return {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
@@ -457,6 +466,9 @@ export default {
                     query = query + `&vendor_name=${this.searchText}`
                 }
                 const response = await this.$axios.get(query)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
 
                 this.waiting_vendor_list = response.data.vendors.map(e => {
                     return {
@@ -470,7 +482,8 @@ export default {
                         'alt phone': e.personal_alt_mobile ? e.personal_alt_mobile : 'N/A',
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
-                        id: e.id
+                        id: e.id,
+                        selected: false,
                     }
                 })
                 this.waiting_vendor_list_total = response.data.total

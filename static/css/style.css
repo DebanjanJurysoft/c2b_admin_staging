@@ -1,17 +1,23 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
 
-body {
-    padding: 5px;
+html,body {
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .row {
-    height: 98.8vh;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .pages-container {
+    max-width: 80%;
     width: 80%;
+    height: 100%;
+    
     /* padding: 15px; */
     /* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 2px 0px; */
 }

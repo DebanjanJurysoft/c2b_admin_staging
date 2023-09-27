@@ -2,18 +2,18 @@
     <div class="table-container" v-if="data_rows.length > 0">
         <table class="main-table">
             <thead>
-                <th class="heading"><i class="fa fa-ellipsis-v" aria-hidden="true"></i>SL</th>
-                <th class="heading" v-for="(head, head_index) in headings" :key="head_index"><i v-if="head.icon" :class="head.icon"></i>{{ head.name }}</th>
+                <th class="heading"><i class="fa fa-ellipsis-v" aria-hidden="true" v-b-tooltip.hover title="Serial No"></i>SL</th>
+                <th class="heading" v-for="(head, head_index) in headings" :key="head_index" v-b-tooltip.hover :title="head.name"><i v-if="head.icon" :class="head.icon"></i>{{ head.name }}</th>
             </thead>
             <tbody>
                 <tr class="table-rows" v-for="(row, row_index) in data_rows" :key="row_index">
-                    <td>{{ row_index + 1 }}</td>
+                    <td @click.prevent="onClickOpenDetails(row_index)">{{ row_index + 1 }}</td>
                     <template v-for="(head, head_index) in headings">
-                        <td :key="head_index" v-if="head.name != 'action'">{{ row[head.name] }}</td>
+                        <td :style="head.onclick ? 'cursor: pointer;' : ''" @click.prevent="head.onclick ? onClickOpenDetails(row_index) : ''" :key="head_index" v-if="head.name != 'action'" v-b-tooltip.hover :title="row[head.name]">{{ row[head.name] }}</td>
                         <td v-if="head.name == 'action'" class="d-flex flex-wrap">
                             <template v-for="(buttons, action_button_index) in head.buttons">
-                                <i v-b-tooltip.hover :title="buttons.emit_name.charAt(0).toUpperCase() + buttons.emit_name.slice(1)" @click.prevent="emitData(buttons.emit_name, row.id)" v-if="!buttons.text" class="px-1" :style="`color: ${buttons.color}; cursor: pointer;`" :key="action_button_index" :class="buttons.icon"></i>
-                                <b-button v-b-tooltip.hover :title="buttons.emit_name.charAt(0).toUpperCase() + buttons.emit_name.slice(1)" v-if="buttons.text" @click.prevent="emitData(buttons.emit_name, row.id)" :style="`background: ${color}; color: #fff; cursor: pointer;`"><i v-if="buttons.icon" :class="buttons.icon"></i>{{ buttons.text }}</b-button>
+                                <i v-b-tooltip.hover :title="buttons.emit_name.charAt(0).toUpperCase() + buttons.emit_name.slice(1)" @click.prevent="emitData(buttons.emit_name, row)" v-if="!buttons.text" class="px-1" :style="`color: ${buttons.color}; cursor: pointer;`" :key="action_button_index" :class="buttons.icon"></i>
+                                <b-button v-b-tooltip.hover :title="buttons.emit_name.charAt(0).toUpperCase() + buttons.emit_name.slice(1)" v-if="buttons.text" @click.prevent="emitData(buttons.emit_name, row)" :style="`background: ${color}; color: #fff; cursor: pointer;`"><i v-if="buttons.icon" :class="buttons.icon"></i>{{ buttons.text }}</b-button>
                             </template>
                         </td>
                     </template>
@@ -30,11 +30,14 @@
 export default {
     props: ['headings', 'data_rows'],
     methods: {
-        emitData(emitMethod, id) {
+        emitData(emitMethod, data) {
             this.$emit('callFunction', {
                 emitMethod,
-                id
+                data
             })
+        },
+        onClickOpenDetails(row_index) {
+            this.$emit('openDetails', `${row_index}`)
         }
     }
 }

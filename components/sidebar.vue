@@ -48,12 +48,18 @@ export default {
                 },
                 {
                     id: 5,
-                    name: 'Payments',
-                    normal_img: '/icons/order-black.svg',
-                    active_img: '/icons/order-white.svg'
+                    name: 'payments',
+                    normal_img: '/icons/payment-black.svg',
+                    active_img: '/icons/payment-white.svg'
                 },
                 {
                     id: 6,
+                    name: 'customers',
+                    normal_img: '/icons/customer-black.svg',
+                    active_img: '/icons/customer-white.svg'
+                },
+                {
+                    id: 7,
                     name: 'account',
                     normal_img: '/icons/profile-black.svg',
                     active_img: '/icons/profile-white.svg'

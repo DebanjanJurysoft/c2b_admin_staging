@@ -1,7 +1,7 @@
 <template>
     <div class="loader-container">
-        <b-spinner class="loader" variant="primary" label="Spinning"></b-spinner>
-        <h3 class="text-primary text-center">{{ text ? text : 'Loading...' }}</h3>
+        <b-spinner class="loader" label="Spinning"></b-spinner>
+        <!-- <h3 class="text-center">{{ text ? text : 'Loading...' }}</h3> -->
     </div>
 </template>
 <script>
@@ -18,9 +18,9 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    color: #e74c3c !important;
 }
 .loader {
-    scale: 1.2;
+    color: #e74c3c !important;
 }
-
 </style>
