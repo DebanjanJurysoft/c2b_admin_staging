@@ -3,8 +3,8 @@
         <Sidebar @setNewActive="setNewActive" :selectedMenu="selectedMenu" />
         <div class="pages-container">
             <Topbar @updateNewActive="updateNewActive" :selectedMenu="selectedMenu"/>
-            <Vendor_form v-if="selectedMenu.name == 'home'"/>
-            <!-- <Dashboard v-if="selectedMenu.name == 'home'"/> -->
+            <!-- <Vendor_form v-if="selectedMenu.name == 'home'"/> -->
+            <Dashboard v-if="selectedMenu.name == 'home'"/>
             <!-- <Category v-if="selectedMenu.name == 'home'"/> -->
             <Vendors :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'vendors'" />
             <Products :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'products'" />
