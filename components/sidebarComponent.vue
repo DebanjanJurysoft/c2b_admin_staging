@@ -16,7 +16,7 @@
     <div class="container">
         <!-- title section -->
         <div class="d-flex flex-row align-items-center justify-content-between">
-            <span>{{ title }}</span>
+            <span class="sidebar-heading"> {{ title }} </span>
             <i @click.prevent="emitClose" style="cursor: pointer;" class="fa fa-times text-danger"></i>
         </div>
         <div class="d-flex flex-column" v-if="product_details" style="overflow-y: auto;">
@@ -82,13 +82,136 @@
                 <span class="text">{{ product_details?.product_store_address }}</span>
             </div>
         </div>
+        <div class="d-flex flex-column" v-if="cart_details && title == 'User Cart Details'" style="gap: 5px; overflow-y: auto;">
+            <template v-for="(stores, stores_index) in cart_details">
+                <template v-for="(cart, cart_index) in stores.carts">
+                    <b-card style="height: 230px; border-radius: 18px;" :key="`${stores_index}X${cart_index}`" no-body class="overflow-hidden">
+                        <b-row no-gutters>
+                        <b-col md="5">
+                            <b-carousel
+                                id="carousel-1"
+                                v-model="slide"
+                                :interval="3000"
+                                fade
+                                indicators
+                                img-height="210px"
+                            >
+                                <b-carousel-slide v-for="(image, image_index) in cart.product.images_of_products" :img-src="image.image_url" :key="image_index"></b-carousel-slide>
+                            </b-carousel>
+                        </b-col>
+                        <b-col md="7">
+                            <div class="p-2">
+                                <h3 class="sidebar-heading">{{ cart.product.name }}</h3>
+                                <div class="d-flex flex-column" style="gap: 3px;">
+                                    <div class="d-flex flex-row" style="font-size: 13px">
+                                        <div class="w-50">Color:</div>
+                                        <div class="w-50"><div class="cart-color" :style="`background: ${cart.product.color}`"></div></div>
+                                    </div>
+                                    <div class="d-flex flex-row" style="font-size: 13px">
+                                        <div class="w-50">Size:</div>
+                                        <div class="w-50"><div class="cart-size">{{ cart.product.size[0].toUpperCase() }}</div></div>
+                                    </div>
+                                    <div class="d-flex flex-row" style="font-size: 13px">
+                                        <div class="w-50">Unit Price:</div>
+                                        <div class="w-50">₹{{ cart.product.price }}</div>
+                                    </div>
+                                    <div class="d-flex flex-row" style="font-size: 13px">
+                                        <div class="w-50">Quantity:</div>
+                                        <div class="w-50">{{ cart.quantity }}</div>
+                                    </div>
+                                    <div class="d-flex flex-row" style="font-size: 13px">
+                                        <div class="w-50">Total Price:</div>
+                                        <div class="w-50">₹{{ (Number(cart.quantity) * Number(cart.product.price)) }}</div>
+                                    </div>
+                                    <!-- <div class="d-flex flex-column" style="font-size: 12px">
+                                        <div class="w-100">Address:  {{ cart.address }}</div>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </b-col>
+                        </b-row>
+                    </b-card>
+                </template>
+            </template>
+        </div>
+        <div class="d-flex flex-column py-3" v-if="address_details && title == 'User Address Details'" style="gap: 5px; overflow-y: auto;">
+            <b-card
+                no-body
+                style="max-width: 100%;"
+            >
+                <b-list-group flush>
+                    <b-list-group-item v-for="(address, address_index) in address_details" :key="address_index">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex flex-row">
+                                <div class="w-50">Address 1: </div>
+                                <div class="w-50">{{ address.add1 }}</div>
+                            </div>
+                            <div class="d-flex flex-row" v-if="address.add2 && address.add2 != ''">
+                                <div class="w-50">Address 2: </div>
+                                <div class="w-50">{{ address.add2 }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">Area: </div>
+                                <div class="w-50">{{ address.area }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">City: </div>
+                                <div class="w-50">{{ address.city }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">landmark: </div>
+                                <div class="w-50">{{ address.landmark }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">State: </div>
+                                <div class="w-50">{{ address.state }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">Country: </div>
+                                <div class="w-50">{{ address.country }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">Zipcode: </div>
+                                <div class="w-50">{{ address.zipcode }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">Lattitude: </div>
+                                <div class="w-50">{{ address.lat }}</div>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="w-50">Longitude: </div>
+                                <div class="w-50">{{ address.lat }}</div>
+                            </div>
+                        </div>
+                    </b-list-group-item>
+                </b-list-group>
+            </b-card>
+        </div>
+        <div class="d-flex flex-column py-3" v-if="customer && title == 'User Details'" style="gap: 5px; overflow-y: auto;">
+            <b-card
+                no-body
+                style="max-width: 100%;"
+            >
+                <b-list-group flush>
+                    <!-- <pre>{{ customer }}</pre> -->
+                    <b-list-group-item v-for="(key, key_index) in Object.keys(customer)" :key="key_index">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex flex-row">
+                                <div class="w-50">{{ key }}</div>
+                                <div class="w-50">{{ customer[key] }}</div>
+                            </div>
+                        </div>
+                    </b-list-group-item>
+                </b-list-group>
+            </b-card>
+        </div>
     </div>
     </b-sidebar>
 </template>
 
 <script>
 export default {
-    props: ['visible', 'title', 'product_details'],
+    props: ['visible', 'title', 'product_details', 'cart_details', 'address_details', 'customer'],
     // data() {
     //     return {
     //         // title: 'Product Details',
@@ -189,3 +312,11 @@ export default {
     }
 }
 </script>
+
+
+<style>
+.cart-card {
+    border-radius: 15px;
+}
+
+</style>

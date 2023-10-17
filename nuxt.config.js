@@ -31,6 +31,10 @@ export default {
     '~/static/css/orders.css',
     '~/static/css/payments.css',
     '~/static/css/customer.css',
+    '~/static/css/vendor_form.css',
+    '~/static/css/category.css',
+    '~/static/css/banner.css',
+    '~/static/css/addons.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -52,6 +56,7 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/auth',
     '@nuxtjs/toast',
+    'nuxt-vue-select',
   ],
 
   auth: {
@@ -80,7 +85,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://localhost:3030/api',
+    baseURL: 'http://localhost:3031/api',
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

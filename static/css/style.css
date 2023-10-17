@@ -26,6 +26,10 @@ html,body {
     padding: 10px 10px;
 } */
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .disabled-button {
     width: 100%;
     padding: 10px 16px;
@@ -49,3 +53,33 @@ html,body {
     background: var(--foundation-sec-normal, #7a7e84);
     cursor: not-allowed;
 }
+
+.button {
+    width: max-content !important;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: row;
+    color: #fff;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    justify-content: center;
+    font-size: 16px;
+    font-feature-settings: 'clig' off, 'liga' off;
+    /* Headline/Regular */
+    font-family: 'poppins';
+    text-transform: capitalize;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px; /* 129.412% */
+    letter-spacing: 1px;
+    color: white;
+    background: var(--foundation-sec-normal, #E74C3C);
+    /* cursor: not-allowed; */
+    border: none !important;
+}
+.button:hover {
+    background-color: var(--foundation-sec-normal, #ff5f4d) !important;
+}
+
+

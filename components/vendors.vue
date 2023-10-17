@@ -10,21 +10,22 @@
         </div>
         <div v-if="!loader" class="tabs-content">
             <div class="d-flex flex-row">
-                <div class="w-75">
+                <div class="w-50">
                     <label class="mr-3">Rows:</label>
                     <b-form-select style="width: 100px;" v-model="per_page" :options="per_page_options"></b-form-select>
                 </div>
-                <div class="w-25">
+                <div class="w-50">
                     <!-- top pagination  -->
-                    <Pagination @changePage="changePage" v-if="selected_tab.id == 1" :data_list="waiting_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
-                    <Pagination @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approved_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
-                    <Pagination @changePage="changePage" v-if="selected_tab.id == 3" :data_list="rejected_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
+                    <button class="button float-right ml-3"><i class="bx bx-plus mr-2"></i>Add Vendor</button>
+                    <Pagination class="float-right" @changePage="changePage" v-if="selected_tab.id == 1" :data_list="waiting_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
+                    <Pagination class="float-right" @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approved_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
+                    <Pagination class="float-right" @changePage="changePage" v-if="selected_tab.id == 3" :data_list="rejected_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
                 </div>
             </div>
             <!-- table  -->
-            <Table @callFunction="checkWhatIsCalled" v-if="selected_tab.id == 1" :headings="waiting_vendor_heading" :data_rows="waiting_vendor_list" />
-            <Table v-if="selected_tab.id == 2" :headings="approved_vendors_heading" :data_rows="approved_vendor_list" />
-            <Table v-if="selected_tab.id == 3" :headings="rejected_vendors_heading" :data_rows="rejected_vendor_list" />
+            <Table @openDetails="openDetails" @callFunction="checkWhatIsCalled" v-if="selected_tab.id == 1" :headings="waiting_vendor_heading" :data_rows="waiting_vendor_list" :file_name="'waiting_vendor_list.csv'" />
+            <Table @openDetails="openDetails" v-if="selected_tab.id == 2" :headings="approved_vendors_heading" :data_rows="approved_vendor_list" :file_name="'approved_vendor_list.csv'"/>
+            <Table @openDetails="openDetails" v-if="selected_tab.id == 3" :headings="rejected_vendors_heading" :data_rows="rejected_vendor_list" :file_name="'rejected_vendor_list.csv'"/>
             <!-- bottom pagination  -->
             <Pagination @changePage="changePage" v-if="selected_tab.id == 1" :data_list="waiting_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
             <Pagination @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approved_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
@@ -41,6 +42,72 @@
             <div class="d-flex text-center py-2">
                 <span @click.prevent="rejectVendor" :class="rejection_reason ? 'logout-button' : 'disabled-button'">Reject</span>
             </div>
+        </b-modal>
+        <b-modal id="showVendorDetailsModal" centered :hide-footer="selected_tab.id != 1" scrollable :footer-class="selected_tab.id != 1 ? '' : 'justify-content-center'" >
+            <template #modal-header>
+                <!-- Emulate built in modal header close button action -->
+                <h5>{{ `SL No: ${formatSerial(view_vendor_data ? view_vendor_data.id : 0)}` }}</h5>
+                <div class="date_container">
+                    Date : {{ view_vendor_data.date }}
+                </div>
+            </template>
+            <b-container fluid style="height: 450px;" v-if="view_vendor_data" class="d-flex flex-column">
+                <div class="row">
+                    <span class="col-5">Vendor Name</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6" style="text-transform: capitalize;">{{ view_vendor_data['vendor name'] }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">Store Name</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6" style="text-transform: capitalize;">{{ view_vendor_data['store name'] }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">FSSAI No</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6" style="text-transform: uppercase;">{{ view_vendor_data['fssai no'] }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">GST No</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6" style="text-transform: uppercase;">{{ view_vendor_data['gst no'] }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">Store Address</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6" v-b-tooltip.hover :title="view_vendor_data.full_data.store ? `${view_vendor_data.full_data.store.add1}, ${view_vendor_data.full_data.store.add2 ? view_vendor_data.full_data.store.add2+',' : ''} ${view_vendor_data.full_data.store.city}, ${view_vendor_data.full_data.store.area}, ${view_vendor_data.full_data.store.landmark}, ${view_vendor_data.full_data.store.state}, ${view_vendor_data.full_data.store.pincode}` : 'N/A'" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; text-transform: capitalize;">{{ view_vendor_data.full_data.store ? `${view_vendor_data.full_data.store.add1}, ${view_vendor_data.full_data.store.add2+',' || ''} ${view_vendor_data.full_data.store.city}, ${view_vendor_data.full_data.store.area}, ${view_vendor_data.full_data.store.landmark}, ${view_vendor_data.full_data.store.state}, ${view_vendor_data.full_data.store.pincode}` : 'N/A' }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">Phone Number</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6">{{ view_vendor_data.phone }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">Alt Phone Number</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6">{{ view_vendor_data['alt phone'] }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">ID Proof</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6">{{ view_vendor_data['identity proof'] }}</span>
+                </div>
+                <div class="row">
+                    <span class="col-5">Date</span>
+                    <span class="col-1">:</span>
+                    <span class="col-6">{{ view_vendor_data.date }}</span>
+                </div>
+                <div class="d-flex justify-content-center" v-if="view_vendor_data['identity proof image'] != 'N/A'">
+                    <img width="270" :src="view_vendor_data['identity proof image']" :alt="view_vendor_data['identity proof']">
+                </div>
+                <!-- {{ view_vendor_data }} -->
+            </b-container>
+            <template #modal-footer>
+                <div class="d-flex" style="gap: 10px">
+                    <span class="reject-button">Reject</span>
+                    <span class="approve-button">Approve</span>
+                </div>
+            </template>
         </b-modal>
     </div>
 </template>
@@ -80,11 +147,13 @@ export default {
             waiting_vendor_heading: [
                 {
                     name: 'vendor name',
-                    icon: 'fa fa-shopping-basket'
+                    icon: 'fa fa-shopping-basket',
+                    onclick: true
                 },
                 {
                     name: 'store name',
-                    icon: 'fa fa-shopping-basket'
+                    icon: 'fa fa-shopping-basket',
+                    onclick: true
                 },
                 {
                     name: 'date',
@@ -140,11 +209,13 @@ export default {
             approved_vendors_heading: [
                 {
                     name: 'vendor name',
-                    icon: 'fa fa-shopping-basket'
+                    icon: 'fa fa-shopping-basket',
+                    onclick: true
                 },
                 {
                     name: 'store name',
-                    icon: 'fa fa-shopping-basket'
+                    icon: 'fa fa-shopping-basket',
+                    onclick: true
                 },
                 {
                     name: 'date',
@@ -176,17 +247,24 @@ export default {
                 },
                 {
                     name: 'identity proof image',
-                    icon: 'fa fa-file-o'
+                    icon: 'fa fa-file-o',
+                    type: 'IMAGE'
                 },
             ],
             rejected_vendors_heading: [
                 {
                     name: 'vendor name',
-                    icon: 'fa fa-shopping-basket'
+                    icon: 'fa fa-shopping-basket',
+                    onclick: true
                 },
                 {
                     name: 'store name',
-                    icon: 'fa fa-shopping-basket'
+                    icon: 'fa fa-shopping-basket',
+                    onclick: true
+                },
+                {
+                    name: 'reason',
+                    icon: 'fa fa-question'
                 },
                 {
                     name: 'date',
@@ -235,7 +313,8 @@ export default {
             approved_vendor_list_total: 0,
             rejected_vendor_list_total: 0,
             total_rows: 0,
-            timer: null
+            timer: null,
+            view_vendor_data: null,
         }
     },
     async mounted() { 
@@ -258,6 +337,34 @@ export default {
         }
     },
     methods: {
+        formatSerial(number) {
+            if (number < 10) {
+                return `000${number}`;
+            } else if (number < 100) {
+                return `00${number}`;
+            } else if (number < 1000) {
+                return `0${number}`;
+            } else {
+                return `${number}`;
+            }
+        },
+        async openDetails(data) { 
+            const index = parseInt(data)
+            switch (this.selected_tab.id) {
+                case 1:
+                    this.view_vendor_data = this.waiting_vendor_list[index];
+                    this.showModal('showVendorDetailsModal')
+                    break;
+                case 2:
+                    this.view_vendor_data = this.approved_vendor_list[index];
+                    this.showModal('showVendorDetailsModal')
+                    break;
+                case 3:
+                    this.view_vendor_data = this.rejected_vendor_list[index];
+                    this.showModal('showVendorDetailsModal')
+                    break;
+            }
+        },
         async mountedFunction() {
             await this.fetchVendorsWaitingForApproval()
             await this.fetchApprovedVendors()
@@ -402,16 +509,17 @@ export default {
                 this.approved_vendor_list = response.data.vendors.map(e => {
                     return {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
-                        'store name': e.stores ? e.stores.name : 'N/A',
-                        'fssai no': e.stores ? e.stores.fssai_number : 'N/A',
-                        'gst no': e.stores ? e.stores.gst_number : 'N/A',
+                        'store name': e.store ? e.store.name : 'N/A',
+                        'fssai no': e.store ? e.store.fssai_number : 'N/A',
+                        'gst no': e.store ? e.store.gst_number : 'N/A',
                         'phone': e.personal_mobile ? e.personal_mobile : 'N/A',
                         'identity proof': e.identity_proof_name ? e.identity_proof_name : 'N/A',
                         'identity proof image': e.identity_proof_file_url ? e.identity_proof_file_url : 'N/A',
                         'alt phone': e.personal_alt_mobile ? e.personal_alt_mobile : 'N/A',
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
-                        id: e.id
+                        id: e.id,
+                        full_data: e
                     }
                 })
                 this.approved_vendor_list_total = response.data.total
@@ -437,16 +545,18 @@ export default {
                 this.rejected_vendor_list = response.data.vendors.map(e => {
                     return {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
-                        'store name': e.stores ? e.stores.name : 'N/A',
-                        'fssai no': e.stores ? e.stores.fssai_number : 'N/A',
-                        'gst no': e.stores ? e.stores.gst_number : 'N/A',
+                        'store name': e.store ? e.store.name : 'N/A',
+                        'reason': e.rejected_vendor.reason ? e.rejected_vendor.reason : 'N/A',
+                        'fssai no': e.store ? e.store.fssai_number : 'N/A',
+                        'gst no': e.store ? e.store.gst_number : 'N/A',
                         'phone': e.personal_mobile ? e.personal_mobile : 'N/A',
                         'identity proof': e.identity_proof_name ? e.identity_proof_name : 'N/A',
                         'identity proof image': e.identity_proof_file_url ? e.identity_proof_file_url : 'N/A',
                         'alt phone': e.personal_alt_mobile ? e.personal_alt_mobile : 'N/A',
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
-                        id: e.id
+                        id: e.id,
+                        full_data: e
                     }
                 })
                 this.rejected_vendor_list_total = response.data.total
@@ -473,9 +583,9 @@ export default {
                 this.waiting_vendor_list = response.data.vendors.map(e => {
                     return {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
-                        'store name': e.stores ? e.stores.name : 'N/A',
-                        'fssai no': e.stores ? e.stores.fssai_number : 'N/A',
-                        'gst no': e.stores ? e.stores.gst_number : 'N/A',
+                        'store name': e.store ? e.store.name : 'N/A',
+                        'fssai no': e.store ? e.store.fssai_number : 'N/A',
+                        'gst no': e.store ? e.store.gst_number : 'N/A',
                         'phone': e.personal_mobile ? e.personal_mobile : 'N/A',
                         'identity proof': e.identity_proof_name ? e.identity_proof_name : 'N/A',
                         'identity proof image': e.identity_proof_file_url ? e.identity_proof_file_url : 'N/A',
@@ -483,7 +593,7 @@ export default {
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
                         id: e.id,
-                        selected: false,
+                        full_data: e
                     }
                 })
                 this.waiting_vendor_list_total = response.data.total

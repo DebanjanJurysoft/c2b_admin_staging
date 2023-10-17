@@ -1,0 +1,59 @@
+.addon-container {
+    width: 100%;
+    height: 87vh;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+.addon-tabs {
+    display: flex;
+    padding: 10px 30px;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.tab-items {
+    display: flex;
+    padding: 16px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex: 1 0 0;
+}
+.tab-items > span {
+    color: var(--labels-secondary, #343B45);
+    opacity: 0.5;
+    text-align: center;
+    font-feature-settings: 'clig' off, 'liga' off;
+    /* Body/Emphasized */
+    font-family: 'poppins';
+    font-size: 17px;
+    text-transform: capitalize;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px; /* 129.412% */
+    letter-spacing: -0.4px;
+}
+.tab-items:hover {
+    background: var(--foundation-pri-light, #FDEDEC);
+    box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.06);
+}
+
+.tab-items-active {
+    display: flex;
+    padding: 16px;
+    justify-content: center;
+    align-items: center;
+    flex: 1 0 0;
+    background: var(--foundation-pri-light, #FDEDEC);
+    box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.06);
+}
+
+.tab-items-active > span {
+    opacity: 1;
+}
+
+.tabs-content {
+    padding: 0px 30px;
+}
