@@ -13,6 +13,10 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
+      {
+        rel: 'stylesheet',
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+      },
       { rel: 'icon', type: 'image/x-icon', href: '/images/small-logo.png' }
     ]
   },
@@ -86,6 +90,7 @@ export default {
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: 'https://close2buy-dev.jurysoftprojects.com/api',
+    // baseURL: 'http://localhost:3031/api',
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

@@ -14,6 +14,7 @@
             <Banners :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'banners'"/>
             <Addons :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'addons'"/>
             <Category :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'sub-category'"/>
+            <Stores :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'stores'"/>
         </div>
     </div>
 </template>
@@ -31,6 +32,7 @@ import Topbar from '../components/topbar.vue';
 import Vendor_form from '../components/vendor_form.vue';
 import Vendors from '../components/vendors.vue';
 import Addons from '../components/addons.vue';
+import Stores from '../components/stores.vue';
 
 export default {
     beforeCreate() {
@@ -56,7 +58,7 @@ export default {
             this.selectedMenu = selected;
         }
     },
-    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons }
+    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores }
 }
 </script>
 

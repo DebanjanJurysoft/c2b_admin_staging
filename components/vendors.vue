@@ -9,7 +9,7 @@
             </div>
         </div>
         <div v-if="!loader" class="tabs-content">
-            <div class="d-flex flex-row">
+            <div class="d-flex flex-row mb-3">
                 <div class="w-50">
                     <label class="mr-3">Rows:</label>
                     <b-form-select style="width: 100px;" v-model="per_page" :options="per_page_options"></b-form-select>
@@ -17,6 +17,10 @@
                 <div class="w-50">
                     <!-- top pagination  -->
                     <button class="button float-right ml-3"><i class="bx bx-plus mr-2"></i>Add Vendor</button>
+                </div>
+            </div>
+            <div class="d-flex flex-row">
+                <div class="w-100">
                     <Pagination class="float-right" @changePage="changePage" v-if="selected_tab.id == 1" :data_list="waiting_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
                     <Pagination class="float-right" @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approved_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
                     <Pagination class="float-right" @changePage="changePage" v-if="selected_tab.id == 3" :data_list="rejected_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
@@ -185,7 +189,8 @@ export default {
                 },
                 {
                     name: 'identity proof image',
-                    icon: 'fa fa-file-o'
+                    icon: 'fa fa-file-o',
+                    type: 'IMAGE'
                 },
                 {
                     name: 'action',
@@ -296,7 +301,8 @@ export default {
                 },
                 {
                     name: 'identity proof image',
-                    icon: 'fa fa-file-o'
+                    icon: 'fa fa-file-o',
+                    type: 'IMAGE'
                 },
             ],
             waiting_vendor_list: [],
@@ -400,6 +406,9 @@ export default {
                     reason: this.rejection_reason
                 }
             })
+            if (response.data.code == 401) {
+                await this.logout()
+            }
             if (response.data.status == 'success') {
                 this.$toast.show(response.data.message, {
                     duration: 1500,
@@ -427,6 +436,9 @@ export default {
                     vendor_id: this.selected_vendor_id,
                 }
             })
+            if (response.data.code == 401) {
+                await this.logout()
+            }
             if (response.data.status == 'success') {
                 this.$toast.show(response.data.message, {
                     duration: 1500,

@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar-container">
-        <div class="sidebar">
+        <div class="sidebar mb-3">
             <div class="logo">
                 <Logo />
             </div>
@@ -49,10 +49,16 @@ export default {
                     active_img: '/icons/vendor-white.svg'
                 },
                 {
+                    id: 16,
+                    name: 'stores',
+                    normal_img: '/icons/vendor-black.svg',
+                    active_img: '/icons/vendor-white.svg'
+                },
+                {
                     id: 4,
                     name: 'inventory',
-                    normal_img: '/icons/inventory-black.svg',
-                    active_img: '/icons/inventory-white.svg',
+                    normal_img: '/icons/Inventory-black.svg',
+                    active_img: '/icons/Inventory-white.svg',
                     collapsable: true,
                     active: false,
                     options: [
@@ -110,7 +116,23 @@ export default {
                     id: 8,
                     name: 'account',
                     normal_img: '/icons/profile-black.svg',
-                    active_img: '/icons/profile-white.svg'
+                    active_img: '/icons/profile-white.svg',
+                    collapsable: true,
+                    active: false,
+                    options: [
+                        {
+                            id: 14,
+                            name: 'FAQ',
+                            normal_img: '/icons/product-black.svg',
+                            active_img: '/icons/product-white.svg'
+                        },
+                        {
+                            id: 15,
+                            name: 'feedback',
+                            normal_img: '/icons/product-black.svg',
+                            active_img: '/icons/product-white.svg'
+                        },
+                    ]
                 },
             ],
             main_index: 0,

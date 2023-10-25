@@ -83,3 +83,25 @@ html,body {
 }
 
 
+.text-heading {
+    max-width: max-content !important;
+    white-space: nowrap;
+    padding: 10px 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--gray-200, #EAECF0);
+    background: var(--gray-50, #F9FAFB);
+    color: var(--gray-500, #667085);
+    /* Text xs/Medium */
+    font-family: 'poppins';
+    font-size: 14px;
+    text-transform: capitalize;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px; /* 150% */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none;
+    background: none;
+}

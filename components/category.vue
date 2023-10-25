@@ -5,12 +5,12 @@
         </div>
         <div v-if="!loader" class="tabs-content">
             <div class="d-flex flex-row w-100" style="gap: 30px">
-                <div class="d-flex flex-column w-50" style="gap: 10px;  height: 640px !important; overflow-y: scroll;">
+                <div class="d-flex flex-column w-50" style="gap: 10px;  height: 100% !important; overflow-y: scroll;">
                     <div class="d-flex flex-row align-items-center justify-content-between">
                         <h1 class="heading" style="font-size: 20px; background: none; border: none; color: black;">Categories</h1>
                     </div>
                     <div class="card" v-for="(category, cat_index) in category_list" style="border-radius: 16px;" @click.prevent="showCategoryForIndex(cat_index)" >
-                        <div class="d-flex flex-row py-3 pl-5 pr-3 justify-content-between align-items-center" :style="cat_index == category_index ? 'border-radius: 16px; border: 2px solid #e74c3c; box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.12);' : ''">
+                        <div class="d-flex flex-row py-5 pl-5 pr-3 justify-content-between align-items-center" :style="cat_index == category_index ? 'border-radius: 16px; border: 2px solid #e74c3c; box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.12);' : ''">
                             <div>
                                 <span class="heading" style="font-size: 16px; background: none; border: none;" >{{ category.category_name }}</span>
                             </div>
@@ -23,9 +23,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex flex-column w-50" style="gap: 10px;  height: 640px !important; overflow-y: scroll;" v-if="category_index != null">
+                <div class="d-flex flex-column w-50" style="gap: 10px;  height: 100% !important; overflow-y: scroll;" v-if="category_index != null">
                     <div class="d-flex flex-row align-items-center justify-content-between">
-                        <h1 class="heading" style="font-size: 18px; background: none; border: none; color: black;">Sub - Categories</h1>
+                        <h1 class=".text-heading" style="font-size: 18px; background: none; border: none; color: black;">Sub - Categories ({{ sub_category_list.length }})</h1>
                         <i @click.prevent="openSubCategoryAddingForm" style="font-size: 18px;" class="fa fa-plus-circle text-success cursor-pointer" aria-hidden="true"></i>
                     </div>
                     <div class="d-flex flex-column sub-category-form mb-3" v-if="open_form">
@@ -83,7 +83,7 @@
                             <div class="card" style="border-radius: 20px;" v-for="(sub_category, sub_cat_index) in sub_category_list">
                                 <div class="d-flex flex-row py-3 pl-3 pr-3 justify-content-between align-items-center">
                                     <div>
-                                        <img style="border-radius: 16px;" :src="sub_category.image_url" width="100" alt="Image">
+                                        <img style="border-radius: 16px; height: 60px !important; width: 60px !important; object-fit: cover;" :src="sub_category.image_url" width="100" alt="Image">
                                         <span class="heading" style="font-size: 20px; background: none; border: none;" >{{ sub_category.name }}</span>
                                     </div>
                                     <div class="d-flex align-items-center">
