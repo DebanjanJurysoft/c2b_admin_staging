@@ -6,13 +6,15 @@
         <div v-if="!loader" class="tabs-content">
             <div class="d-flex flex-row w-100" style="gap: 30px">
                 <div class="d-flex flex-column w-50" style="gap: 10px;  height: 100% !important; overflow-y: scroll;">
-                    <div class="d-flex flex-row align-items-center justify-content-between">
+                    <div class="d-flex flex-row align-items-center justify-content-between px-3">
                         <h1 class="heading" style="font-size: 20px; background: none; border: none; color: black;">Categories</h1>
+                        <i class="fa fa-refresh text-success" @click.prevent="fetchCategories"></i>
                     </div>
-                    <div class="card" v-for="(category, cat_index) in category_list" style="border-radius: 16px;" @click.prevent="showCategoryForIndex(cat_index)" >
-                        <div class="d-flex flex-row py-5 pl-5 pr-3 justify-content-between align-items-center" :style="cat_index == category_index ? 'border-radius: 16px; border: 2px solid #e74c3c; box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.12);' : ''">
+                    <div class="card" v-for="(category, cat_index) in category_list" style="border-radius: 16px; cursor: pointer;" @click.prevent="showCategoryForIndex(cat_index)" >
+                        <div class="d-flex flex-row py-3 pl-5 pr-3 justify-content-between align-items-center" :style="cat_index == category_index ? 'border-radius: 16px; border: 2px solid #e74c3c; box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.12);' : ''">
                             <div>
-                                <span class="heading" style="font-size: 16px; background: none; border: none;" >{{ category.category_name }}</span>
+                                <img style="border-radius: 16px; width: 60px !important; object-fit: cover;" :src="category.image" width="100" alt="Image">
+                                <span class="heading" style="font-size: 26px; background: none; border: none;" >{{ category.category_name }}</span>
                             </div>
                             <i 
                                 v-b-tooltip.hover
@@ -24,9 +26,12 @@
                     </div>
                 </div>
                 <div class="d-flex flex-column w-50" style="gap: 10px;  height: 100% !important; overflow-y: scroll;" v-if="category_index != null">
-                    <div class="d-flex flex-row align-items-center justify-content-between">
+                    <div class="d-flex flex-row align-items-center justify-content-between px-3 mt-3">
                         <h1 class=".text-heading" style="font-size: 18px; background: none; border: none; color: black;">Sub - Categories ({{ sub_category_list.length }})</h1>
-                        <i @click.prevent="openSubCategoryAddingForm" style="font-size: 18px;" class="fa fa-plus-circle text-success cursor-pointer" aria-hidden="true"></i>
+                        <div class="d-flex flex-row align-items-center" style="gap: 10px;">
+                            <i class="fa fa-refresh text-primary" @click.prevent="fetchSubCategories"></i>
+                            <i @click.prevent="openSubCategoryAddingForm" style="font-size: 18px;" class="fa fa-plus-circle text-success cursor-pointer" aria-hidden="true"></i>
+                        </div>
                     </div>
                     <div class="d-flex flex-column sub-category-form mb-3" v-if="open_form">
                         <div class="d-flex flex-column" style="gap: 10px">
@@ -183,6 +188,26 @@ export default {
         },
         async saveSubCategories() {
             this.loader = true
+            if (!this.selected_subcategory_data.sub_category) {
+                this.$toast.show('Enter a sub category name.', {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: 'error'
+                })
+                this.loader = false
+                return
+            }
+            if (!this.selected_subcategory_data.sub_category_file) {
+                this.$toast.show('Select a sub category file.', {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: 'error'
+                })
+                this.loader = false
+                return
+            }
             const form_data = new FormData()
             form_data.append('sub_category_file', this.selected_subcategory_data.sub_category_file)
             form_data.append('category', JSON.stringify(this.selected_subcategory_data.category))
@@ -222,6 +247,7 @@ export default {
             await this.fetchSubCategories()
         },
         async fetchCategories() {
+            this.loader = true
             try {
                 const path = '/get-categories-and-services'
                 const response = await this.$axios.get(path)
@@ -229,8 +255,10 @@ export default {
             } catch (error) {
                console.log(error); 
             }
+            this.loader = false
         },
         async fetchSubCategories() {
+            this.loader = true
             try {
                 const selectedCategory = this.category_list[this.category_index]
                 const path = `/fetch-sub-category-for-admin?category=${selectedCategory.category_name.includes('&') ? selectedCategory.category_name.replace('&', '%26') : selectedCategory.category_name}`
@@ -239,6 +267,7 @@ export default {
             } catch (error) {
                console.log(error); 
             }
+            this.loader = false
         }
     }
 }

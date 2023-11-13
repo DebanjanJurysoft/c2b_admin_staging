@@ -5,16 +5,17 @@
         </div>
         <div v-if="!loader" class="tabs-content">
             <div class="d-flex flex-row">
-                <div class="w-75">
+                <div class="w-75 d-flex flex-row align-items-center" style="gap: 10px;">
                     <label class="mr-3">Rows:</label>
                     <b-form-select style="width: 100px;" v-model="per_page" :options="per_page_options"></b-form-select>
+                    <button class="button" @click.prevent="reload"><i class="fa fa-refresh"></i></button>
                 </div>
                 <div class="w-25">
                     <!-- top pagination  -->
                     <Pagination @changePage="changePage" :data_list="customers" :per_page="per_page" :total_rows="total" :page="page"/>
                 </div>
             </div>
-            <Table @openSpecific="openSpecific" :headings="heading" :data_rows="customers"/>
+            <Table @openSpecific="openSpecific" :headings="heading" :data_rows="customers"  :file_name="'user_list.csv'" :page="page" :rows="per_page"/>
             <Pagination @changePage="changePage" :data_list="customers" :per_page="per_page" :total_rows="total" :page="page"/>
             <SidebarComponent @openDetails="openDetails" :visible="show_details" :title="sidebar_title" v-if="customer_cart_details" :cart_details="customer_cart_details"/>
             <SidebarComponent @openDetails="openDetails" :visible="show_details" :title="sidebar_title" v-if="customer_addresses" :address_details="customer_addresses"/>
@@ -83,6 +84,12 @@ export default {
         this.loader = false
     },
     methods: {
+        async reload() {
+            this.loader = true
+            this.page = 1
+            await this.fetchCustomers()
+            this.loader = false
+        },
         async openSpecific(data) {
             const selectedRow = this.customers[data.row_index]
             if (data.type == "address") {
@@ -110,6 +117,9 @@ export default {
                 let query = `/get-cart?user_id=${user_id}`
                 const response = await this.$axios.get(query)
                 console.log(response.data);
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 if (response.data.cart_data.length) {
                     this.sidebar_title = 'User Cart Details'
                     this.customer_cart_details = response.data.cart_data
@@ -145,9 +155,9 @@ export default {
                 query = query + `&q=${this.searchText}`
             }
             const response = await this.$axios.get(query)
-                if (response.data.code == 401) {
-                    await this.logout()
-                }
+            if (response.data.code == 401) {
+                await this.logout()
+            }
             this.total = response.data.total
             this.customers = response.data.customers.map(cust => {
                 return {

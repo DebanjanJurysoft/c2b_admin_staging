@@ -9,6 +9,9 @@
                     <img src="~/static/images/login-illustration.svg" alt="image">
                 </div>
                 <div class="col-6 col-md-6 col-sm-12">
+                    <div class="login-input-container d-flex flex-row justify-content-center" style="width: 80% !important;">
+                        <h1 class="text-heading h1" style="font-size: 35px !important; line-height: 40px !important;">Login</h1>
+                    </div>
                     <div class="login-input-container">
                         <span class="login-input-label">Email*</span>
                         <div class="login-input-field">
@@ -52,7 +55,7 @@ export default {
         } 
     },
     mounted() {
-        if (this.$auth.state.loggedIn) {
+        if (this.$auth.loggedIn) {
             this.$router.push('/')
         }
     },

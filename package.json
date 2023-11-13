@@ -15,6 +15,7 @@
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.25.3",
+    "joi": "^17.11.0",
     "nuxt": "^2.15.8",
     "nuxt-vue-select": "^0.1.4",
     "papaparse": "^5.4.1",

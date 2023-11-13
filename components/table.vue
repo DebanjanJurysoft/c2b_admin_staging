@@ -18,7 +18,8 @@
           v-b-tooltip.hover
           :title="head.name"
         >
-          <i v-if="head.icon" :class="head.icon"></i>{{ head.name }}
+          <!-- <i v-if="head.icon" :class="head.icon"></i> -->
+          {{ head.name }}
         </th>
       </thead>
       <tbody>
@@ -28,13 +29,13 @@
           :key="row_index"
         >
           <td @click.prevent="onClickOpenDetails(row_index)">
-            {{ row_index + 1 }}
+            {{ (Number(rows || 0) * (Number(page || 1) - 1)) + row_index + 1 }}
           </td>
           <template v-for="(head, head_index) in headings">
-            <td v-if="head.type">
+            <td v-if="head.type" style="max-width: max-content !important; min-width: max-content !important; width: max-content !important; text-overflow: clip !important; ">
               <img
                 v-if="head.type == 'IMAGE' && row[head.name] != 'N/A'"
-                width="50"
+                style="height: 30px !important; width: 130px !important; object-fit: cover !important;"
                 :src="row[head.name]"
                 alt="image"
               />
@@ -42,16 +43,32 @@
                 v-else-if="head.type == 'FILE' && row[head.name] != 'N/A'"
                 :href="row[head.name]"
               ></a>
-              <b-form-checkbox v-else-if="head.type == 'SWITCH' && row[head.name] != 'N/A'" 
-                @change="
-                  head.onclick && !head.onclick_emit
-                  ? onClickOpenDetails(row_index)
-                  : head.onclick_emit
-                  ? onClickOpen(row_index, head, row)
-                  : ''
-                " 
-                v-model="row[head.name]" switch></b-form-checkbox>
-              <span v-else>N/A</span>
+              <div v-else-if="head.type == 'SWITCH' && row[head.name] != 'N/A'" class="d-flex flex-row justify-content-center">
+                <b-form-checkbox  
+                  @change="
+                    head.onclick && !head.onclick_emit
+                    ? onClickOpenDetails(row_index)
+                    : head.onclick_emit
+                    ? onClickOpen(row_index, head, row)
+                    : ''
+                  " 
+                  v-model="row[head.name]" switch></b-form-checkbox>
+              </div>
+                <b-form-select 
+                  @change="
+                    head.onclick && !head.onclick_emit
+                    ? onClickOpenDetails(row_index)
+                    : head.onclick_emit
+                    ? onClickOpen(row_index, head, row)
+                    : ''
+                  " 
+                  v-else-if="head.type == 'DROPDOWN'" 
+                  style="max-width: max-content !important; min-width: max-content !important; width: max-content !important;" 
+                  v-model="row[head.name]" 
+                  :placeholder="head.name" 
+                  :options="head.dropdown_data"
+                ></b-form-select>
+                <span v-else>N/A</span>
             </td>
             <td
               :style="head.onclick ? 'cursor: pointer;' : ''"
@@ -69,7 +86,7 @@
             >
               {{ row[head.name] }}
             </td>
-            <td v-if="head.name == 'action'" class="d-flex flex-wrap">
+            <td v-if="head.name == 'action'" class="d-flex flex-row" style="width: max-content !important; max-width: max-content !important; gap: 16px;">
               <template v-for="(buttons, action_button_index) in head.buttons">
                 <i
                   v-b-tooltip.hover
@@ -92,8 +109,8 @@
                   "
                   v-if="buttons.text"
                   @click.prevent="emitData(buttons.emit_name, row)"
-                  :style="`background: ${color}; color: #fff; cursor: pointer;`"
-                  ><i v-if="buttons.icon" :class="buttons.icon"></i
+                  :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
+                  ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
                   >{{ buttons.text }}</b-button
                 >
               </template>
@@ -102,7 +119,7 @@
         </tr>
       </tbody>
     </table>
-    <button class="button float-left mb-3" @click.prevent="downloadReport">
+    <button class="button float-left mb-3" v-if="file_name" @click.prevent="downloadReport">
       <i class="fa fa-pie-chart mr-2"></i>Report
     </button>
   </div>
@@ -114,7 +131,7 @@
 <script>
 import papaparse from "papaparse";
 export default {
-  props: ["headings", "data_rows", "file_name"],
+  props: ["headings", "data_rows", "file_name", 'page', 'rows'],
   methods: {
     emitData(emitMethod, data) {
       this.$emit("callFunction", {

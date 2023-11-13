@@ -9,18 +9,104 @@
             </div>
         </div>
         <div v-if="!loader" class="tabs-content">
-            <div class="d-flex flex-row">
-                <div class="w-75">
+            <div class="d-flex flex-row align-items-center">
+                <div class="w-75 d-flex flex-row align-items-center" style="gap: 10px;">
                     <label class="mr-3">Rows:</label>
                     <b-form-select style="width: 100px;" v-model="per_page" :options="per_page_options"></b-form-select>
+                    <button class="button" @click.preview="reloadPage"><i class="fa fa-refresh"></i></button>
+                    <button class="button" @click.preview="openAdminBanner"><i class="fa fa-plus"><span class="text-heading" style="color: white; font-weight: 500; margin-left: 0px;">Admin Banner</span></i></button>
+                    <button class="button" @click.preview="openVendorBanner"><i class="fa fa-plus"><span class="text-heading" style="color: white; font-weight: 500; margin-left: 0px;">Vendor Banner</span></i></button>
                 </div>
                 <div class="w-25">
                     <!-- top pagination  -->
                     <Pagination @changePage="changePage" :data_list="banners" :per_page="per_page" :total_rows="total_banners" :page="page_number"/>
                 </div>
             </div>
-            <Table @openSpecific="openSpecific" @callFunction="checkWhatIsCalled" :headings="banner_headings" :data_rows="banners" :file_name="export_file"/>
+            <Table @openSpecific="openSpecific" @callFunction="checkWhatIsCalled" :headings="banner_headings" :data_rows="banners" :file_name="export_file" :page="page_number" :rows="per_page" />
             <Pagination @changePage="changePage" :data_list="banners" :per_page="per_page" :total_rows="total_banners" :page="page_number"/>
+            <b-modal
+                id="vendorBanner" 
+                hide-footer 
+                hide-header 
+                no-close-on-backdrop 
+                centered 
+            >
+                <div class="d-flex flex-row align-items-center justify-content-between">
+                    <span class="text-heading">Add Banner For Vendor</span>
+                    <span class="text-danger cursor-pointer" @click.prevent="closeModal"><i class="fa fa-times mr-1"></i> Close</span>
+                </div>
+                <div class="d-flex flex-column align-items-center w100 px-4 pt-4">
+                    <div class="d-flex flex-row align-items-center w100 mb-3">
+                        <div class="w50">
+                            <label class="input-label">Vendor: </label>
+                        </div>
+                        <div class="w50">
+                            <b-form-select 
+                                type="text" 
+                                style="
+                                    width: 100% !important; 
+                                    max-width: 100% !important; 
+                                    min-width: 100% !important;
+                                " 
+                                placeholder="Select a vendor"
+                                v-model="selected_vendor"
+                                :options="vendor_list"
+                            />
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row align-items-center w100 mb-3">
+                        <div class="w50">
+                            <label class="input-label">App Banner: </label>
+                        </div>
+                        <div class="w50">
+                            <b-form-file v-model="app_banner" accept="image/*" plain></b-form-file>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row align-items-center w100 mb-3">
+                        <div class="w50">
+                            <label class="input-label">Web Banner: </label>
+                        </div>
+                        <div class="w50">
+                            <b-form-file v-model="web_banner" accept="image/*" plain></b-form-file>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row justify-content-center">
+                        <button class="button" @click.prevent="addBannerVendor"><i class="fa fa-save mr-1"></i>Save</button>
+                    </div>
+                </div>
+            </b-modal>
+            <b-modal
+                id="adminBanner" 
+                hide-footer 
+                hide-header 
+                no-close-on-backdrop 
+                centered 
+            ><div class="d-flex flex-row align-items-center justify-content-between">
+                    <span class="text-heading">Add Banner For Admin</span>
+                    <span class="text-danger cursor-pointer" @click.prevent="closeModal"><i class="fa fa-times mr-1"></i> Close</span>
+                </div>
+                <div class="d-flex flex-column align-items-center w100 px-4 pt-4">
+                    <div class="d-flex flex-row align-items-center w100 mb-3">
+                        <div class="w50">
+                            <label class="input-label">App Banner: </label>
+                        </div>
+                        <div class="w50">
+                            <b-form-file v-model="app_banner" accept="image/*" plain></b-form-file>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row align-items-center w100 mb-3">
+                        <div class="w50">
+                            <label class="input-label">Web Banner: </label>
+                        </div>
+                        <div class="w50">
+                            <b-form-file v-model="web_banner" accept="image/*" plain></b-form-file>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row justify-content-center">
+                        <button class="button" @click.prevent="addBannerAdmin"><i class="fa fa-save mr-1"></i>Save</button>
+                    </div>
+                </div>
+            </b-modal>
         </div>
     </div>
 </template>
@@ -52,8 +138,12 @@ export default {
             banner_headings: [],
             total_banners: null,
             per_page_options: Array.from(Array(15).keys()).map(e => e + 1),
-            per_page: 7,
-            page_number: 1
+            per_page: 5,
+            page_number: 1,
+            vendor_list: [],
+            web_banner: null,
+            app_banner: null,
+            selected_vendor: null,
         }
     },
     async mounted() {
@@ -68,6 +158,102 @@ export default {
         },
     },
     methods: {
+        async addBannerVendor() { 
+            try {
+                this.loader = true
+                const formData = new FormData()
+                formData.append('web_image', this.web_banner)
+                formData.append('app_image', this.app_banner)
+                formData.append('vendor_id', this.selected_vendor)
+                formData.append('active', true)
+                const path = '/add-banner'
+                const response = await this.$axios.post(path, formData)
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                this.closeModal()
+                this.changeTab(1)
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async addBannerAdmin() { 
+            try {
+                this.loader = true
+                const formData = new FormData()
+                formData.append('web_image', this.web_banner)
+                formData.append('app_image', this.app_banner)
+                formData.append('active', true)
+                const path = '/add-banner'
+                const response = await this.$axios.post(path, formData)
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                this.closeModal()
+                this.changeTab(1)
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        closeModal() {
+            this.$bvModal.hide('adminBanner')
+            this.$bvModal.hide('vendorBanner')
+            this.selected_vendor = null
+            this.web_banner = null
+            this.app_banner = null
+        },
+        async openAdminBanner() {
+            try {
+                this.$bvModal.show('adminBanner')
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async openVendorBanner() {
+            try {
+                await this.fetchApprovedVendors()
+                this.$bvModal.show('vendorBanner')
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async fetchApprovedVendors() {
+            try {
+                let query = `/approved-vendor`
+                if (this.searchText && this.searchText != '') {
+                    query = query + `&vendor_name=${this.searchText}`
+                }
+                const response = await this.$axios.get(query)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.vendor_list = response.data.vendors.map(e => {
+                    return {
+                        value: e.id,
+                        text: e.fullname
+                    }
+                })
+                this.vendor_list.unshift({
+                    value: null,
+                    text: 'Select a vendor'
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async reloadPage() { 
+            this.loader = true
+            await this.changePage(1)
+            this.loader = false
+        },
         async checkWhatIsCalled(passedData) {
             try {
                 const { emitMethod, data } = passedData
@@ -86,6 +272,9 @@ export default {
                             type: response.data.status
                         })
                         break;
+                    case "delete":
+                        await this.deleteWithPopup('/delete-banner', 'banner_id', data.full_data.id)
+                        break;
                 }
                 
             } catch (error) {
@@ -95,6 +284,59 @@ export default {
                     keepOnHover: true,
                     type: 'error'
                 })
+            }
+        },
+        async deleteWithPopup(path, key, data_id) {
+            try {
+                const h = this.$createElement
+                const id = `DeleteModal${id}`
+                this.$bvToast.hide(id)
+                const $closeButton = h(
+                'b-button',
+                {
+                    on: { click: () => this.$bvToast.hide(id) },
+                    class: 'btn btn-primary mx-1',
+                    style: 'margin: 0 auto;'
+                },
+                'No'
+                )
+                const $acceptButton = h(
+                'b-button',
+                {
+                    on: {
+                        click: async () => {
+                            let data = {}
+                            data[key] = data_id
+                            const deleteresponse = await this.$axios.post(path, data)
+                            await this.fetchBannerCount()
+                            await this.changePage(this.page_number)  
+                            this.$toast.show(deleteresponse.data.message, {
+                                duration: 1500,
+                                position: 'top-right',
+                                keepOnHover: true,
+                                type: deleteresponse.data.status
+                            })
+                            this.$bvToast.hide(id)
+                        }
+                    },
+                    class: 'btn btn-danger mx-1',
+                },
+                'Yes'
+                )
+                const $buttonContainer = h(
+                    'div',
+                    {
+                        class: 'text-center my-2',
+                    },
+                    [$closeButton, $acceptButton]
+                )
+                this.$bvToast.toast($buttonContainer, {
+                    id: id,
+                    title: `Are you sure?`,
+                    noCloseButton: true,
+                })
+            } catch (error) {
+                console.log(error);
             }
         },
         async fetchBannerCount() {
@@ -147,7 +389,7 @@ export default {
             this.total_banners = response.data.banner_total
             const mapped_banner = response.data.banners.map(banner => {
                 return {
-                    'vendor Name': banner.vendor.fullname,
+                    'vendor Name': banner.vendor ? banner.vendor.fullname : 'ADMIN',
                     'app image': banner.app_banner_url,
                     'show in app': banner.show_in_app,
                     "today's offer": banner.is_today_offer,
@@ -183,6 +425,19 @@ export default {
                     type: 'SWITCH',
                     onclick: true,
                     onclick_emit: 'today_offer'
+                },
+                {
+                    name: 'action',
+                    icon: 'fa fa-cog',
+                    buttons: [
+                        {
+                            text: 'Delete',
+                            icon: 'fa fa-trash',
+                            color: 'red',
+                            border: 'none',
+                            emit_name: 'delete'
+                        },
+                    ]
                 },
             ]
             this.banners = await Promise.all(mapped_banner)
@@ -228,10 +483,18 @@ export default {
                     icon: 'fa fa-cog',
                     buttons: [
                         {
-                            text: null,
+                            emit_name: 'approve',
                             icon: 'fa fa-check',
+                            text: 'Approve',
                             color: 'green',
-                            emit_name: 'approve'
+                            border: 'none',
+                        },
+                        {
+                            text: 'Delete',
+                            icon: 'fa fa-trash',
+                            color: 'red',
+                            border: 'none',
+                            emit_name: 'delete'
                         },
                     ]
                 },
@@ -267,7 +530,8 @@ export default {
                 keepOnHover: true,
                 type: response.data.status
             })
-        }
+        }, 
     }
 }
 </script>
+

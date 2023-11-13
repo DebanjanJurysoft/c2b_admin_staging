@@ -1,3 +1,8 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+
 .dashboard-container {
     width: 100%;
     height: 87vh;
@@ -11,7 +16,9 @@
     width: 100%;
     border-radius: 20px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    min-height: 330px !important;
+    min-height: 220px !important;
+    height: 220px !important;
+    max-height: 220px !important;
 }
 
 
@@ -44,7 +51,7 @@
     color: var(--labels-secondary, #343B45);
     font-feature-settings: 'clig' off, 'liga' off;
     /* Title2/Emphasized */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 24px;
     font-style: normal;
     font-weight: 500;
@@ -57,7 +64,7 @@
     color: var(--labels-secondary, #343B45);
     font-feature-settings: 'clig' off, 'liga' off;
     /* Title2/Emphasized */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 34px;
     font-style: normal;
     font-weight: 700;
@@ -71,7 +78,7 @@
     color: var(--labels-secondary, #343B45);
     font-feature-settings: 'clig' off, 'liga' off;
     /* Title2/Emphasized */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 15px;
     font-style: normal;
     margin-top: 11px;

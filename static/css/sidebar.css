@@ -1,9 +1,14 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+
 /* logo component  */
 .cls {
     color: #343B45;
-    font-feature-settings: 'clig' off, 'liga' off;
+    /* font-feature-settings: 'clig' off, 'liga' off; */
     /* Title2/Emphasized */
-    font-family: 'Lexend Mega';
+    font-family: 'Lexend Mega', sans-serif;
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
@@ -12,10 +17,10 @@
     letter-spacing: 2px;
 }
 .cls2 {
-    color: var(--labels-primary, #E74C3C);;
-    font-feature-settings: 'clig' off, 'liga' off;
+    color: #E74C3C;
+    /* font-feature-settings: 'clig' off, 'liga' off; */
     /* Title2/Emphasized */
-    font-family: 'Lexend Mega';
+    font-family: 'Lexend Mega', sans-serif;
     font-size: 22px;
     font-style: normal;
     font-weight: 400;
@@ -26,7 +31,7 @@
 }
 
 .logo-container {
-    width: 100%;
+    width: 80%;
     display: flex;
     align-items: center;
     text-align: center;
@@ -107,9 +112,9 @@
 
 .nav-items > div > span {
     font-size: 16px;
-    font-feature-settings: 'clig' off, 'liga' off;
+    /* font-feature-settings: 'clig' off, 'liga' off; */
     /* Headline/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     text-transform: capitalize;
     font-style: normal;
     font-weight: 300;
@@ -136,9 +141,9 @@
     cursor: pointer;
     justify-content: center;
     font-size: 16px;
-    font-feature-settings: 'clig' off, 'liga' off;
+    /* font-feature-settings: 'clig' off, 'liga' off; */
     /* Headline/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     text-transform: capitalize;
     font-style: normal;
     font-weight: 300;

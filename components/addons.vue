@@ -9,17 +9,18 @@
             </div>
         </div>
         <div v-if="!loader" class="tabs-content">
-            <div class="d-flex flex-row">
-                <div class="w-75">
+            <div class="d-flex flex-row align-items-center">
+                <div class="w-75 d-flex flex-row align-items-center" style="gap: 10px;">
                     <label class="mr-3">Rows:</label>
                     <b-form-select style="width: 100px;" v-model="per_page" :options="per_page_options"></b-form-select>
+                    <button class="button" @click.prevent="fetchDataForPage"><i class="fa fa-refresh"></i></button>
                 </div>
                 <div class="w-25">
                     <!-- top pagination  -->
                     <Pagination @changePage="changePage" :data_list="addon_data" :per_page="per_page" :total_rows="total_addons" :page="page"/>
                 </div>
             </div>
-            <Table @callFunction="checkWhatIsCalled" :headings="addon_heading" :data_rows="addon_data" />
+            <Table @callFunction="checkWhatIsCalled" :headings="addon_heading" :data_rows="addon_data" :file_name="`${selected_tab.name}_list.csv`" :page="page" :rows="per_page"/>
             <Pagination @changePage="changePage" :data_list="addon_data" :per_page="per_page" :total_rows="total_addons" :page="page"/>
         </div>
     </div>
@@ -51,7 +52,7 @@ export default {
             addon_data: [],
             total_addons: 0,
             page: 1,
-            per_page: 7,
+            per_page: 5,
             per_page_options: Array.from(Array(15).keys()).map(e => e + 1),
         }
     },
@@ -105,14 +106,15 @@ export default {
             this.fetchDataForPage()
         },
         async fetchDataForPage() { 
+            this.loader = true
             switch (this.selected_tab.id) {
                 case 1:
                     const addons = await this.fetchAddons(false, this.page, this.per_page)
                     this.total_addons = addons.total
                     const mappedAddons = addons.addons.map(addon => {
                         return {
-                            'Vendor Name': addon.vendor.fullname,
-                            'Store Name': addon.vendor.store.name,
+                            // 'Vendor Name': addon.vendor.fullname,
+                            // 'Store Name': addon.vendor.store.name,
                             'Addon Name': addon.name,
                             'Price': `₹ ${addon.price}`,
                             'Compare Price': `₹ ${addon.compared_price}`,
@@ -124,14 +126,14 @@ export default {
                     const addonData = await Promise.all(mappedAddons)
                     this.addon_data = addonData
                     this.addon_heading = [
-                        {
-                            name: 'Vendor Name',
-                            icon: 'fa fa-user-o',
-                        },
-                        {
-                            name: 'Store Name',
-                            icon: 'fa fa-user-o',
-                        },
+                        // {
+                        //     name: 'Vendor Name',
+                        //     icon: 'fa fa-user-o',
+                        // },
+                        // {
+                        //     name: 'Store Name',
+                        //     icon: 'fa fa-user-o',
+                        // },
                         {
                             name: 'Addon Name',
                             icon: 'fa fa-mobile',
@@ -157,10 +159,11 @@ export default {
                             icon: 'fa fa-cog',
                             buttons: [
                                 {
-                                    text: null,
+                                    emit_name: 'approve',
                                     icon: 'fa fa-check',
+                                    text: 'Approve',
                                     color: 'green',
-                                    emit_name: 'approve'
+                                    border: 'none',
                                 },
                             ]
                         },
@@ -172,8 +175,8 @@ export default {
                     this.total_addons = approvedAddons.total
                     const mappedApprovedAddons = approvedAddons.addons.map(addon => {
                         return {
-                            'Vendor Name': addon.vendor.fullname,
-                            'Store Name': addon.vendor.store.name,
+                            // 'Vendor Name': addon.vendor.fullname,
+                            // 'Store Name': addon.vendor.store.name,
                             'Addon Name': addon.name,
                             'Price': `₹ ${addon.price}`,
                             'Compare Price': `₹ ${addon.compared_price}`,
@@ -185,14 +188,14 @@ export default {
                     const approvedAddonData = await Promise.all(mappedApprovedAddons)
                     this.addon_data = approvedAddonData
                     this.addon_heading = [
-                        {
-                            name: 'Vendor Name',
-                            icon: 'fa fa-user-o',
-                        },
-                        {
-                            name: 'Store Name',
-                            icon: 'fa fa-user-o',
-                        },
+                        // {
+                        //     name: 'Vendor Name',
+                        //     icon: 'fa fa-user-o',
+                        // },
+                        // {
+                        //     name: 'Store Name',
+                        //     icon: 'fa fa-user-o',
+                        // },
                         {
                             name: 'Addon Name',
                             icon: 'fa fa-mobile',
@@ -216,7 +219,8 @@ export default {
                     ]
                     break
             }
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
+            this.loader = false
         },
         async fetchAddons(approve, page = 1, per_page = 7) {
             try {
@@ -228,6 +232,9 @@ export default {
                     path += `&per_page=${per_page}`
                 }
                 const response = await this.$axios.get(path)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 return {addons: response.data.addOns, total: response.data.totalAddOns}
             } catch (error) {
                 console.log(error);

@@ -1,5 +1,6 @@
 <template>
-    <div class="row">
+    <div class="row" @mousemove="isUsing">
+    <!-- <div class="row"> -->
         <Sidebar @setNewActive="setNewActive" :selectedMenu="selectedMenu" />
         <div class="pages-container">
             <Topbar @updateNewActive="updateNewActive" :selectedMenu="selectedMenu"/>
@@ -35,26 +36,75 @@ import Addons from '../components/addons.vue';
 import Stores from '../components/stores.vue';
 
 export default {
-    beforeCreate() {
+    async beforeCreate() {
         if (!this.$auth.loggedIn) {
+            // await this.$auth.logout()
             this.$router.push('/login')
         }
     },
     data() {
         return {
+            not_active_timer: null,
+            not_use_max_time: 900000,
+            tabIsActive: null,
             selectedMenu: {
                 id: 1,
                 name: 'home',
+                text: 'home',
                 normal_img: '/icons/home-black.svg',
                 active_img: '/icons/home-white.svg'
             },
+            intervalTimeOut: null,
+            localStorageServer: null
         };
     },
-    methods: { 
+    mounted() {
+        localStorage.removeItem('navData')
+        this.changeTab()
+        this.isUsing()
+        if (typeof document.hidden !== "undefined") {
+            document.addEventListener("visibilitychange", this.handleVisibilityChange);
+        } else {
+            console.log("Page Visibility API is not supported in this browser");
+        }
+    },
+    methods: {
+        changeTab() {
+            this.intervalTimeOut = setInterval(() => {
+                this.localStorageServer = localStorage.getItem('navData')
+                if (typeof this.localStorageServer === 'string') {
+                    this.localStorageServer = JSON.parse(this.localStorageServer)
+                    this.setNewActive(this.localStorageServer.nav)
+                    clearInterval(this.intervalTimeOut)
+                }
+            }, 100);
+        },
+        handleVisibilityChange() {
+            this.tabIsActive = !document.hidden;
+            if (!this.tabIsActive) {
+                this.isUsing()
+            }
+        }, 
+        async logout() {
+            await this.$auth.logout()
+            this.$router.push('/login')
+        },
+        async isUsing() { 
+            clearTimeout(this.not_active_timer)
+            this.not_active_timer = setTimeout(async () => {
+                await this.logout()
+            }, this.not_use_max_time);
+        },
         updateNewActive(selected) {
             this.selectedMenu = selected;
         },
         setNewActive(selected) {
+            if (this.selectedMenu.name == 'home') {
+                if (this.localStorageServer && !this.localStorageServer.inner_nav) {
+                    localStorage.removeItem('navData')
+                }
+                this.changeTab()
+            }
             this.selectedMenu = selected;
         }
     },

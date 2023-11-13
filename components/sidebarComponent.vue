@@ -85,10 +85,11 @@
         <div class="d-flex flex-column" v-if="cart_details && title == 'User Cart Details'" style="gap: 5px; overflow-y: auto;">
             <template v-for="(stores, stores_index) in cart_details">
                 <template v-for="(cart, cart_index) in stores.carts">
-                    <b-card style="height: 230px; border-radius: 18px;" :key="`${stores_index}X${cart_index}`" no-body class="overflow-hidden">
+                    <b-card v-if="cart.product" style="height: 230px; border-radius: 18px;" :key="`${stores_index}X${cart_index}`" no-body class="overflow-hidden">
                         <b-row no-gutters>
                         <b-col md="5">
                             <b-carousel
+                                v-if="cart.product && cart.product.images_of_products.length"
                                 id="carousel-1"
                                 v-model="slide"
                                 :interval="3000"

@@ -1,3 +1,8 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+
 /* login page css  */
 
 .login-input-container {
@@ -23,7 +28,7 @@
     color: var(--grays-gray-2-dark, #636366);
     font-feature-settings: 'clig' off, 'liga' off;
     /* Callout/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 200;
@@ -63,7 +68,7 @@
     color: var(--grays-gray-2-dark, #636366);
     font-feature-settings: 'clig' off, 'liga' off;
     /* Caption1/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 12px;
     font-style: normal;
     font-weight: 200;
@@ -99,7 +104,7 @@
     /* color: var(--grays-gray-2-dark, #636366); */
     font-feature-settings: 'clig' off, 'liga' off;
     /* Callout/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 200;
@@ -169,7 +174,7 @@
 .google-button > span, .facebook-button > span, .apple-button > span {
     font-feature-settings: 'clig' off, 'liga' off;
     /* Headline/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 17px;
     font-style: normal;
     font-weight: 200;

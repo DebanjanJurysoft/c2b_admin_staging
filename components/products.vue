@@ -10,21 +10,40 @@
         </div>
         <div v-if="!loader" class="tabs-content">
             <div class="d-flex flex-row">
-                <div class="w-75">
-                    <label class="mr-3">Rows:</label>
-                    <b-form-select style="width: 100px;" v-model="per_page" :options="per_page_options"></b-form-select>
+                <div class="d-flex flex-fill flex-row align-items-center mb-3">
+                    <div class="w-75" v-if="selected_tab.id != 4">
+                        <div class="d-flex flex-row align-items-center" style="gap: 10px">
+                            <label class="mr-3">Rows:</label>
+                            <b-form-select style="width: 100px;" v-model="per_page" :options="per_page_options"></b-form-select>
+                            <button class="button" @click.prevent="reloadData"><i class="fa fa-refresh"></i></button>
+                            <b-form-select 
+                                @input="filterCategory"
+                                style="width: max-content;"
+                                v-model="selectecd_category_filter" 
+                                value-field="id"
+                                text-field="category_name"
+                                :options="category_list_filter"
+                            ></b-form-select>
+                        </div>
+                    </div>
+                    <div class="w-25 d-flex flex-row-reverse align-items-center" v-if="selected_tab.id != 4">
+                        <button class="button mx-2" @click.prevent="addEditProduct('Add Product')"><i class="fa fa-plus mr-2"></i> Add</button>
+                    </div>
                 </div>
-                <div class="w-25">
-                    <!-- top pagination  -->
-                    <Pagination @changePage="changePage" v-if="selected_tab.id == 1" :data_list="waiting_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
-                    <Pagination @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approve_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
-                    <Pagination @changePage="changePage" v-if="selected_tab.id == 3" :data_list="rejected_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
+                <div class="d-flex flex-row-reverse ml-3">
+                    <div>
+                        <!-- top pagination  -->
+                        <Pagination @changePage="changePage" v-if="selected_tab.id == 1" :data_list="waiting_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
+                        <Pagination @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approve_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
+                        <Pagination @changePage="changePage" v-if="selected_tab.id == 3" :data_list="rejected_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
+                    </div>
                 </div>
             </div>
             <!-- table  -->
-            <Table @openDetails="openDetails" @callFunction="checkWhatIsCalled" v-if="selected_tab.id == 1" :headings="waiting_product_heading" :data_rows="waiting_product_list" />
-            <Table @openDetails="openDetails" v-if="selected_tab.id == 2" :headings="approved_product_heading" :data_rows="approve_product_list" />
-            <Table @openDetails="openDetails" v-if="selected_tab.id == 3" :headings="rejected_product_heading" :data_rows="rejected_product_list" />
+            <Table @openDetails="openDetails" @callFunction="checkWhatIsCalled" v-if="selected_tab.id == 1" :headings="waiting_product_heading" :file_name="'waiting_products_list.csv'" :data_rows="waiting_product_list" :page="page" :rows="per_page"/>
+            <Table @openSpecific="openSpecific" @callFunction="checkWhatIsCalled" @openDetails="openDetails" v-if="selected_tab.id == 2" :headings="approved_product_heading" :data_rows="approve_product_list" :file_name="'approve_product_list.csv'" :page="page" :rows="per_page" />
+            <Table @openDetails="openDetails" v-if="selected_tab.id == 3" :headings="rejected_product_heading" :data_rows="rejected_product_list" :file_name="'rejected_product_list.csv'" :page="page" :rows="per_page" />
+            <BulkUploadProducts @reloadData="reloadData" v-if="selected_tab.id == 4" />
             <!-- bottom pagination  -->
             <Pagination @changePage="changePage" v-if="selected_tab.id == 1" :data_list="waiting_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
             <Pagination @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approve_product_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
@@ -44,19 +63,26 @@
                 <span @click.prevent="rejectProduct" :class="rejection_reason ? 'logout-button' : 'disabled-button'">Reject</span>
             </div>
         </b-modal>
+        <ProductAdd :edit_data="edit_data" :product_data="product_update_data" :visible="add_edit_product" :title="form_title" @closeSidebar="closeSidebar" @openDetails="addEditProduct"/>
+        <!-- <ProductAdd2 v-else :visible="add_edit_product" :product_data="product_update_data" :title="form_title" @closeSidebar="closeSidebar" @openDetails="addEditProduct"/> -->
     </div>
 </template>
 
 <script>
 import Loader from "./loader.vue"
+import ProductAdd from "./product_adding_form.vue"
 import Pagination from "./pagination.vue"
 import SidebarComponent from "./sidebarComponent.vue"
+import BulkUploadProducts from "./bulkUploadProducts.vue"
 import Table from "./table.vue"
 export default {
-    components: { Loader, Table, Pagination, SidebarComponent },
+    components: { Loader, Table, Pagination, SidebarComponent, ProductAdd, BulkUploadProducts },
     props: ['searchText'],
     data() {
         return {
+            edit_data: false,
+            form_title: '',
+            add_edit_product: false,
             loader: false,
             show_details: false,
             selected_tab: {
@@ -79,6 +105,11 @@ export default {
                     id: 3,
                     name: 'products_disapproved',
                     text: 'disapproved products'
+                },
+                {
+                    id: 4,
+                    name: 'bulk_upload_product',
+                    text: 'bulk upload products'
                 },
             ],
             waiting_product_heading: [
@@ -117,16 +148,25 @@ export default {
                     icon: 'fa fa-cog',
                     buttons: [
                         {
-                            text: null,
-                            icon: 'fa fa-ban',
-                            color: 'red',
-                            emit_name: 'disapprove'
+                            text: 'Edit',
+                            icon: 'fa fa-pencil',
+                            color: 'orange',
+                            emit_name: 'Edit',
+                            border: 'none'
                         },
                         {
-                            text: null,
+                            text: 'Disapprove',
+                            icon: 'fa fa-ban',
+                            color: 'red',
+                            emit_name: 'disapprove',
+                            border: 'none'
+                        },
+                        {
+                            text: 'Approve',
                             icon: 'fa fa-check',
                             color: 'green',
-                            emit_name: 'approve'
+                            emit_name: 'approve',
+                            border: 'none'
                         },
                     ]
                 },
@@ -151,12 +191,32 @@ export default {
                     onclick: true
                 },
                 {
+                    name: 'Active',
+                    icon: 'fa fa-eye',
+                    type: 'SWITCH',
+                    onclick: true,
+                    onclick_emit: 'is_active'
+                },
+                {
                     name: 'date',
                     icon: 'fa fa-calendar-o'
                 },
                 {
                     name: 'time',
                     icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'action',
+                    icon: 'fa fa-cog',
+                    buttons: [
+                        {
+                            text: 'Edit',
+                            icon: 'fa fa-pencil',
+                            color: 'orange',
+                            emit_name: 'Edit',
+                            border: 'none'
+                        },
+                    ]
                 },
             ],
             rejected_product_heading: [
@@ -190,12 +250,14 @@ export default {
             waiting_product_list: [],
             approve_product_list: [],
             rejected_product_list: [],
+            category_list_filter: [],
+            selectecd_category_filter: null,
             selected_product_id: null,
             selected_category_id: null,
             modal_title: '',
             rejection_reason: null,
             selected_date: null,
-            per_page: 7,
+            per_page: 5,
             per_page_options: Array.from(Array(15).keys()).map(e => e + 1),
             page: 1,
             waiting_product_list_total: 0,
@@ -204,6 +266,7 @@ export default {
             total_rows: 0,
             timer: null,
             selected_product_details: {},
+            product_update_data: null
         }
     },
     async mounted() { 
@@ -226,6 +289,29 @@ export default {
         }
     },
     methods: {
+        reloadData() {
+            if (this.selected_tab.id == 4) {
+                this.mountedFunction()
+            }
+            this.changeTab(this.tabs.indexOf(this.selected_tab))
+        },
+        async filterCategory() { 
+            this.loader = true
+            await this.mountedFunction()
+            await this.changeTab(this.tabs.indexOf(this.selected_tab))
+            this.loader = false
+        },
+        async closeSidebar() {
+            this.add_edit_product = false
+            this.product_update_data = null
+            this.edit_data = false
+            await this.mountedFunction()
+        },
+        async addEditProduct(title = null) {
+            this.form_title = title ? title : 'Add Product'
+            this.edit_data = title.includes('Edit') ? true : false
+            this.add_edit_product = true
+        },
         openDetails(data) {
             const index = parseInt(data)
             this.selected_product_details = {}
@@ -242,6 +328,7 @@ export default {
                         product_colors: selectedData.full_data.color ? [{
                             name: selectedData.full_data.color,
                         }] : null,
+                        product_image: selectedData.full_data.category_table_association.image,
                         product_sizes: selectedData.full_data.size ? [{
                             name: selectedData.full_data.size[0].toUpperCase()
                         }] : null,
@@ -279,6 +366,7 @@ export default {
                         product_colors: selectedDataA.full_data.color ? [{
                             name: selectedDataA.full_data.color,
                         }] : null,
+                        product_image: selectedDataA.full_data.category_table_association.image,
                         product_sizes: selectedDataA.full_data.size ? [{
                             name: selectedDataA.full_data.size[0].toUpperCase()
                         }] : null,
@@ -316,6 +404,7 @@ export default {
                         product_colors: selectedDataR.full_data.color ? [{
                             name: selectedDataR.full_data.color,
                         }] : null,
+                        product_image: selectedDataR.full_data.category_table_association.image,
                         product_sizes: selectedDataR.full_data.size ? [{
                             name: selectedDataR.full_data.size[0].toUpperCase()
                         }] : null,
@@ -349,6 +438,28 @@ export default {
             await this.fetchProductsWaitingForApproval()
             await this.fetchApprovedVendors()
             await this.fetchRejectedVendors()
+            await this.fetchCategoryList()
+        },
+        openSpecific(data) {
+            if (data.type == 'is_active') {
+                this.active_inactive(data)
+            }
+        },
+        async active_inactive(data) {
+            this.loader = true
+            const response = await this.$axios.post('/active-inactive-product', {
+                category_id: data.data.full_data.category_id,
+                product_id: data.data.full_data.id,
+                is_active: data.data['Active']
+            })
+            this.$toast.show(response.data.message, {
+                duration: 1500,
+                position: 'top-right',
+                keepOnHover: true,
+                type: response.data.status
+            })
+            await this.changePage(this.page)
+            this.loader = false
         },
         async changePage(page_no) {
             this.page = page_no
@@ -413,6 +524,11 @@ export default {
             try {
                 const { emitMethod, data } = passedData
                 switch (emitMethod) {
+                    case 'Edit': 
+                        const product_data = data.full_data
+                        this.product_update_data = product_data
+                        this.addEditProduct('Edit Product')
+                        break
                     case "approve":
                         this.selected_product_id = data.full_data.id
                         this.selected_category_id = data.full_data.category_table_association.id
@@ -462,6 +578,10 @@ export default {
                 if (this.searchText && this.searchText != '') {
                     query = query + `&q=${this.searchText}`
                 }
+                if (this.selectecd_category_filter) {
+                    const cat = this.category_list_filter.find(e => e.id == this.selectecd_category_filter).category_name
+                    query = query + `&category_name=${cat.replace('&', '%26')}`
+                }
                 const response = await this.$axios.get(query)
                 if (response.data.code == 401) {
                     await this.logout()
@@ -473,6 +593,7 @@ export default {
                         'product category': e.category_table_association ? e.category_table_association.category_name : 'N/A',
                         'product name': e.name ? e.name : 'N/A',
                         'product id': e.id ? `${e.category_table_association.category_name}-${e.id}` : 'N/A',
+                        'Active': e.is_active ? true : false,
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
                         id: e.id,
@@ -494,6 +615,10 @@ export default {
                 let query = `/rejected-product?page=${this.page ? this.page : 1}&per_page=${this.per_page}`
                 if (this.searchText && this.searchText != '') {
                     query = query + `&q=${this.searchText}`
+                }
+                if (this.selectecd_category_filter) {
+                    const cat = this.category_list_filter.find(e => e.id == this.selectecd_category_filter).category_name
+                    query = query + `&category_name=${cat.replace('&', '%26')}`
                 }
                 const response = await this.$axios.get(query)
                 if (response.data.code == 401) {
@@ -532,6 +657,10 @@ export default {
                 if (this.searchText && this.searchText != '') {
                     query = query + `&q=${this.searchText}`
                 }
+                if (this.selectecd_category_filter) {
+                    const cat = this.category_list_filter.find(e => e.id == this.selectecd_category_filter).category_name
+                    query = query + `&category_name=${cat.replace('&', '%26')}`
+                }
                 const response = await this.$axios.get(query)
                 if (response.data.code == 401) {
                     await this.logout()
@@ -558,7 +687,23 @@ export default {
             } catch (error) {
                 console.log(error);
             }
-        } 
+        },
+        async fetchCategoryList() {
+            try {
+                const path = '/get-categories-and-services'
+                const response = await this.$axios.get(path)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.category_list_filter = response.data.categories
+                this.category_list_filter.unshift({
+                    id: null,
+                    category_name: 'Select a category to filter'
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
     }
 }
 </script>

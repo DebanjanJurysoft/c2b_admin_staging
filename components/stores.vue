@@ -5,7 +5,7 @@
         </div>
         <div v-if="!loader" class="tabs-content">
             <div class="d-flex flex-row w-100" style="gap: 30px">
-                <div class="d-flex flex-column w-50" style="gap: 10px;  height: 100% !important; overflow-y: scroll;">
+                <div class="d-flex flex-column" style="cursor: pointer; width: 40% !important; gap: 10px;  height: 100% !important; overflow-y: scroll;">
                     <div class="d-flex flex-row align-items-center justify-content-between">
                         <h1 class="heading" style="font-size: 20px; background: none; border: none; color: black;">Stores</h1>
                     </div>
@@ -27,12 +27,242 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex flex-column w-50 p-2" style="gap: 10px;  height: 100% !important; overflow-y: scroll;" v-if="selected_store_index != null && !open_form">
+                <div class="d-flex flex-column p-2" style="width: 60% !important; gap: 10px;  height: 100% !important; overflow-y: scroll;" v-if="selected_store_index != null && !open_form">
                     <div class="d-flex flex-row align-items-center justify-content-between">
                         <h1 class="text-heading" style="font-size: 20px; background: none; border: none; color: black;">Branches ({{ branch_list.length }})</h1>
-                        <i @click.prevent="openCreateForm" style="font-size: 18px;" class="fa fa-plus-circle text-success cursor-pointer" aria-hidden="true"></i>
+                        <div class="d-flex flex-row" style="gap: 10px;">
+                            <button class="button"
+                                @click.prevent="openCreateForm" 
+                                >
+                                <i 
+                                style="font-size: 18px;" 
+                                class="fa fa-plus-circle" 
+                                aria-hidden="true"
+                                ><span class="pl-2">Branches</span></i>
+                            </button>
+                            <button class="button"
+                                @click.prevent="openSettings" 
+                            >
+                                <i 
+                                    style="font-size: 18px;" 
+                                    class="fa fa-cog" 
+                                    aria-hidden="true"
+                                ><span class="pl-2">Store Settings</span></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="card sub-category-form" v-for="(branch, branch_index) in branch_list" :key="branch_index">
+                    <div v-if="open_settings">
+                        <div class="d-flex flex-row mb-3">
+                            <div  class="tab-items" @click.prevent="changeTab(tabs)" :style="selected_tab == tabs ? 'color: black;' : 'color: rgb(120 120 120);'" :class="selected_tab == tabs ? 'tab-items-active' : ''" v-for="(tabs, tabs_index) in inner_tabs"><i :class="tabs.icon" class="mr-2"></i>{{ tabs.name }}</div>
+                        </div>
+                        <div class="card sub-category-form" v-if="open_store_image_form">
+                            <div style="width: 100% !important;" class="mb-2 d-flex flex-row align-items-center">
+                                <span class="heading" style=" padding-left: 0px !important; font-size: 20px; background: none; border: none;" >Store Image</span>
+                            </div>
+                            <div class="d-flex flex-row align-items-center">
+                                <b-form-file @input="changeStoreImage($event)" v-model="store_image"></b-form-file>
+                                <div class="d-flex flex-column px-3" v-if="store_image_url">
+                                    <img style="width: 100px; border-radius: 16px;" :src="store_image_url" alt="Image">
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row justify-content-center pt-3">
+                                <button class="button" @click.prevent="saveStoreImage"><i class="fa fa-save mr-2"></i> Save Store Image</button>
+                            </div>
+                        </div>
+                        <div class="card sub-category-form" v-if="open_store_timings_form">
+                            <div style="width: 100% !important" class="mb-2 d-flex flex-row align-items-center">
+                                <span class="heading" style="font-size: 20px; background: none; border: none;" >Store Timings</span>
+                            </div>
+                            <div class="d-flex flex-column" style="gap: 5px;">
+                                <div class="d-flex flex-row align-items-center" style="gap: 5px" v-for="(days, days_index) in store_timings_form">
+                                    <div style="width: 26% !important;">
+                                        <span class="text-heading">{{ days.day }}</span>
+                                    </div>
+                                    <div style="width: 30% !important;">
+                                        <b-form-timepicker :disabled="!days.is_open" v-model="days.open_time" placeholder="time" locale="en"></b-form-timepicker>
+                                    </div>
+                                    <div style="width: 30% !important;">
+                                        <b-form-timepicker :disabled="!days.is_open" v-model="days.close_time" placeholder="time" locale="en"></b-form-timepicker>
+                                    </div>
+                                    <div style="width: 24% !important;">
+                                        <b-form-select v-model="days.is_open" :options="store_status_options"></b-form-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row justify-content-center pt-3">
+                                <button class="button" @click.prevent="saveStoreTimings"><i class="fa fa-save mr-2"></i> Save Store Timings</button>
+                            </div>
+                        </div>
+                        <div class="card sub-category-form" v-if="open_store_delivery_form">
+                            <div style="width: 100% !important" class="mb-2 d-flex flex-row align-items-center justify-content-between">
+                                <span class="heading" style="font-size: 20px; background: none; border: none;" >Store Delivery</span>
+                                <span class="text-heading">Service Radius: {{ store_service_radius }}</span>
+                                <!-- <div class="d-flex flex-row">
+                                    <b-form-select style="width: 20% !important" placeholder="Service Radius" disabled v-model="store_service_radius" :options="store_service_radius_option"></b-form-select>
+                                </div> -->
+                            </div>
+                            <div class="d-flex flex-column" style="gap: 10px;">
+                                <div class="d-flex flex-row" style="gap: 10px;" v-for="(del, del_index) in store_delivery_form">
+                                    <span style="width: 20% !important; max-width: 20% !important; min-height: 20% !important;" class="text-heading">{{ `${del.km} KM` }}</span>
+                                    <b-form-input style="width: 40% !important" v-model="del.time" placeholder="Time in minute"></b-form-input>
+                                    <b-form-input style="width: 40% !important" v-model="del.price" placeholder="Price"></b-form-input>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row justify-content-center pt-3">
+                                <button class="button" @click.prevent="saveStoreDeliveryPriceDetails"><i class="fa fa-save mr-2"></i> Save Store Delivery Details</button>
+                            </div>
+                        </div>
+                        <div class="card sub-category-form" v-if="open_other_settings_form">
+                            <div class="d-flex flex-row-reverse justify-content-between align-items-center py-2">
+                                <b-form-radio-group
+                                    id="btn-radios-2"
+                                    v-model="other_setting_data.store_open_close"
+                                    :options="store_open_close_type"
+                                    :button-variant="other_setting_data.store_open_close == true ? 'outline-success' : 'outline-danger'"
+                                    size="sm"
+                                    name="radio-btn-outline"
+                                    buttons
+                                ></b-form-radio-group>
+                                <span class="text-heading" 
+                                    style="
+                                        font-size: 25px !important; 
+                                        padding-left: 0px !important;
+                                        font-weight: 500 !important;
+                                    ">Other settings</span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <div class="d-flex flex-column py-2" style="justify-content: space-between;">
+                                    <div class="d-flex flex-row" style="width: 100% !important;">
+                                        <b-form-checkbox switch
+                                            v-model="other_setting_data.free_delivery"
+                                        >
+                                            <span class="text-heading"
+                                            style="
+                                                font-size: 16px !important; 
+                                                padding-left: 0px !important;
+                                                font-weight: 500 !important;
+                                            "
+                                            >Free Delivery Available</span>
+                                        </b-form-checkbox>
+                                    </div>
+                                    <span class="text-heading"
+                                        style="
+                                            width: 100% !important; 
+                                            padding-left: 0px !important;
+                                            font-size: 12px !important; 
+                                            padding-left: 0px !important;
+                                            font-weight: 300 !important;
+                                        "
+                                    >Free delivery if amount is more than</span>
+                                    <b-form-input 
+                                        v-model="other_setting_data.free_delivery_if_more"
+                                        style="width: 100% !important; margin-top: -6px !important;" 
+                                        type="text" 
+                                        placeholder="₹ 000"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column py-4" style="justify-content: space-between;">
+                                    <div class="d-flex flex-row" style="width: 100% !important;">
+                                        <b-form-checkbox switch
+                                            v-model="other_setting_data.exchange"
+                                        ><span class="text-heading"
+                                            style="
+                                                font-size: 16px !important; 
+                                                padding-left: 0px !important;
+                                                font-weight: 500 !important;
+                                            "
+                                        >Exchange Available</span></b-form-checkbox>
+                                    </div>
+                                    <div class="d-flex flex-column" style="width: 100% !important;">
+                                        <span class="text-heading"
+                                            style="
+                                                width: 100% !important; 
+                                                padding-left: 0px !important;
+                                                font-size: 12px !important; 
+                                                padding-left: 0px !important;
+                                                font-weight: 300 !important;
+                                            "
+                                        >Exchange Policy</span>
+                                        <div class="d-flex flex-row align-items-center mb-2" v-for="(policy, policy_index) in other_setting_data.policies">
+                                            <span class="text-heading px-1"
+                                                style="
+                                                    font-weight: 400 !important;
+                                                    width: 5% !important;
+                                                    font-size: 16px !important; 
+                                                    max-width: 5% !important;
+                                                    min-width: 5% !important;
+                                                "
+                                            >{{ policy_index + 1 }}.</span>
+                                            <b-form-input
+                                                v-model="policy.text"
+                                                style="width: 80% !important;"
+                                                type="text" 
+                                                :placeholder="`Policy ${policy_index + 1}`"
+                                            ></b-form-input>
+                                            <div class="d-flex flex-row justify-content-center"
+                                                style="
+                                                    width: 15% !important;
+                                                    font-size: 25px !important;
+                                                    gap: 10px !important;
+                                                "
+                                            >
+                                                <i 
+                                                    @click.prevent="add_policy"
+                                                    class="fa fa-plus-circle text-success"
+                                                ></i>
+                                                <i 
+                                                    @click.prevent="remove_policy(policy_index)"
+                                                    class="fa fa-minus-circle text-danger" 
+                                                    v-if="policy_index > 0"
+                                                ></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column" style="justify-content: space-between;">
+                                    <div class="d-flex flex-row" style="width: 100% !important;">
+                                        <b-form-checkbox switch
+                                            v-model="other_setting_data.negociation"
+                                        ><span class="text-heading"
+                                            style="
+                                                font-size: 16px !important; 
+                                                padding-left: 0px !important;
+                                                font-weight: 500 !important;
+                                            "
+                                        >Negociation Available</span></b-form-checkbox>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-center">
+                                    <button class="button" @click.prevent="saveOtherData"><i class="fa fa-save mr-2"></i> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="card  sub-category-form">
+                        <div style="width: 100% !important" class="mb-2 d-flex flex-row align-items-center justify-content-center">
+                            <span class="heading" style="font-size: 20px; background: none; border: none;" >Store Delivery</span>
+                        </div>
+                        <div class="d-flex flex-column" style="gap: 5px;">
+                            <div class="d-flex flex-row align-items-center" style="gap: 5px" v-for="(days, days_index) in store_timings_form">
+                                <div style="width: 26% !important;">
+                                    <span class="text-heading">{{ days.day }}</span>
+                                </div>
+                                <div style="width: 30% !important;">
+                                    <b-form-timepicker :disabled="!days.is_open" v-model="days.open_time" placeholder="time" locale="en"></b-form-timepicker>
+                                </div>
+                                <div style="width: 30% !important;">
+                                    <b-form-timepicker :disabled="!days.is_open" v-model="days.close_time" placeholder="time" locale="en"></b-form-timepicker>
+                                </div>
+                                <div style="width: 24% !important;">
+                                    <b-form-select v-model="days.is_open" :options="store_status_options"></b-form-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row justify-content-center pt-3">
+                            <button class="button" @click.prevent="saveStoreTimings">Save Store Timings</button>
+                        </div>
+                    </div> -->
+                    <div class="card sub-category-form" v-if="!open_settings && branch_list.length > 0" v-for="(branch, branch_index) in branch_list" :key="branch_index">
                         <div class="d-flex flex-row" :class="branch.collapse_active ? 'mb-3' : ''">
                             <div style="width: 25% !important;">
                                 <img style="border-radius: 16px; height: 60px !important;  width: 100px !important; object-fit: cover;" :src="branch.image_url" alt="Branch Image" >
@@ -59,8 +289,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card sub-category-form" v-if="!open_settings && branch_list.length == 0" >
+                        <div class="d-flex flex-row justify-content-center">
+                            <span class="text-heading" style="font-size: 20px !important;">No Branches</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex flex-column w-50" style="gap: 10px;  height: 100% !important; overflow-y: scroll;" v-else-if="open_form">
+                <div class="d-flex flex-column" style="width: 60% !important; gap: 10px;  height: 100% !important; overflow-y: scroll;" v-else-if="open_form">
                     <div class="d-flex sub-category-form flex-column" style="gap: 10px">
                         <div class="d-flex flex-row align-items-center justify-content-between">
                             <h1 class="heading" style="font-size: 16px; width: 100% !important; background: none; border: none; color: black;">{{ edit_id ? 'Edit Branch' : 'Add Branch' }}</h1>
@@ -338,6 +573,70 @@ export default {
     components: { vSelect },
     data() {
         return {
+            selected_tab: {
+                name: 'Store Image',
+                icon: 'fa fa-picture-o'
+            },
+            inner_tabs: [
+                {
+                    name: 'Store Image',
+                    icon: 'fa fa-picture-o'
+                },
+                {
+                    name: 'Store Timings',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'Delivery Price',
+                    icon: 'fa fa-truck'
+                },
+                {
+                    name: 'Others',
+                    icon: 'fa fa-cogs'
+                },
+            ],
+            store_open_close_type: [
+                {
+                    value: true,
+                    text: 'Open'
+                }, {
+                    value: false,
+                    text: 'Closed'
+                }
+            ],
+            other_setting_data: {
+                store_open_close: true,
+                free_delivery: false,
+                free_delivery_if_more: null,
+                exchange: false,
+                policies: [{
+                    text: null
+                }],
+                negociation: false
+            },
+            open_settings: false,
+            open_store_image_form: false,
+            open_store_timings_form: false,
+            open_store_delivery_form: false,
+            open_other_settings_form: false,
+            store_service_radius: null,
+            store_service_radius_option: Array.from(Array(10).keys()).map(e => e + 1),
+            store_status_options: [
+                {
+                    value: null,
+                    text: 'Status'
+                },
+                {
+                    value: true,
+                    text: 'Open'
+                },
+                {
+                    value: false,
+                    text: 'Close'
+                },
+            ],
+            store_delivery_form: [],
+            store_timings_form: [],
             store_list: [],
             branch_list: [],
             vendor_delivery_types: [],
@@ -347,6 +646,8 @@ export default {
             selected_store: null,
             open_form: false,
             edit_id: null,
+            store_image_url: null,
+            store_image: null,
             self_delivery_timing_template: {
                 km: null,
                 time: null,
@@ -397,6 +698,159 @@ export default {
         this.loader = false
     },
     methods: {
+        async changeTab(tab) {
+            this.selected_tab = tab
+            switch (tab.name) {
+                case 'Store Image':
+                    await this.openStoreImageForm()
+                    break;
+                case 'Store Timings':
+                    await this.OpenStoreTimingsForm()
+                    break;
+                case 'Delivery Price':
+                    await this.OpenStoreDeliveryPriceForm()
+                    break;
+                case 'Others':
+                    await this.openOtherSettingForm()
+                    break;
+            }
+        },
+        async saveOtherData() {
+            try {
+                const data = {
+                    vendor_id: this.selected_store.vendor_id,
+                    store_id: this.selected_store.id,
+                    ...this.other_setting_data,
+                    policies: JSON.stringify(this.other_setting_data.policies)
+                }
+                const response = await this.$axios.post('/upload-store-other-details', data)
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        add_policy() {
+            this.other_setting_data.policies.push({
+                text: null
+            })
+        },
+        remove_policy(index) {
+            this.other_setting_data.policies.splice(index, 1);
+        },
+        async openSettings() {
+            this.open_settings = !this.open_settings
+            if (this.open_settings) {
+                this.selected_tab = this.inner_tabs[0]
+                await this.changeTab(this.selected_tab)
+            }
+        },
+        async openOtherSettingForm() {
+            this.loader = true
+            await this.fetchOtherSettingData()
+            this.open_other_settings_form = true
+            this.open_store_image_form = false
+            this.open_store_delivery_form = false
+            this.open_store_timings_form = false
+            this.loader = false
+        },
+        async fetchOtherSettingData() {
+            try {
+                const response = await this.$axios.get(`/fetch-store-other-details?vendor_id=${this.selected_store.vendor_id}&store_id=${this.selected_store.id}`)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.other_setting_data = {
+                    store_open_close: Boolean(response.data.store.is_open),
+                    free_delivery: Boolean(response.data.store.free_delivery),
+                    free_delivery_if_more: response.data.store.free_delivery_if_more,
+                    exchange: Boolean(response.data.store.exchange),
+                    policies: response.data.store.policies.length ? response.data.store.policies : [{
+                        text: null
+                    }],
+                    negociation: Boolean(response.data.store.negociation)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async openStoreImageForm() {
+            this.loader = true
+            this.open_store_image_form = true
+            this.open_store_delivery_form = false
+            this.open_store_timings_form = false
+            this.open_other_settings_form = false
+            this.loader = false
+        },
+        async OpenStoreDeliveryPriceForm() {
+            this.loader = true
+            await this.fetchStoreDeliveryPriceDetails()
+            this.open_store_delivery_form = true
+            this.open_store_image_form = false
+            this.open_store_timings_form = false
+            this.open_other_settings_form = false
+            this.loader = false
+        },
+        async OpenStoreTimingsForm() {
+            this.loader = true
+            await this.fetchStoreTimings()
+            this.open_store_timings_form = true
+            this.open_store_image_form = false
+            this.open_store_delivery_form = false
+            this.open_other_settings_form = false
+            this.loader = false
+        },
+        async fetchStoreDeliveryPriceDetails() {
+            try {
+                const response = await this.$axios.get(`/fetch-vendor-delivery-price?vendor_id=${this.selected_store.vendor_id}&store_id=${this.selected_store.id}`)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                if (response.data.delivery_details.length) {
+                    this.store_delivery_form = response.data.delivery_details.map(e => {
+                        return {
+                            km: e.km,
+                            time: e.time,
+                            price: e.price
+                        }
+                    })
+                } else {
+                    this.store_delivery_form = Array.from(Array(this.store_service_radius).keys()).map(e => { 
+                        return {
+                            km: e+1,
+                            time: null,
+                            price: null
+                        }
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async saveStoreDeliveryPriceDetails() {
+            try {
+                this.loader = true
+                const response = await this.$axios.post('/save-vendor-delivery-price', {
+                    vendor_id: this.selected_store.vendor_id,
+                    store_id: this.selected_store.id,
+                    delivery_data: this.store_delivery_form
+                })
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                await this.fetchStores()
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async openBranchDetails(data, index) {
             this.loader = true
             if (this.selected_branch_index != null && index == this.selected_branch_index) {
@@ -499,6 +953,117 @@ export default {
                 ]
             }
         },
+        async changeStoreImage(event) {
+            this.store_image_url = URL.createObjectURL(event)
+        },
+        async fetchStoreTimings() {
+            try {
+                const response = await this.$axios.get(`/fetch-store-timings?vendor_id=${this.selected_store.vendor_id}&store_id=${this.selected_store.id}`)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                if (response.data.store_timings.length) {
+                    this.store_timings_form = response.data.store_timings.map(e => {
+                        return {
+                            day: e.day,
+                            open_time: e.open_time,
+                            close_time: e.close_time,
+                            is_open: Boolean(e.is_open)
+                        }
+                    })
+                } else {
+                    this.store_timings_form = [
+                        {
+                            day: 'MONDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'TUESDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'WEDNESDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'THURSDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'FRIDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'SATURDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'SUNDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                    ]
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async saveStoreTimings() {
+            try {
+                this.loader = true
+                const response = await this.$axios.post('/save-store-timings', {
+                    vendor_id: this.selected_store.vendor_id,
+                    store_id: this.selected_store.id,
+                    timings_data: this.store_timings_form
+                })
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                await this.fetchStores()
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async saveStoreImage() { 
+            try {
+                this.loader = true
+                const form = new FormData()
+                form.append('vendor_id', this.selected_store.vendor_id)
+                form.append('store_id', this.selected_store.id)
+                form.append('store_image', this.store_image)
+                const response = await this.$axios.post('/upload-store-image', form)
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                await this.fetchStores()
+                await this.fetchStoreTimings()
+                // await this.fetchBranches()
+                // this.closeForm()
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async changeImage(event) { 
             this.create_branch_data.branch_image_url = URL.createObjectURL(event)
         },
@@ -514,6 +1079,8 @@ export default {
             this.loader = true
             this.selected_store_index = store_index
             this.selected_store = this.store_list[this.selected_store_index]
+            this.store_image_url = this.selected_store.store_image_url
+            this.store_service_radius = this.selected_store.service_radius
             await this.fetchBranches()
             await this.fetchDeliveryTypesForVendor()
             this.closeForm()
@@ -578,6 +1145,9 @@ export default {
         async fetchProductsForTheStores(store, vendor, branch) {
             let path = `/fetch-all-products-for-branch?vendor_id=${vendor}&store_id=${store}&branch_id=${branch}`
             const response = await this.$axios.get(path)
+            if (response.data.code == 401) {
+                await this.logout()
+            }
             this.branch_product_list = response.data.products.map(e => {
                 return {
                     ...e,

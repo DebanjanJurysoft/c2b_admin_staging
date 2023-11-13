@@ -1,3 +1,8 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+
 .vendor-form-container {
     width: 100%;
     height: 87vh;
@@ -27,11 +32,11 @@
     text-align: center;
     font-feature-settings: 'clig' off, 'liga' off;
     /* Body/Emphasized */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 17px;
     text-transform: capitalize;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 200;
     line-height: 22px; /* 129.412% */
     letter-spacing: -0.4px;
 }
@@ -62,10 +67,10 @@
 .add-vendor-heading {
     color: var(--bg-primary-dark-elevated, #1C1C1E);
     font-feature-settings: 'clig' off, 'liga' off;
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 34px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 300;
 }
 
 .progress-state {
@@ -115,10 +120,10 @@
     font-size: 16px;
     font-feature-settings: 'clig' off, 'liga' off;
     /* Headline/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     text-transform: capitalize;
     font-style: normal;
-    font-weight: 300;
+    font-weight: 200;
     line-height: 22px; /* 129.412% */
     letter-spacing: 1px;
     color: white;
@@ -143,10 +148,10 @@
     font-size: 16px;
     font-feature-settings: 'clig' off, 'liga' off;
     /* Headline/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     text-transform: capitalize;
     font-style: normal;
-    font-weight: 300;
+    font-weight: 200;
     line-height: 22px; /* 129.412% */
     letter-spacing: 1px;
     color: white;
@@ -174,10 +179,10 @@
     color: var(--grays-gray-2-dark, #636366);
     font-feature-settings: 'clig' off, 'liga' off;
     /* Caption1/Regular */
-    font-family: 'poppins';
+    font-family: 'poppins', sans-serif;
     font-size: 12px;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 200;
     line-height: 16px; /* 133.333% */
     letter-spacing: -0.4px;
 }
