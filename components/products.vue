@@ -144,6 +144,18 @@ export default {
                     icon: 'fa fa-clock-o'
                 },
                 {
+                    name: 'has time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'open time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'close time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
                     name: 'action',
                     icon: 'fa fa-cog',
                     buttons: [
@@ -206,6 +218,18 @@ export default {
                     icon: 'fa fa-clock-o'
                 },
                 {
+                    name: 'has time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'open time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'close time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
                     name: 'action',
                     icon: 'fa fa-cog',
                     buttons: [
@@ -244,6 +268,18 @@ export default {
                 },
                 {
                     name: 'time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'has time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'open time',
+                    icon: 'fa fa-clock-o'
+                },
+                {
+                    name: 'close time',
                     icon: 'fa fa-clock-o'
                 },
             ],
@@ -498,6 +534,7 @@ export default {
                 keepOnHover: true,
                 type: response.data.status
             })
+            this.rejection_reason = null
             this.closeModal('rejectProductModal')
             await this.fetchProductsWaitingForApproval()
             await this.mountedFunction()
@@ -596,6 +633,9 @@ export default {
                         'Active': e.is_active ? true : false,
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
+                        'has time': e.has_time != null ? String(e.has_time) : 'N/A',
+                        'open time': e.open_time != null ? e.open_time : 'N/A',
+                        'close time': e.close_time != null ? e.close_time : 'N/A',
                         id: e.id,
                         full_data: e
                     }
@@ -633,6 +673,9 @@ export default {
                         'product id': e.id ? `${e.category_table_association.category_name}-${e.id}` : 'N/A',
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
+                        'has time': e.has_time != null ? String(e.has_time) : 'N/A',
+                        'open time': e.open_time != null ? e.open_time : 'N/A',
+                        'close time': e.close_time != null ? e.close_time : 'N/A',
                         id: e.id,
                         full_data: e
                     }
@@ -674,6 +717,9 @@ export default {
                         'product id': e.id ? `${e.category_table_association.category_name}-${e.id}` : 'N/A',
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
+                        'has time': e.has_time != null ? String(e.has_time) : 'N/A',
+                        'open time': e.open_time != null ? e.open_time : 'N/A',
+                        'close time': e.close_time != null ? e.close_time : 'N/A',
                         id: e.id,
                         full_data: e
                     }

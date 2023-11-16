@@ -142,6 +142,7 @@
                                     </div>
                                 </div>
                             </div> -->
+
                             <div class="col-12">
                                 <div class="d-flex flex-column align-items-left">
                                     <div class="col-12">
@@ -477,8 +478,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-flex flex-row">
-                                <div class="col-6">
+                            <div class="d-flex flex-column">
+                                <div class="col-12">
                                     <div class="d-flex flex-column align-items-left">
                                         <div class="col-12">
                                             <label class="input-label">Choose Delivery Types: </label>
@@ -494,13 +495,53 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="d-flex flex-column align-items-left">
-                                        <div class="col-12">
-                                            <label class="input-label">Email: </label>
+                                <div class="d-flex flex-row">
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column align-items-left">
+                                            <div class="col-12">
+                                                <label class="input-label">Packing Charges: </label>
+                                            </div>
+                                            <div class="col-12">
+                                                <b-form-input inputmode="numeric" type="number" v-model="vendor_data.store.packing_charges" placeholder="Packing Charges"></b-form-input>
+                                            </div>
                                         </div>
-                                        <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.email" placeholder="Email"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column align-items-left">
+                                            <div class="col-12">
+                                                <label class="input-label">Convenience Fee: </label>
+                                            </div>
+                                            <div class="col-12">
+                                                <b-form-input inputmode="numeric" type="number" v-model="vendor_data.store.conv_fee" placeholder="Packing Charges"></b-form-input>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row">
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column align-items-left">
+                                            <div class="col-12">
+                                                <label class="input-label">Packing Charges: </label>
+                                            </div>
+                                            <div class="col-12">
+                                                <b-form-file @input="handleFileUploadForGst($event)" v-model="vendor_data.store.gst_file" ref="file-input" plain class="mb-2"></b-form-file>
+                                                <div class="d-flex" v-if="vendor_data.store.gst_file_url" >
+                                                    <img :src="vendor_data.store.gst_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column align-items-left">
+                                            <div class="col-12">
+                                                <label class="input-label">Convenience Fee: </label>
+                                            </div>
+                                            <div class="col-12">
+                                                <b-form-file @input="handleFileUploadFor($event)" v-model="vendor_data.store.fssai_file" ref="file-input" plain class="mb-2"></b-form-file>
+                                                <div class="d-flex" v-if="vendor_data.store.fssai_file_url" >
+                                                    <img :src="vendor_data.store.fssai_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -859,7 +900,13 @@ export default {
                             status: null
                         },
                     ],
-                    store_image: null
+                    gst_file: null,
+                    fssai_file: null,
+                    gst_file_url: null,
+                    fssai_file_url: null,
+                    store_image: null,
+                    packing_charges: 10,
+                    conv_fee: 10
                 },
                 bank: {
                     account_holder_name: null,
@@ -908,6 +955,12 @@ export default {
         this.loader = false
     },
     methods: {
+        handleFileUploadForGst(event) {
+            this.vendor_data.store.gst_file_url = URL.createObjectURL(event)
+        },
+        handleFileUploadFor(event) {
+            this.vendor_data.store.fssai_file_url = URL.createObjectURL(event)
+        },
         changeIdentityImage(event) {
             this.vendor_data.personal.identity_proof_file_url = URL.createObjectURL(event)
         },
@@ -960,6 +1013,10 @@ export default {
             this.vendor_data.store.landmark  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.landmark : null
             this.vendor_data.store.lat  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lat : null
             this.vendor_data.store.lng  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lng : null
+            this.vendor_data.store.packing_charges  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.packing_charges : null
+            this.vendor_data.store.conv_fee  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.conv_fee : null
+            this.vendor_data.store.gst_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.gst_file_url : null
+            this.vendor_data.store.fssai_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.fssai_file_url : null
 
             this.vendor_data.bank.account_holder_name  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.account_holder_name : null
             this.vendor_data.bank.account_number  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.account_holder_name : null
@@ -1071,18 +1128,39 @@ export default {
                     state: this.vendor_data.store.state,
                     pincode: this.vendor_data.store.pincode,
                     landmark: this.vendor_data.store.landmark,
+                    lat: this.vendor_data.store.lat,
+                    lng: this.vendor_data.store.lng,
                     type_market_place: this.vendor_data.store.type_market_place,
                     services: JSON.stringify(this.vendor_data.store.selected_service),
                     country: this.vendor_data.store.country,
                     categories: JSON.stringify(this.vendor_data.store.selected_product),
                     delivery_types: JSON.stringify(this.vendor_data.store.delivery_types),
-                    // delivery_people: this.vendor_data.store.,
+                    packing_charges: this.vendor_data.store.packing_charges,
+                    conv_fee: this.vendor_data.store.conv_fee,
                 }
                 const response = await this.$axios({
                     method: 'post',
                     url: `/vendor-store-details`,
                     data: create_data
                 })
+                if (response.data.status == 'success' && (this.vendor_data.store.gst_file || this.vendor_data.store.fssai_file)) {
+                    const formData = new FormData()
+                    formData.append('vendor_id', this.created_vendor_id) 
+                    formData.append('store_id', response.data.data.createdData.id) 
+                    formData.append('gst_file', this.vendor_data.store.gst_file) 
+                    formData.append('fssai_file', this.vendor_data.store.fssai_file) 
+                    const fileUpload = await this.$axios({
+                        method: 'post',
+                        url: `/store-gst-fssai-files`,
+                        data: formData
+                    })
+                    this.$toast.show(fileUpload.data.message, {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: fileUpload.data.status
+                    })
+                }
                 this.$toast.show(response.data.message, {
                     duration: 1500,
                     position: 'top-right',

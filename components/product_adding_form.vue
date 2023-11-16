@@ -115,6 +115,18 @@
                     <div class="d-flex flex-row w-100">
                         <div class="d-flex flex-column align-items-left w-100">
                             <div class="w-100">
+                                <label class="input-label">Product Timings: </label>
+                            </div>
+                            <div class="w-100 d-flex flex-row align-items-center" style="gap: 15px !important;">
+                                <b-form-checkbox class="w30" v-model="foodData.hasTime" switch><span class="text-heading" style="margin-left: 0px !important;">Has Time</span></b-form-checkbox>
+                                <b-form-timepicker class="w30" v-model="foodData.openTime" placeholder="time" locale="en"></b-form-timepicker>
+                                <b-form-timepicker class="w30" v-model="foodData.closeTime" placeholder="time" locale="en"></b-form-timepicker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row w-100">
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
                                 <label class="input-label">Product Images: </label>
                             </div>
                             <div class="w-100">
@@ -214,6 +226,9 @@ export default {
                 description: null,
                 files: null,
                 price: null,
+                hasTime: false,
+                openTime: null,
+                closeTime: null,
                 compare_price: null,
                 gst: null,
             },
@@ -247,6 +262,7 @@ export default {
             this.files = []
             this.food_types = ['VEG', 'NON-VEG']
             this.selected_food_type = 'VEG'
+            this.update_id = null
             this.foodData = {
                 title: null,
                 description: null,
@@ -381,6 +397,9 @@ export default {
                             name: Joi.string().required()
                         })).allow(null).empty(Joi.array().max(0)),
                         size: Joi.string().max(255).required(),
+                        has_time: Joi.boolean().default(false).allow(null),
+                        open_time: Joi.string().allow(null),
+                        close_time: Joi.string().allow(null),
                         // is_veg: Joi.boolean().default(true).required(),
                         available: Joi.boolean().default(true).required(),
                     })
@@ -409,6 +428,9 @@ export default {
                             name: Joi.string().required()
                         })).allow(null).empty(Joi.array().max(0)),
                         size: Joi.string().max(255).required(),
+                        has_time: Joi.boolean().default(false).allow(null),
+                        open_time: Joi.string().allow(null),
+                        close_time: Joi.string().allow(null),
                         // is_veg: Joi.boolean().default(true).required(),
                         available: Joi.boolean().default(true).required(),
                     })
@@ -442,6 +464,9 @@ export default {
                     category: category,
                     size: 'l',
                     available: true,
+                    has_time: this.foodData.hasTime,
+                    open_time: this.foodData.openTime,
+                    close_time: this.foodData.closeTime,
                     free_delivery: false
                 } : {
                     vendor_id: this.selected_vendor,
@@ -454,6 +479,9 @@ export default {
                     category: category,
                     size: 'l',
                     available: true,
+                    has_time: this.foodData.hasTime,
+                    open_time: this.foodData.openTime,
+                    close_time: this.foodData.closeTime,
                     free_delivery: false
                 }
                 const result = await this.check_food_data(addData, this.update_id ? 'EDIT' : 'ADD')
@@ -528,6 +556,9 @@ export default {
             this.foodData.compare_price = data.compare_price
             this.foodData.price = data.price
             this.foodData.gst = data.gst
+            this.foodData.hasTime = Boolean(data.has_time)
+            this.foodData.openTime = data.open_time
+            this.foodData.closeTime = data.close_time
             this.selected_images = data.images_of_products
         },
         async logout() {

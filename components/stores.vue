@@ -270,8 +270,37 @@
                             <div style="width: 65% !important" class="d-flex flex-row align-items-center">
                                 <span class="heading" style="font-size: 20px; background: none; border: none;" >{{ branch.branch_name }}</span>
                             </div>
-                            <div style="width: 10% !important;" class="d-flex flex-row align-items-center float-right">
-                                <i @click.prevent="openBranchDetails(branch, branch_index)" :class="branch.collapse_active ? 'fa fa-angle-up' : 'fa fa-angle-down'"></i>
+                            <div style="width: 5% !important;" class="d-flex flex-row align-items-center float-right">
+                                <i @click.prevent="openStoreTimingDetails(branch, branch_index)" :style="branch.branch_timings ? 'color: #e74c3c' : 'color: #000000'" class="fa fa-clock-o cursor-pointer"></i>
+                            </div>
+                            <div style="width: 5% !important;" class="d-flex flex-row align-items-center float-right">
+                                <i @click.prevent="openBranchDetails(branch, branch_index)" :style="branch.collapse_active ? 'color: #e74c3c' : 'color: #000000'" :class="branch.collapse_active ? 'fa fa-angle-up cursor-pointer' : 'fa fa-angle-down cursor-pointer'"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column p-3" v-if="branch.branch_timings">
+                            <div class="card sub-category-form" style="background: white;" v-if="branch.branch_timings">
+                                <div style="width: 100% !important" class="mb-2 d-flex flex-row align-items-center">
+                                    <span class="text-heading" style="font-size: 20px; background: none; border: none;" >Branch Timings ({{selectedBranch.branch_name}})</span>
+                                </div>
+                                <div class="d-flex flex-column" style="gap: 5px;">
+                                    <div class="d-flex flex-row align-items-center" style="gap: 5px" v-for="(days, days_index) in branchTimings">
+                                        <div style="width: 26% !important;">
+                                            <span class="text-heading">{{ days.day }}</span>
+                                        </div>
+                                        <div style="width: 30% !important;">
+                                            <b-form-timepicker :disabled="!days.is_open" v-model="days.open_time" placeholder="time" locale="en"></b-form-timepicker>
+                                        </div>
+                                        <div style="width: 30% !important;">
+                                            <b-form-timepicker :disabled="!days.is_open" v-model="days.close_time" placeholder="time" locale="en"></b-form-timepicker>
+                                        </div>
+                                        <div style="width: 24% !important;">
+                                            <b-form-select v-model="days.is_open" :options="store_status_options"></b-form-select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-center pt-3">
+                                    <button class="button" @click.prevent="saveStoreBranchTimings"><i class="fa fa-save mr-2"></i> Save Branch Timings</button>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex flex-column" v-if="branch.collapse_active">
@@ -653,6 +682,9 @@ export default {
                 time: null,
                 price: null
             },
+            selectedBranch: null,
+            branchTimings: [],
+            OpenBranchTimings: false,
             branch_product_list: [],
             create_branch_data: {
                 branch_name: null,
@@ -851,8 +883,28 @@ export default {
                 console.log(error);
             }
         },
+        async openStoreTimingDetails(data, index) {
+            this.loader = true
+            this.selectedBranch = data
+            if (this.selected_branch_index != null && index == this.selected_branch_index) {
+                this.branch_product_list = []
+                this.branch_list[this.selected_branch_index].branch_timings = false
+                this.selected_branch_index = null
+            } else if (this.selected_branch_index != null) {
+                this.branch_list[this.selected_branch_index].branch_timings = false
+                this.selected_branch_index = index 
+                this.branch_list[this.selected_branch_index].branch_timings = true
+                await this.fetchBranchTimings()
+            } else {
+                this.selected_branch_index = index 
+                this.branch_list[this.selected_branch_index].branch_timings = true
+                await this.fetchBranchTimings()
+            }
+            this.loader = false
+        },
         async openBranchDetails(data, index) {
             this.loader = true
+            this.OpenBranchTimings = false
             if (this.selected_branch_index != null && index == this.selected_branch_index) {
                 this.branch_product_list = []
                 this.branch_list[this.selected_branch_index].collapse_active = false
@@ -875,6 +927,10 @@ export default {
         },
         async saveBranchDetails() {
             this.loader = true
+            if (!this.create_branch_data.vendor_delivery_types.find(e => e.type == 'SELLER DELIVERY')) {
+                delete this.create_branch_data.seller_delivery_partners
+                delete this.create_branch_data.self_delivery_timings
+            }
             const keys = Object.keys(this.create_branch_data)
             const formData = new FormData()
             keys.forEach((key) => {
@@ -1021,6 +1077,71 @@ export default {
                 console.log(error);
             }
         },
+        async fetchBranchTimings() {
+            try {
+                const response = await this.$axios.get(`/fetch-store-timings?vendor_id=${this.selected_store.vendor_id}&store_id=${this.selected_store.id}&branch_id=${this.selectedBranch.id}`)
+                if (response.data.code == 401) {
+                    await this.logout()
+                } 
+                if (response.data.store_timings.length) {
+                    this.branchTimings = response.data.store_timings.map(e => {
+                        return {
+                            day: e.day,
+                            open_time: e.open_time,
+                            close_time: e.close_time,
+                            is_open: Boolean(e.is_open)
+                        }
+                    })
+                } else {
+                    this.branchTimings = [
+                        {
+                            day: 'MONDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'TUESDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'WEDNESDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'THURSDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'FRIDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'SATURDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                        {
+                            day: 'SUNDAY',
+                            open_time: '09:00:00',
+                            close_time: '09:00:00',
+                            is_open: true,
+                        },
+                    ]
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async saveStoreTimings() {
             try {
                 this.loader = true
@@ -1028,6 +1149,27 @@ export default {
                     vendor_id: this.selected_store.vendor_id,
                     store_id: this.selected_store.id,
                     timings_data: this.store_timings_form
+                })
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                await this.fetchStores()
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async saveStoreBranchTimings() {
+            try {
+                this.loader = true
+                const response = await this.$axios.post('/save-store-timings', {
+                    vendor_id: this.selected_store.vendor_id,
+                    store_id: this.selected_store.id,
+                    branch_id: this.selectedBranch.id,
+                    timings_data: this.branchTimings
                 })
                 this.$toast.show(response.data.message, {
                     duration: 1500,
@@ -1109,6 +1251,7 @@ export default {
                         return {
                             ...e,
                             collapse_active: false,
+                            branch_timings: false,
                         }
                     })
                 } else {
