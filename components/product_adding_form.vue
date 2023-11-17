@@ -182,6 +182,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="d-flex flex-row w-100">
+                            <div class="d-flex flex-column align-items-left w-100">
+                                <div class="w-100">
+                                    <label class="input-label">Packing Charges: </label>
+                                </div>
+                                <div class="w-100">
+                                    <b-form-input placeholder="Packing Charges" v-model="foodData.packing_charges"></b-form-input>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </template>
             </template>
@@ -231,6 +241,7 @@ export default {
                 closeTime: null,
                 compare_price: null,
                 gst: null,
+                packing_charges: null,
             },
             created_product_id: null,
         }
@@ -385,6 +396,7 @@ export default {
                         gst: Joi.number().required(),
                         food_type: Joi.string().allow(null),
                         tags: Joi.string().allow(null).allow(''),
+                        packing_charges: Joi.number().allow(null).default(0),
                         free_delivery: Joi.boolean().required().default(false),
                         free_delivery_if_more: Joi.number().allow(null).allow(0),
                         category: Joi.object({
@@ -413,6 +425,7 @@ export default {
                         description: Joi.string().max(1000).required(),
                         total_price: Joi.number().required(),
                         compare_price: Joi.number().required(),
+                        packing_charges: Joi.number().allow(null).default(0),
                         gst: Joi.number().required(),
                         food_type: Joi.string().allow(null),
                         tags: Joi.string().allow(null).allow(''),
@@ -458,6 +471,7 @@ export default {
                     name: this.foodData.title,
                     description: this.foodData.description,
                     total_price: this.foodData.price,
+                    packing_charges: this.foodData.packing_charges,
                     compare_price: this.foodData.compare_price,
                     gst: this.foodData.gst,
                     food_type: this.selected_food_type,
@@ -473,6 +487,7 @@ export default {
                     name: this.foodData.title,
                     description: this.foodData.description,
                     total_price: this.foodData.price,
+                    packing_charges: this.foodData.packing_charges,
                     compare_price: this.foodData.compare_price,
                     gst: this.foodData.gst,
                     food_type: this.selected_food_type,
