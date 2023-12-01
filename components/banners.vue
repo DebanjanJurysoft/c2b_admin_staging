@@ -70,6 +70,14 @@
                             <b-form-file v-model="web_banner" accept="image/*" plain></b-form-file>
                         </div>
                     </div>
+                    <div class="d-flex flex-row align-items-center w100 mb-3">
+                        <div class="w30">
+                            <label class="input-label">Social Media Link: </label>
+                        </div>
+                        <div class="w70">
+                            <b-form-input v-model="social_media_link" placeholder="Social Media Link"></b-form-input>
+                        </div>
+                    </div>
                     <div class="d-flex flex-row justify-content-center">
                         <button class="button" @click.prevent="addBannerVendor"><i class="fa fa-save mr-1"></i>Save</button>
                     </div>
@@ -102,9 +110,29 @@
                             <b-form-file v-model="web_banner" accept="image/*" plain></b-form-file>
                         </div>
                     </div>
+                    <div class="d-flex flex-row align-items-center w100 mb-3">
+                        <div class="w30">
+                            <label class="input-label">Social Media Link: </label>
+                        </div>
+                        <div class="w70">
+                            <b-form-input v-model="social_media_link" placeholder="Social Media Link"></b-form-input>
+                        </div>
+                    </div>
                     <div class="d-flex flex-row justify-content-center">
                         <button class="button" @click.prevent="addBannerAdmin"><i class="fa fa-save mr-1"></i>Save</button>
                     </div>
+                </div>
+            </b-modal>
+            <b-modal
+                id="BannerView" 
+                hide-footer 
+                lazy
+                header-bg-variant="dark"
+                header-text-variant="light"
+                :title="selected_banner_title" 
+            >
+                <div class="w100">
+                    <img class="w100" :src="selected_banners" alt="Banner">
                 </div>
             </b-modal>
         </div>
@@ -141,9 +169,12 @@ export default {
             per_page: 5,
             page_number: 1,
             vendor_list: [],
+            social_media_link: null,
             web_banner: null,
             app_banner: null,
             selected_vendor: null,
+            selected_banners: null,
+            selected_banner_title: null,
         }
     },
     async mounted() {
@@ -165,6 +196,9 @@ export default {
                 formData.append('web_image', this.web_banner)
                 formData.append('app_image', this.app_banner)
                 formData.append('vendor_id', this.selected_vendor)
+                if (this.social_media_link) {
+                    formData.append('social_link', this.social_media_link)
+                }
                 formData.append('active', true)
                 const path = '/add-banner'
                 const response = await this.$axios.post(path, formData)
@@ -187,6 +221,7 @@ export default {
                 const formData = new FormData()
                 formData.append('web_image', this.web_banner)
                 formData.append('app_image', this.app_banner)
+                formData.append('social_link', this.social_media_link)
                 formData.append('active', true)
                 const path = '/add-banner'
                 const response = await this.$axios.post(path, formData)
@@ -209,6 +244,7 @@ export default {
             this.selected_vendor = null
             this.web_banner = null
             this.app_banner = null
+            this.social_media_link = null
         },
         async openAdminBanner() {
             try {
@@ -252,6 +288,7 @@ export default {
         async reloadPage() { 
             this.loader = true
             await this.changePage(1)
+            this.$emit('reloadDashboard')
             this.loader = false
         },
         async checkWhatIsCalled(passedData) {
@@ -379,6 +416,16 @@ export default {
             if (data.type == 'today_offer') {
                 this.bannerToday(data.data.full_data.id, data.data["today's offer"])
             }
+            if (data.type == 'view_app_banner') { 
+                this.selected_banners = this.banners[data.row_index]['app image']
+                this.selected_banner_title = 'Showing Application Banner'
+                this.$bvModal.show('BannerView')
+            }
+            if (data.type == 'view_web_banner') {
+                this.selected_banners = this.banners[data.row_index]['web image']
+                this.selected_banner_title = 'Showing Website Banner'
+                this.$bvModal.show('BannerView')
+            }
         },
         async fetchApprovedBanners() {
             let query = `/fetch-approved-banners-for-admin?page_number=${this.page_number ? this.page_number : 1}&per_page=${this.per_page}`
@@ -392,6 +439,7 @@ export default {
                     'vendor Name': banner.vendor ? banner.vendor.fullname : 'ADMIN',
                     'app image': banner.app_banner_url,
                     'show in app': banner.show_in_app,
+                    "social media link": banner.social_link ? banner.social_link : 'N/A',
                     "today's offer": banner.is_today_offer,
                     'web image': banner.web_banner_url,
                     full_data: banner
@@ -403,14 +451,23 @@ export default {
                     icon: 'fa fa-user-o',
                 },
                 {
+                    name: 'social media link',
+                    icon: 'fa fa-user-o',
+                    type: 'FILE'
+                },
+                {
                     name: 'app image',
                     icon: 'fa fa-mobile',
-                    type: 'IMAGE'
+                    type: 'IMAGE',
+                    onclick: true,
+                    onclick_emit: 'view_app_banner'
                 },
                 {
                     name: 'web image',
                     icon: 'fa fa-window-maximize',
-                    type: 'IMAGE'
+                    type: 'IMAGE',
+                    onclick: true,
+                    onclick_emit: 'view_web_banner'
                 },
                 {
                     name: 'show in app',
@@ -454,6 +511,7 @@ export default {
                     'vendor Name': banner.vendor.fullname,
                     'app image': banner.app_banner_url,
                     // 'show in app': banner.show_in_app,
+                    "social media link": banner.social_link ? banner.social_link : 'N/A',
                     'web image': banner.web_banner_url,
                     full_data: banner
                 }
@@ -464,14 +522,24 @@ export default {
                     icon: 'fa fa-user-o',
                 },
                 {
+                    name: 'social media link',
+                    icon: 'fa fa-user-o',
+                    type: 'FILE',
+                    onclick: true,
+                },
+                {
                     name: 'app image',
                     icon: 'fa fa-mobile',
-                    type: 'IMAGE'
+                    type: 'IMAGE',
+                    onclick: true,
+                    onclick_emit: 'view_app_banner'
                 },
                 {
                     name: 'web image',
                     icon: 'fa fa-window-maximize',
-                    type: 'IMAGE'
+                    type: 'IMAGE',
+                    onclick: true,
+                    onclick_emit: 'view_web_banner'
                 },
                 // {
                 //     name: 'show in app',

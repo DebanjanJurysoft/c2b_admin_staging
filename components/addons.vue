@@ -154,9 +154,6 @@
                 </div>
             </b-modal>
             <div class="d-flex flex-column" v-if="selected_tab.id == 3">
-                <div class="d-flex flex-row">
-
-                </div>
                 <div class="d-flex flex-column mt-3" style="height: 600px !important; overflow-y: auto !important;">
                     <div class="w100" v-for="(product, product_index) in mapping_data.products">
                         <div class="card d-flex flex-row align-items-center px-5 py-3" style="gap: 15px !important;">
@@ -540,6 +537,7 @@ export default {
                     ]
                     break
             }
+            this.$emit('reloadDashboard')
             window.scrollTo(0, 0);
             this.loader = false
         },

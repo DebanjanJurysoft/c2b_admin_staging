@@ -33,6 +33,13 @@
                     <span>{{ `${product_details?.product_quantity} Item(s)` }}</span>
                 </div>
             </div>
+            <div class="product_id d-flex flex-row align-items-center justify-content-between w100" v-if="product_details?.downloadInvoiceUrl && product_details?.downloadInvoiceText && product_details?.downloadInvoicefileName">
+                <span class="text-heading" style="padding-left: 0px; font-size: 16px;">{{ product_details?.downloadInvoiceText }}</span>
+                <div class="d-flex flex-row align-items-center w10 justify-content-between">
+                    <a target="_blank" :href="product_details?.downloadInvoiceUrl"><i class="fa fa-eye"></i></a>
+                    <!-- <a :download="product_details?.downloadInvoicefileName" target="_blank" :href="product_details?.downloadInvoiceUrl" download><i class="fa fa-download"></i></a> -->
+                </div>
+            </div>
             <div class="product_id" v-if="product_details?.product_id">
                 <span>Product ID: {{ product_details?.product_id }}</span>
             </div>
@@ -309,7 +316,7 @@ export default {
     methods: {
         emitClose() {
             this.$emit('openDetails')
-        }
+        },
     }
 }
 </script>

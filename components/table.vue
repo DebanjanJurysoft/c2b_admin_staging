@@ -36,13 +36,22 @@
               <img
                 v-if="head.type == 'IMAGE' && row[head.name] != 'N/A'"
                 style="height: 30px !important; width: 130px !important; object-fit: cover !important;"
+                :style="head.onclick ? 'cursor: pointer;' : ''"
                 :src="row[head.name]"
+                @click.prevent="
+                  head.onclick && !head.onclick_emit
+                    ? onClickOpenDetails(row_index)
+                    : head.onclick_emit
+                    ? onClickOpen(row_index, head)
+                    : ''
+                "
                 alt="image"
               />
               <a
                 v-else-if="head.type == 'FILE' && row[head.name] != 'N/A'"
                 :href="row[head.name]"
-              ></a>
+                target="_blank"
+              ><strong>{{head.name}}</strong></a>
               <div v-else-if="head.type == 'SWITCH' && row[head.name] != 'N/A'" class="d-flex flex-row justify-content-center">
                 <b-form-checkbox  
                   @change="

@@ -88,6 +88,7 @@ export default {
             this.loader = true
             this.page = 1
             await this.fetchCustomers()
+            this.$emit('reloadDashboard')
             this.loader = false
         },
         async openSpecific(data) {

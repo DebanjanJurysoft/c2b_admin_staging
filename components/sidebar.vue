@@ -60,8 +60,15 @@ export default {
                     id: 16,
                     name: 'stores',
                     text: 'stores',
-                    normal_img: '/icons/vendor-black.svg',
-                    active_img: '/icons/vendor-white.svg'
+                    normal_img: '/icons/shop-black.svg',
+                    active_img: '/icons/shop-white.svg'
+                },
+                {
+                    id: 19,
+                    name: 'malls',
+                    text: 'malls',
+                    normal_img: '/icons/malls-black.svg',
+                    active_img: '/icons/malls-white.svg'
                 },
                 {
                     id: 4,
@@ -109,6 +116,13 @@ export default {
                     ]
                 },
                 {
+                    id: 17,
+                    name: 'coupons',
+                    text: 'coupons',
+                    normal_img: '/icons/coupon-black.svg',
+                    active_img: '/icons/coupon-white.svg'
+                },
+                {
                     id: 5,
                     name: 'orders',
                     text: 'orders',
@@ -121,6 +135,13 @@ export default {
                     text: 'payments',
                     normal_img: '/icons/payment-black.svg',
                     active_img: '/icons/payment-white.svg'
+                },
+                {
+                    id: 18,
+                    name: 'plans',
+                    text: 'plans',
+                    normal_img: '/icons/plans-black.svg',
+                    active_img: '/icons/plans-white.svg'
                 },
                 {
                     id: 7,
@@ -140,8 +161,8 @@ export default {
                     options: [
                         {
                             id: 14,
-                            name: 'FAQ',
-                            text: 'FAQ',
+                            name: 'privacy policy',
+                            text: 'privacy policy',
                             normal_img: '/icons/product-black.svg',
                             active_img: '/icons/product-white.svg'
                         },
@@ -163,7 +184,7 @@ export default {
     watch: {
         selectedMenu(val) {
             if (val.id == 9) {
-                this.setActive(3,0)
+                this.setActive(4,0)
             }
         }
     },
@@ -180,6 +201,7 @@ export default {
                 this.$emit('setNewActive', selectedMenu);
             }
             if (this.sub_index != null) {
+                console.log(this.menues[this.main_index]);
                 const selectedMenu = this.menues[this.main_index].options[this.sub_index];
                 this.$emit('setNewActive', selectedMenu);
                 // console.log(selectedMenu);
@@ -191,6 +213,11 @@ export default {
         },
         collaps(ind) {
             this.menues[ind].active = !this.menues[ind].active;
+        },
+        async reloadSidebar() { 
+            this.loader = true
+            await this.fetchDashBoardData()
+            this.loader = false
         },
         async fetchDashBoardData() {
             try {
@@ -210,6 +237,9 @@ export default {
                     available_orders,
                     available_customers,
                     available_payments,
+                    malls,
+                    plans,
+                    coupons,
                     // rejected_vendors,
                 } = response.data.stats
                 this.menues.forEach(e => {
@@ -237,6 +267,15 @@ export default {
                     }
                     if (e.name == 'orders') {
                         e.text = `orders (${available_orders})`  
+                    }
+                    if (e.name == 'malls') {
+                        e.text = `malls (${malls})`  
+                    }
+                    if (e.name == 'coupons') {
+                        e.text = `coupons (${coupons})`  
+                    }
+                    if (e.name == 'plans') {
+                        e.text = `plans (${plans})`  
                     }
                     if (e.name == 'stores') {
                         e.text = `stores (${available_stores})`;

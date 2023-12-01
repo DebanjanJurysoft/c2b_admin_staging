@@ -1,27 +1,33 @@
 <template>
     <div class="row" @mousemove="isUsing">
     <!-- <div class="row"> -->
-        <Sidebar @setNewActive="setNewActive" :selectedMenu="selectedMenu" />
+        <Sidebar @setNewActive="setNewActive" :selectedMenu="selectedMenu" ref="childComponentRef"  />
         <div class="pages-container">
             <Topbar @updateNewActive="updateNewActive" :selectedMenu="selectedMenu"/>
             <!-- <Vendor_form v-if="selectedMenu.name == 'home'"/> -->
             <Dashboard v-if="selectedMenu.name == 'home'"/>
             <!-- <Category v-if="selectedMenu.name == 'home'"/> -->
-            <Vendors :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'vendors'" />
-            <Products :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'products'" />
-            <Orders :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'orders'"/>
-            <Payments :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'payments'"/>
-            <Customers :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'customers'"/>
-            <Banners :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'banners'"/>
-            <Addons :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'addons'"/>
-            <Category :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'sub-category'"/>
-            <Stores :searchText="selectedMenu.searchText" v-if="selectedMenu.name == 'stores'"/>
+            <PrivacyPolicy :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'privacy policy'" />
+            <Plans :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'plans'" />
+            <Vendors :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'vendors'" />
+            <Coupons :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'coupons'" />
+            <Products :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'products'" />
+            <Orders :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'orders'"/>
+            <Payments :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'payments'"/>
+            <Customers :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'customers'"/>
+            <Banners :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'banners'"/>
+            <Addons :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'addons'"/>
+            <Category :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'sub-category'"/>
+            <Stores :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'stores'"/>
+            <Malls :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'malls'"/>
         </div>
     </div>
 </template>
 
 <script>
 import Banners from '../components/banners.vue';
+import Plans from '../components/plans.vue';
+import Coupons from '../components/coupons.vue';
 import Category from '../components/category.vue';
 import Customers from '../components/customers.vue';
 import Dashboard from '../components/dashboard.vue';
@@ -34,6 +40,8 @@ import Vendor_form from '../components/vendor_form.vue';
 import Vendors from '../components/vendors.vue';
 import Addons from '../components/addons.vue';
 import Stores from '../components/stores.vue';
+import Malls from '../components/malls.vue';
+import PrivacyPolicy from '../components/privacy_policy.vue';
 
 export default {
     async beforeCreate() {
@@ -58,7 +66,36 @@ export default {
             localStorageServer: null
         };
     },
-    mounted() {
+    async mounted() {
+
+        // socket.io start
+        // await this.$socket.connect()
+        // await this.$socket.on('server-connected', async (message) => {
+        //     this.$toast.show(message.message, {
+        //         duration: 700,
+        //         position: 'top-right',
+        //         keepOnHover: true,
+        //         type: 'success'
+        //     })
+        //     if (localStorage.getItem('socket_id')) {
+        //         await this.$axios.get(`/remove-socket/${localStorage.getItem('socket_id')}`)
+        //         localStorage.setItem('socket_id', message.id)
+        //     } else {
+        //         localStorage.setItem('socket_id', message.id)
+        //     }
+        //     // Update your component state or perform other actions
+        // });
+        // await this.$socket.on('server-message', async (message) => {
+        //     this.$toast.show(message, {
+        //         duration: 1500,
+        //         position: 'top-right',
+        //         keepOnHover: true,
+        //         type: 'success'
+        //     })
+        // });
+        // socket.io end
+
+        
         localStorage.removeItem('navData')
         this.changeTab()
         this.isUsing()
@@ -68,7 +105,14 @@ export default {
             console.log("Page Visibility API is not supported in this browser");
         }
     },
+    beforeDestroy() {
+        // Disconnect the Socket.IO connection when the page is destroyed
+        // this.$socket.disconnect();
+    },
     methods: {
+        reloadDashboard() {
+            this.$refs.childComponentRef.reloadSidebar();
+        },
         changeTab() {
             this.intervalTimeOut = setInterval(() => {
                 this.localStorageServer = localStorage.getItem('navData')
@@ -108,7 +152,7 @@ export default {
             this.selectedMenu = selected;
         }
     },
-    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores }
+    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy }
 }
 </script>
 

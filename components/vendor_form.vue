@@ -84,9 +84,50 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-100" v-if="progress[in_progress_index].name == 'Profile'">
+                <div class="w-100" v-if="progress[in_progress_index].name == 'Profile'" id="top">
                     <div class="d-flex flex-column w-100 login-details-area" style="gap: 5px;">
-                        <span class="text-center h3">Personal Details</span>
+                        <div class="d-flex flex-row justify-content-between px-4">
+                            <span class="h3">Personal Details</span>
+                            <div class="d-flex flex-row align-items-center">
+                                <span class="text-heading">Enable Edit</span>
+                                <b-form-checkbox
+                                    v-model="vendor_data.personal.will_Edit"
+                                    switch>
+                                </b-form-checkbox>
+                            </div>
+                        </div>
+                        <div 
+                            class="d-flex flex-column login-details-area" 
+                            style="gap: 5px;" 
+                            v-if="type == 'EDIT'"
+                        >
+                            <span class="text-center fontSize20 h4">Reset Password Area</span>
+                            <div class="d-flex flex-row">
+                                <div class="col-6">
+                                    <div class="d-flex flex-column align-items-left">
+                                        <div class="col-12">
+                                            <label class="input-label">Username: </label>
+                                        </div>
+                                        <div class="col-12">
+                                            <b-form-input disabled type="text" v-model="vendor_login_details.username" placeholder="Username" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex flex-column align-items-left">
+                                        <div class="col-12">
+                                            <label class="input-label">Password: </label>
+                                        </div>
+                                        <div class="col-12">
+                                            <b-form-input type="text" v-model="vendor_login_details.password" placeholder="Password" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center py-3">
+                                <button class="button" @click.prevent="resetPassword"><i class="fa fa-cog mr-2"></i> Reset Password</button>
+                            </div>
+                        </div>
                         <div class="d-flex flex-row">
                             <div class="col-6">
                                 <div class="d-flex flex-column align-items-left">
@@ -94,7 +135,7 @@
                                         <label class="input-label">First Name: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.personal.first_name" placeholder="First Name" />
+                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.first_name" placeholder="First Name" />
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +145,7 @@
                                         <label class="input-label">Last Name: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.personal.last_name" placeholder="Last Name" />
+                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.last_name" placeholder="Last Name" />
                                     </div>
                                 </div>
                             </div>
@@ -116,7 +157,7 @@
                                         <label class="input-label">DOB: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="date" v-model="vendor_data.personal.dob" />
+                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="date" v-model="vendor_data.personal.dob" />
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +167,7 @@
                                         <label class="input-label">Gender: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-select v-model="vendor_data.personal.gender" :options="gender_list"></b-form-select>
+                                        <b-form-select :disabled="!vendor_data.personal.will_Edit" v-model="vendor_data.personal.gender" :options="gender_list"></b-form-select>
                                     </div>
                                 </div>
                             </div>
@@ -149,7 +190,7 @@
                                         <label class="input-label">Email: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.personal.email" placeholder="Email" />
+                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.email" placeholder="Email" />
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +202,7 @@
                                         <label class="input-label">Phone: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.personal.phone" placeholder="Phone Number" />
+                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.phone" placeholder="Phone Number" />
                                     </div>
                                 </div>
                             </div>
@@ -171,12 +212,12 @@
                                         <label class="input-label">Alternative Phone: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.personal.alt_phone" placeholder="Alternative Phone Number" />
+                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.alt_phone" placeholder="Alternative Phone Number" />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <span class="text-center h3">Address</span>
+                        <span class="text-center h3">Vendor Address</span>
                         <div class="d-flex flex-row address-area">
                             <div class="d-flex flex-column col-12">
                                 <div class="d-flex flex-row">
@@ -186,7 +227,7 @@
                                                 <label class="input-label">Country: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.country" placeholder="Country" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.country" placeholder="Country" />
                                             </div>
                                         </div>
                                     </div>
@@ -196,7 +237,7 @@
                                                 <label class="input-label">State: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.state" placeholder="State" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.state" placeholder="State" />
                                             </div>
                                         </div>
                                     </div>
@@ -208,7 +249,7 @@
                                                 <label class="input-label">City: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.city" placeholder="City" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.city" placeholder="City" />
                                             </div>
                                         </div>
                                     </div>
@@ -218,7 +259,7 @@
                                                 <label class="input-label">Pincode: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.pincode" placeholder="Pincode" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.pincode" placeholder="Pincode" />
                                             </div>
                                         </div>
                                     </div>
@@ -230,7 +271,7 @@
                                                 <label class="input-label">Area: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.area" placeholder="Area" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.area" placeholder="Area" />
                                             </div>
                                         </div>
                                     </div>
@@ -240,7 +281,7 @@
                                                 <label class="input-label">Street Number / Name: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.add2" placeholder="Street Number / Name" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.add2" placeholder="Street Number / Name" />
                                             </div>
                                         </div>
                                     </div>
@@ -252,7 +293,7 @@
                                                 <label class="input-label">Door No, Floor, Apartment: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.add1" placeholder="Door No, Floor, Apartment" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.add1" placeholder="Door No, Floor, Apartment" />
                                             </div>
                                         </div>
                                     </div>
@@ -262,7 +303,7 @@
                                                 <label class="input-label">Landmark: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.personal.landmark" placeholder="Landmark" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="text" v-model="vendor_data.personal.landmark" placeholder="Landmark" />
                                             </div>
                                         </div>
                                     </div>
@@ -274,7 +315,7 @@
                                                 <label class="input-label">Lattitude: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="number" v-model="vendor_data.personal.lat" placeholder="Lattitude" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="number" v-model="vendor_data.personal.lat" placeholder="Lattitude" />
                                             </div>
                                         </div>
                                     </div>
@@ -284,7 +325,7 @@
                                                 <label class="input-label">Longitude: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="number" v-model="vendor_data.personal.lng" placeholder="Longitude" />
+                                                <b-form-input :disabled="!vendor_data.personal.will_Edit" type="number" v-model="vendor_data.personal.lng" placeholder="Longitude" />
                                             </div>
                                         </div>
                                     </div>
@@ -298,7 +339,7 @@
                                         <label class="input-label">Identity Proof Type: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-select v-model="vendor_data.personal.identity_proof" :options="identity_proof_list"></b-form-select>
+                                        <b-form-select :disabled="!vendor_data.personal.will_Edit" v-model="vendor_data.personal.identity_proof" :options="identity_proof_list"></b-form-select>
                                     </div>
                                 </div>
                             </div>
@@ -308,9 +349,11 @@
                                         <label class="input-label">Identity Proof File: </label>
                                     </div>
                                     <div class="d-flex flex-column col-12">
-                                        <b-form-file @input="changeIdentityImage($event)" v-model="vendor_data.personal.identity_proof_file" ref="file-input" class="mb-2"></b-form-file>
+                                        <b-form-file :disabled="!vendor_data.personal.will_Edit" @input="changeIdentityImage($event)" v-model="vendor_data.personal.identity_proof_file" ref="file-input" class="mb-2"></b-form-file>
                                         <div class="d-flex" v-if="vendor_data.personal.identity_proof_file_url" >
-                                            <img :src="vendor_data.personal.identity_proof_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                            <a :href="vendor_data.personal.identity_proof_file_url" target="_blank">
+                                                <img :src="vendor_data.personal.identity_proof_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -318,9 +361,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-100" v-if="progress[in_progress_index].name == 'Store'">
+                <div class="w-100" v-if="progress[in_progress_index].name == 'Store'" id="top">
                     <div class="d-flex flex-column w-100 login-details-area" style="gap: 5px;">
-                        <span class="text-center h3">Store Details</span>
+                        <div class="d-flex flex-row justify-content-between px-4">
+                            <span class="text-center h3">Store Details</span>
+                            <!-- <span class="h3">Personal Details</span> -->
+                            <div class="d-flex flex-row align-items-center">
+                                <span class="text-heading">Enable Edit</span>
+                                <b-form-checkbox
+                                    v-model="vendor_data.store.will_Edit"
+                                    switch>
+                                </b-form-checkbox>
+                            </div>
+                        </div>
                         <div class="d-flex flex-row">
                             <div class="col-6">
                                 <div class="d-flex flex-column align-items-left">
@@ -328,7 +381,7 @@
                                         <label class="input-label">Type Market Place: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-select v-model="vendor_data.store.type_market_place" :options="type_market_place_list"></b-form-select>
+                                        <b-form-select :disabled="!vendor_data.store.will_Edit" v-model="vendor_data.store.type_market_place" :options="type_market_place_list"></b-form-select>
                                     </div>
                                 </div>
                             </div>
@@ -340,6 +393,7 @@
                                     <div class="col-12">
                                         <vSelect 
                                             class="v-select"
+                                            :disabled="!vendor_data.store.will_Edit"
                                             multiple
                                             v-model="vendor_data.store.selected_product"
                                             :label="'category_name'"
@@ -357,6 +411,7 @@
                                         <vSelect 
                                             class="v-select"
                                             multiple
+                                            :disabled="!vendor_data.store.will_Edit"
                                             v-model="vendor_data.store.selected_service"
                                             :label="'name'"
                                             :options="services_list"
@@ -373,7 +428,7 @@
                                             <label class="input-label">Phone: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.mobile" placeholder="Phone NUmber"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.mobile" placeholder="Phone NUmber"/>
                                         </div>
                                     </div>
                                 </div>
@@ -383,7 +438,7 @@
                                             <label class="input-label">Alt Phone: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.alt_mobile" placeholder="Alternative Phone Number"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.alt_mobile" placeholder="Alternative Phone Number"/>
                                         </div>
                                     </div>
                                 </div>
@@ -395,7 +450,7 @@
                                             <label class="input-label">Email: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.email" placeholder="Email"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.email" placeholder="Email"/>
                                         </div>
                                     </div>
                                 </div>
@@ -405,7 +460,7 @@
                                             <label class="input-label">Blank Cheque: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-file v-model="vendor_data.store.blank_cheque" ref="file-input" class="mb-2" />
+                                            <b-form-file :disabled="!vendor_data.store.will_Edit" v-model="vendor_data.store.blank_cheque" ref="file-input" class="mb-2" />
                                         </div>
                                     </div>
                                 </div>
@@ -419,7 +474,7 @@
                                             <label class="input-label">Store / Company Name: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.store_name" placeholder="Store / Company Name:"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.store_name" placeholder="Store / Company Name:"/>
                                         </div>
                                     </div>
                                 </div>
@@ -429,7 +484,7 @@
                                             <label class="input-label">GST Number: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.gst_no" placeholder="GST Number"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.gst_no" placeholder="GST Number"/>
                                         </div>
                                     </div>
                                 </div>
@@ -441,7 +496,7 @@
                                             <label class="input-label">FSSAI Number: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.fssai_no" placeholder="FSSAI Number"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.fssai_no" placeholder="FSSAI Number"/>
                                         </div>
                                     </div>
                                 </div>
@@ -451,7 +506,7 @@
                                             <label class="input-label">Phone: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.mobile" placeholder="Phone Number"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.mobile" placeholder="Phone Number"/>
                                         </div>
                                     </div>
                                 </div>
@@ -473,7 +528,7 @@
                                             <label class="input-label">Email: </label>
                                         </div>
                                         <div class="col-12">
-                                            <b-form-input type="text" v-model="vendor_data.store.email" placeholder="Email"/>
+                                            <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.email" placeholder="Email"/>
                                         </div>
                                     </div>
                                 </div>
@@ -487,6 +542,7 @@
                                         <div class="col-12">
                                             <vSelect 
                                                 multiple
+                                                :disabled="!vendor_data.store.will_Edit"
                                                 @input="checkDeliveryTypes(vendor_data.store.delivery_types)"
                                                 v-model="vendor_data.store.delivery_types"
                                                 :label="'type'"
@@ -502,7 +558,7 @@
                                                 <label class="input-label">Packing Charges: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input inputmode="numeric" type="number" v-model="vendor_data.store.packing_charges" placeholder="Packing Charges"></b-form-input>
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" inputmode="numeric" type="number" v-model="vendor_data.store.packing_charges" placeholder="Packing Charges"></b-form-input>
                                             </div>
                                         </div>
                                     </div>
@@ -512,7 +568,7 @@
                                                 <label class="input-label">Convenience Fee: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input inputmode="numeric" type="number" v-model="vendor_data.store.conv_fee" placeholder="Packing Charges"></b-form-input>
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" inputmode="numeric" type="number" v-model="vendor_data.store.conv_fee" placeholder="Packing Charges"></b-form-input>
                                             </div>
                                         </div>
                                     </div>
@@ -521,12 +577,14 @@
                                     <div class="col-6">
                                         <div class="d-flex flex-column align-items-left">
                                             <div class="col-12">
-                                                <label class="input-label">Packing Charges: </label>
+                                                <label class="input-label">GST File: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-file @input="handleFileUploadForGst($event)" v-model="vendor_data.store.gst_file" ref="file-input" plain class="mb-2"></b-form-file>
+                                                <b-form-file :disabled="!vendor_data.store.will_Edit" @input="handleFileUploadForGst($event)" v-model="vendor_data.store.gst_file" ref="file-input" plain class="mb-2"></b-form-file>
                                                 <div class="d-flex" v-if="vendor_data.store.gst_file_url" >
-                                                    <img :src="vendor_data.store.gst_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                                    <a :href="vendor_data.store.gst_file_url" target="_blank">
+                                                        <img :src="vendor_data.store.gst_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -534,12 +592,14 @@
                                     <div class="col-6">
                                         <div class="d-flex flex-column align-items-left">
                                             <div class="col-12">
-                                                <label class="input-label">Convenience Fee: </label>
+                                                <label class="input-label">FSSAI File: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-file @input="handleFileUploadFor($event)" v-model="vendor_data.store.fssai_file" ref="file-input" plain class="mb-2"></b-form-file>
+                                                <b-form-file :disabled="!vendor_data.store.will_Edit" @input="handleFileUploadFor($event)" v-model="vendor_data.store.fssai_file" ref="file-input" plain class="mb-2"></b-form-file>
                                                 <div class="d-flex" v-if="vendor_data.store.fssai_file_url" >
-                                                    <img :src="vendor_data.store.fssai_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                                    <a :href="vendor_data.store.fssai_file_url" target="_blank">
+                                                        <img :src="vendor_data.store.fssai_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -547,7 +607,7 @@
                                 </div>
                             </div>
                         </div>
-                        <span class="text-center h3">Address</span>
+                        <span class="text-center h3">Store Address</span>
                         <div class="d-flex flex-row address-area">
                             <div class="d-flex flex-column col-12">
                                 <div class="d-flex flex-row">
@@ -557,7 +617,7 @@
                                                 <label class="input-label">Country: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.country" placeholder="Country" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.country" placeholder="Country" />
                                             </div>
                                         </div>
                                     </div>
@@ -567,7 +627,7 @@
                                                 <label class="input-label">State: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.state" placeholder="State" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.state" placeholder="State" />
                                             </div>
                                         </div>
                                     </div>
@@ -579,7 +639,7 @@
                                                 <label class="input-label">City: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.city" placeholder="City" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.city" placeholder="City" />
                                             </div>
                                         </div>
                                     </div>
@@ -589,7 +649,7 @@
                                                 <label class="input-label">Pincode: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.pincode" placeholder="Pincode" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.pincode" placeholder="Pincode" />
                                             </div>
                                         </div>
                                     </div>
@@ -601,7 +661,7 @@
                                                 <label class="input-label">Area: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.area" placeholder="Area" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.area" placeholder="Area" />
                                             </div>
                                         </div>
                                     </div>
@@ -611,7 +671,7 @@
                                                 <label class="input-label">Street Number / Name: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.add1" placeholder="Street Number / Name" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.add1" placeholder="Street Number / Name" />
                                             </div>
                                         </div>
                                     </div>
@@ -623,7 +683,7 @@
                                                 <label class="input-label">Door No, Floor, Apartment: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.add2" placeholder="Door No, Floor, Apartment" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.add2" placeholder="Door No, Floor, Apartment" />
                                             </div>
                                         </div>
                                     </div>
@@ -633,7 +693,7 @@
                                                 <label class="input-label">Landmark: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="text" v-model="vendor_data.store.landmark" placeholder="Landmark" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="text" v-model="vendor_data.store.landmark" placeholder="Landmark" />
                                             </div>
                                         </div>
                                     </div>
@@ -645,7 +705,7 @@
                                                 <label class="input-label">Lattitude: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="number" v-model="vendor_data.store.lat" placeholder="Lattitude" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="number" v-model="vendor_data.store.lat" placeholder="Lattitude" />
                                             </div>
                                         </div>
                                     </div>
@@ -655,7 +715,7 @@
                                                 <label class="input-label">Longitude: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-input type="number" v-model="vendor_data.store.lng" placeholder="Longitude" />
+                                                <b-form-input :disabled="!vendor_data.store.will_Edit" type="number" v-model="vendor_data.store.lng" placeholder="Longitude" />
                                             </div>
                                         </div>
                                     </div>
@@ -664,9 +724,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-100" v-if="progress[in_progress_index].name == 'Bank'">
+                <div class="w-100" v-if="progress[in_progress_index].name == 'Bank'" id="top">
                     <div class="d-flex flex-column w-100 login-details-area" style="gap: 5px;">
-                        <span class="text-center h3">Bank Details</span>
+                        <div class="d-flex flex-row justify-content-between px-4">
+                            <span class="text-center h3">Bank Details</span>
+                            <!-- <span class="text-center h3">Store Details</span> -->
+                            <!-- <span class="h3">Personal Details</span> -->
+                            <div class="d-flex flex-row align-items-center">
+                                <span class="text-heading">Enable Edit</span>
+                                <b-form-checkbox
+                                    v-model="vendor_data.bank.will_Edit"
+                                    switch>
+                                </b-form-checkbox>
+                            </div>
+                        </div>
                         <div class="d-flex flex-row">
                             <div class="col-6">
                                     <div class="d-flex flex-column align-items-left">
@@ -674,7 +745,7 @@
                                         <label class="input-label">Account Holder Name: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.bank.account_holder_name" placeholder="Account Holder Name" />
+                                        <b-form-input :disabled="!vendor_data.bank.will_Edit" type="text" v-model="vendor_data.bank.account_holder_name" placeholder="Account Holder Name" />
                                     </div>
                                 </div>
                             </div>
@@ -684,7 +755,7 @@
                                         <label class="input-label">Account Number: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.bank.account_number" placeholder="Account Number" />
+                                        <b-form-input :disabled="!vendor_data.bank.will_Edit" type="text" v-model="vendor_data.bank.account_number" placeholder="Account Number" />
                                     </div>
                                 </div>
                             </div>
@@ -698,6 +769,7 @@
                                     <div class="col-12">
                                         <vSelect 
                                             v-model="vendor_data.bank.bank"
+                                            :disabled="!vendor_data.bank.will_Edit"
                                             :label="'bank_name'"
                                             :options="bank_list"
                                         >
@@ -723,7 +795,7 @@
                                         <label class="input-label">City: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.bank.city" placeholder="City" />
+                                        <b-form-input :disabled="!vendor_data.bank.will_Edit" type="text" v-model="vendor_data.bank.city" placeholder="City" />
                                     </div>
                                 </div>
                             </div>
@@ -735,7 +807,7 @@
                                         <label class="input-label">Branch: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.bank.branch" placeholder="Branch" />
+                                        <b-form-input :disabled="!vendor_data.bank.will_Edit" type="text" v-model="vendor_data.bank.branch" placeholder="Branch" />
                                     </div>
                                 </div>
                             </div>
@@ -745,8 +817,25 @@
                                         <label class="input-label">IFSC Number: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input type="text" v-model="vendor_data.bank.ifsc_code" placeholder="IFSC Number" />
+                                        <b-form-input :disabled="!vendor_data.bank.will_Edit" type="text" v-model="vendor_data.bank.ifsc_code" placeholder="IFSC Number" />
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="col-6">
+                                    <div class="d-flex flex-column align-items-left">
+                                    <div class="col-12">
+                                        <label class="input-label">Cancelled Cheque: </label>
+                                    </div>
+                                    <div class="col-12">
+                                        <b-form-file :disabled="!vendor_data.bank.will_Edit" @input="handleFileUploadForCancelledCheque($event)" v-model="vendor_data.bank.cancelled_cheque" ref="file-input" plain class="mb-2"></b-form-file>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6" v-if="vendor_data.bank.cancelled_cheque_url">
+                                <div class="d-flex flex-column align-items-left">
+                                    <img :src="vendor_data.bank.cancelled_cheque_url" alt="Cancelled Cheque" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
                                 </div>
                             </div>
                         </div>
@@ -756,7 +845,8 @@
             <div class="button-move">
                 <button class="prev-button" @click.prevent="goPrev" v-if="in_progress_index > 0"><i class='bx bx-left-arrow mr-2'></i> Prev</button>
                 <button class="next-button" @click.prevent="goNext" v-if="in_progress_index < progress.filter(e => e.disable === false).length - 1">Next <i class='bx bx-right-arrow ml-2'></i></button>
-                <button class="next-button" @click.prevent="goNext" v-if="in_progress_index == progress.filter(e => e.disable === false).length - 1">Save <i class='bx bx-save ml-2'></i></button>
+                <button class="next-button" @click.prevent="goNext" v-if="in_progress_index == progress.filter(e => e.disable === false).length - 1 && vendor_data.bank.will_Edit">Save <i class='bx bx-save ml-2'></i></button>
+                <button class="prev-button" @click.prevent="goNext" v-if="in_progress_index == progress.filter(e => e.disable === false).length - 1 && !vendor_data.bank.will_Edit">Close <i class='fa fa-times ml-2'></i></button>
             </div>
         </div>
     </div>
@@ -792,6 +882,7 @@ export default {
                     disable: false
                 },
             ],
+            vendor_login_details: {},
             categories_list: [],
             services_list: [],
             bank_list: [],
@@ -812,6 +903,7 @@ export default {
                 otp_verified: false,
                 otp: null,
                 personal: {
+                    will_Edit: false,
                     first_name: null,
                     last_name: null,
                     dob: null,
@@ -835,6 +927,7 @@ export default {
                     identity_proof_file_url: null,
                 },
                 store: {
+                    will_Edit: false,
                     type_market_place: 'PRODUCT',
                     selected_product: [],
                     selected_service: [],
@@ -909,12 +1002,15 @@ export default {
                     conv_fee: 10
                 },
                 bank: {
+                    will_Edit: false,
                     account_holder_name: null,
                     account_number: null,
                     bank: null,
                     city: null,
                     branch: null,
-                    ifsc_code: null
+                    ifsc_code: null,
+                    cancelled_cheque: null,
+                    cancelled_cheque_url: null,
                 }
             },
             file: null,
@@ -955,6 +1051,48 @@ export default {
         this.loader = false
     },
     methods: {
+        async logout() {
+            await this.$auth.logout()
+            this.$router.push('/login')
+        },
+        async resetPassword() { 
+            try {
+                if (!this.vendor_login_details.password) {
+                    this.$toast.show('Password is mandatory to reset the password.', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'error'
+                    })
+                    return
+                }
+                const response = await this.$axios({
+                    method: 'POST',
+                    url: '/reset-password-by-admin',
+                    data: this.vendor_login_details
+                })
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+            } catch (error) {
+                console.log(error);
+                this.$toast.show(error.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: 'error'
+                })
+            }
+        },
+        handleFileUploadForCancelledCheque(event) {
+            this.vendor_data.bank.cancelled_cheque_url = URL.createObjectURL(event)
+        },
         handleFileUploadForGst(event) {
             this.vendor_data.store.gst_file_url = URL.createObjectURL(event)
         },
@@ -967,6 +1105,12 @@ export default {
         placeData() {
             // vendor id
             this.created_vendor_id = this.vendor_data_for_edit?.id 
+            // vendor login details
+            this.vendor_login_details = {
+                vendor_id: this.vendor_data_for_edit?.id,
+                username: this.vendor_data_for_edit ? this.vendor_data_for_edit?.username : null,
+                password: null
+            }
             // vendor personal details 
             this.vendor_data.personal.first_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.first_name : null
             this.vendor_data.personal.last_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.last_name : null
@@ -1024,23 +1168,33 @@ export default {
             this.vendor_data.bank.city  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.city : null
             this.vendor_data.bank.branch  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.branch : null
             this.vendor_data.bank.ifsc_code  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.ifsc_code : null
+            this.vendor_data.bank.cancelled_cheque_url  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.cancelled_cheque_url : null
             this.isEdit = true
         },
         async goNext() {
             this.loader = true
             switch (this.progress[this.in_progress_index].name) {
                 case 'Profile':
-                    await this.saveProfileData();
+                    if (this.vendor_data.personal.will_Edit) {
+                        await this.saveProfileData();
+                    }
                     break;
                 case 'Store':
-                    await this.saveStoreDetails();
+                    if (this.vendor_data.store.will_Edit) {
+                        await this.saveStoreDetails();
+                    }
                     break;
                 case 'Bank':
-                    await this.saveBankDetails();
+                    if (this.vendor_data.bank.will_Edit) {
+                        await this.saveBankDetails();
+                    }
                     break;
-            
                 default:
                     break;
+            }
+            const topElement = document.getElementById('top');
+            if (topElement) {
+                topElement.scrollIntoView({ behavior: 'smooth' });
             }
             if (this.in_progress_index + 1 == this.progress.filter(e => e.disable === false).length) {
                 // this.$toast.show('This Is The Last Step.', {
@@ -1084,6 +1238,9 @@ export default {
                     url: `/vendor-personal-details`,
                     data: createData
                 })
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.$toast.show(response.data.message, {
                     duration: 1500,
                     position: 'top-right',
@@ -1143,6 +1300,9 @@ export default {
                     url: `/vendor-store-details`,
                     data: create_data
                 })
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 if (response.data.status == 'success' && (this.vendor_data.store.gst_file || this.vendor_data.store.fssai_file)) {
                     const formData = new FormData()
                     formData.append('vendor_id', this.created_vendor_id) 
@@ -1173,6 +1333,7 @@ export default {
         },
         async saveBankDetails() {
             try {
+                const formData = new FormData()
                 const createData = {
                     vendor_id: this.created_vendor_id,
                     bank_name: this.vendor_data.bank.bank.bank_name,
@@ -1183,11 +1344,18 @@ export default {
                     branch: this.vendor_data.bank.branch,
                     ifsc_code: this.vendor_data.bank.ifsc_code
                 }
+                formData.append('cancelled_cheque_file', this.vendor_data.bank.cancelled_cheque)
+                for (const key of Object.keys(createData)) {
+                    formData.append(key, createData[key]);
+                }
                 const response = await this.$axios({
                     method: 'post',
                     url: this.isEdit ? '/update-vendor-bank-details' : '/vendor-bank-details',
-                    data: createData
+                    data: formData
                 })
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.$toast.show(response.data.message, {
                     duration: 1500,
                     position: 'top-right',
@@ -1210,6 +1378,10 @@ export default {
                 this.progress[this.in_progress_index].completed = false
                 this.in_progress_index -= 1
             }
+            const topElement = document.getElementById('top');
+            if (topElement) {
+                topElement.scrollIntoView({ behavior: 'smooth' });
+            }
         },
         checkDeliveryTypes(data) {
             if (data[data.length - 1].type == 'DUNZO DELIVERY' && data.find(e => e.type == "SELLER DELIVERY")) {
@@ -1229,6 +1401,9 @@ export default {
         async fetchCategoryAndServices() {
             try {
                 const response = await this.$axios.get('/get-categories-and-services')
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.categories_list = response.data.categories
                 this.services_list = response.data.services
             } catch (error) {
@@ -1238,6 +1413,9 @@ export default {
         async fetchDeliveryTypesList() {
             try {
                 const response = await this.$axios.get('/get-delivery-types')
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.delivery_types_list = response.data.delivery_types
             } catch (error) {
                 console.log(error);
@@ -1251,6 +1429,9 @@ export default {
         async fetchBanks() {
             try {
                 const response = await this.$axios.get('fetch-banks')
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.bank_list = response.data.bank_list
             } catch (error) {
                 console.log(error);
@@ -1276,6 +1457,9 @@ export default {
                         otp: this.vendor_data.otp
                     }
                 })
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.$toast.show(response.data.message, {
                     duration: 1500,
                     position: 'top-right',
@@ -1308,6 +1492,9 @@ export default {
                         confirm_password: this.vendor_data.profile.confirm_password
                     }
                 })
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
                 this.$toast.show(response.data.message, {
                     duration: 1500,
                     position: 'top-right',

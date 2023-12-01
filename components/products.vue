@@ -136,15 +136,19 @@ export default {
                     onclick: true
                 },
                 {
-                    name: 'date',
+                    name: 'created date',
                     icon: 'fa fa-calendar-o'
                 },
                 {
-                    name: 'time',
+                    name: 'created time',
                     icon: 'fa fa-clock-o'
                 },
                 {
-                    name: 'has time',
+                    name: 'updated date',
+                    icon: 'fa fa-calendar-o'
+                },
+                {
+                    name: 'updated time',
                     icon: 'fa fa-clock-o'
                 },
                 {
@@ -210,15 +214,19 @@ export default {
                     onclick_emit: 'is_active'
                 },
                 {
-                    name: 'date',
+                    name: 'created date',
                     icon: 'fa fa-calendar-o'
                 },
                 {
-                    name: 'time',
+                    name: 'created time',
                     icon: 'fa fa-clock-o'
                 },
                 {
-                    name: 'has time',
+                    name: 'updated date',
+                    icon: 'fa fa-calendar-o'
+                },
+                {
+                    name: 'updated time',
                     icon: 'fa fa-clock-o'
                 },
                 {
@@ -330,6 +338,7 @@ export default {
                 this.mountedFunction()
             }
             this.changeTab(this.tabs.indexOf(this.selected_tab))
+            this.$emit('reloadDashboard')
         },
         async filterCategory() { 
             this.loader = true
@@ -475,6 +484,7 @@ export default {
             await this.fetchApprovedVendors()
             await this.fetchRejectedVendors()
             await this.fetchCategoryList()
+            this.$emit('reloadDashboard')
         },
         openSpecific(data) {
             if (data.type == 'is_active') {
@@ -631,9 +641,11 @@ export default {
                         'product name': e.name ? e.name : 'N/A',
                         'product id': e.id ? `${e.category_table_association.category_name}-${e.id}` : 'N/A',
                         'Active': e.is_active ? true : false,
-                        'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
-                        'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
-                        'has time': e.has_time != null ? String(e.has_time) : 'N/A',
+                        'created date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
+                        'created time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
+                        'updated date': e.updatedAt ? new Date(e.updatedAt).toLocaleDateString() : 'N/A',
+                        'updated time': e.updatedAt ? new Date(e.updatedAt).toLocaleTimeString() : 'N/A',
+                        // 'has time': e.has_time != null ? String(e.has_time) : 'N/A',
                         'open time': e.open_time != null ? e.open_time : 'N/A',
                         'close time': e.close_time != null ? e.close_time : 'N/A',
                         id: e.id,
@@ -715,9 +727,11 @@ export default {
                         'product category': e.category_table_association ? e.category_table_association.category_name : 'N/A',
                         'product name': e.name ? e.name : 'N/A',
                         'product id': e.id ? `${e.category_table_association.category_name}-${e.id}` : 'N/A',
-                        'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
-                        'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
-                        'has time': e.has_time != null ? String(e.has_time) : 'N/A',
+                        'created date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
+                        'created time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
+                        'updated date': e.updatedAt ? new Date(e.updatedAt).toLocaleDateString() : 'N/A',
+                        'updated time': e.updatedAt ? new Date(e.updatedAt).toLocaleTimeString() : 'N/A',
+                        // 'has time': e.has_time != null ? String(e.has_time) : 'N/A',
                         'open time': e.open_time != null ? e.open_time : 'N/A',
                         'close time': e.close_time != null ? e.close_time : 'N/A',
                         id: e.id,

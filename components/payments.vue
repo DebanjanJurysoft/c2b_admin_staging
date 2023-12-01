@@ -96,14 +96,17 @@
                                             {{ row_index + 1 }}
                                         </td>
                                         <td class="text-center" v-for="(head, head_index) in headers" style="min-width: 200px !important;">
-                                            <span v-if="row[head.name] != null && row[head.name] != '' && !['paid_date', 'paid_amount', 'payment_reference_number'].includes(head.name)">
+                                            <span v-if="row[head.name] != null && row[head.name] != '' && !['paid_date', 'paid_amount', 'payment_reference_number', 'reason'].includes(head.name)">
                                                 {{ row[head.name] }}
                                             </span>
                                             <span v-else-if="head.name.toLowerCase() == 'paid_date' && row.is_input">
                                                 <input :disabled="validated" v-model="row[head.name]" style="width: max-content !important;" type="date" class="form-control" />
                                             </span>
                                             <span v-else-if="head.name.toLowerCase() == 'paid_amount' && row.is_input">
-                                                <b-form-input disabled type="number" v-model="row[head.name]" inputmode="numeric" :placeholder="head.name.replaceAll('_', ' ')"></b-form-input>
+                                                <b-form-input :disabled="validated" type="number" v-model="row[head.name]" inputmode="numeric" :placeholder="head.name.replaceAll('_', ' ')"></b-form-input>
+                                            </span>
+                                            <span v-else-if="head.name.toLowerCase() == 'reason' && row.is_input">
+                                                <b-form-input :disabled="validated" type="text" v-model="row[head.name]" :placeholder="head.name.replaceAll('_', ' ')"></b-form-input>
                                             </span>
                                             <span v-else-if="head.name.toLowerCase() == 'payment_reference_number' && row.is_input">
                                                 <b-form-input :disabled="validated" v-model="row[head.name]" :placeholder="head.name.replaceAll('_', ' ')"></b-form-input>
@@ -200,7 +203,7 @@ export default {
                         console.log(e);
                         return {
                             ...e,
-                            is_input: e.paid_date != null || e.paid_date != '' || e.paid_amount != null || e.paid_amount != '' || e.payment_reference_number != null || e.payment_reference_number != ''
+                            is_input: e.reason != null || e.reason != '' || e.paid_date != null || e.paid_date != '' || e.paid_amount != null || e.paid_amount != '' || e.payment_reference_number != null || e.payment_reference_number != ''
                         }
                     }); 
                     this.headers = results.meta.fields.map(e => {
@@ -249,12 +252,9 @@ export default {
                 this.validationLoading = true
                 const allPayments = await this.fetchAllPayments()
                 for (const data of this.data_row) {
-                    const availablePaymentData = allPayments.find(e => e.id == data['vendor id'] && e.store.id == data['store id'] )
+                    const availablePaymentData = allPayments.find(e => e.ord_id == data['order id'])
                     if (availablePaymentData) {
-                        let totalDueAmount = 0
-                        availablePaymentData.payments.forEach(payment => {
-                            totalDueAmount = Number(totalDueAmount) + Number(payment.amount)
-                        })
+                        let totalDueAmount = Number(availablePaymentData.order_amount)
                         const totalPayable = Number(Number(totalDueAmount) - (Number(Number(this.cut_percentage) / 100) * Number(totalDueAmount)))
                         if (parseFloat(totalDueAmount).toFixed(2) != data['sales amount']) {
                             isCorrupt = true
@@ -262,7 +262,7 @@ export default {
                         if (parseFloat(totalPayable).toFixed(2) != data['payable amount']) {
                             isCorrupt = true
                         }
-                        if (Number(totalPayable) < Number(data['paid_amount'])) {
+                        if (Number(totalPayable) < Number(data['paid amount (₹)'])) {
                             maxPayableError = true
                             break
                         }
@@ -317,6 +317,8 @@ export default {
         async exportScreenData() {
             try {
                 let exportDataHeadings = [
+                    'order id',
+                    'order_id',
                     'vendor id',
                     'vendor name',
                     'vendor email',
@@ -332,10 +334,13 @@ export default {
                     'payable amount',
                     'paid_date',
                     'paid_amount',
+                    'reason',
                     'payment_reference_number'
                 ]
                 const exportData = this.payments.map(e => {
                     return {
+                        'order id': e['order ID'],
+                        'order_id': e['order_id'],
                         'vendor id': e['vendor ID'],
                         'vendor name': e['vendor name'],
                         'vendor email': e['vendor email'],
@@ -347,9 +352,9 @@ export default {
                         'account holder name': e['account holder name'],
                         'account number': e['account number'],
                         'IFSC code': e['IFSC code'],
-                        'sales amount': e['sales amount'],
-                        'payable amount': e['payable amount'],
-                        'paid_amount': e['payable amount'],
+                        'sales amount': e['sales amount (₹)'],
+                        'payable amount': e['payable amount (₹)'],
+                        'paid_amount': e['payable amount (₹)'],
                     }
                 })
                 const filename = `unpaid_payments.csv`
@@ -388,6 +393,8 @@ export default {
             try {
                 const response = await this.fetchAllPayments()
                 let exportDataHeadings = [
+                    'order id',
+                    'order_id',
                     'vendor id',
                     'vendor name',
                     'vendor email',
@@ -402,33 +409,35 @@ export default {
                     'sales amount',
                     'payable amount',
                     'paid_date',
+                    'reason',
                     'paid_amount',
                     'payment_reference_number'
                 ]
                 const data = response.map(payment => {
-                    let totalDueAmount = 0
-                    payment.payments.forEach(payment => {
-                        totalDueAmount = Number(totalDueAmount) + Number(payment.amount)
-                    })
-                    const totalPayable = Number(Number(totalDueAmount) - (Number(Number(this.cut_percentage) / 100) * Number(totalDueAmount)))
+                    const sales_amount = Number(payment.order_amount)
+                    const totalPayable = Number(Number(sales_amount) - (Number(Number(this.cut_percentage) / 100) * Number(sales_amount)))
                     return {
-                        'vendor ID': payment.id,
+                        'order_id': payment.id,
+                        'order ID': payment.ord_id,
                         'store ID': payment.store.id,
-                        'vendor name': payment.fullname,
-                        'vendor email': payment.personal_email,
-                        'vendor mobile': payment.personal_mobile,
-                        'vendor alt mobile': payment.personal_alt_mobile,
+                        'vendor ID': payment.vendor.id,
+                        'vendor name': payment.vendor.fullname,
+                        'vendor email': payment.vendor.personal_email,
+                        'vendor mobile': payment.vendor.personal_mobile,
+                        'vendor alt mobile': payment.vendor.personal_alt_mobile,
                         'store name': payment.store.name,
-                        'bank name': payment.bank_details.bank_name,
-                        'account holder name': payment.bank_details.account_holder_name,
-                        'account number': payment.bank_details.account_number,
-                        'IFSC code': payment.bank_details.ifsc_code,
-                        'sales amount': parseFloat(totalDueAmount).toFixed(2),
+                        'bank name': payment.vendor_bank.bank_name,
+                        'account holder name': payment.vendor_bank.account_holder_name,
+                        'account number': payment.vendor_bank.account_number,
+                        'IFSC code': payment.vendor_bank.ifsc_code,
+                        'sales amount': parseFloat(sales_amount).toFixed(2),
                         'payable amount': parseFloat(totalPayable).toFixed(2),
                     }
                 })
                 const exportData = data.map(e => {
                     return {
+                        'order id': e['order ID'],
+                        'order_id': e['order_id'],
                         'vendor id': e['vendor ID'],
                         'vendor name': e['vendor name'],
                         'vendor email': e['vendor email'],
@@ -545,6 +554,7 @@ export default {
                     await this.fetchUnpaid(true)
                     break
             }
+            this.$emit('reloadDashboard')
             this.loader = false
         },
         async changeTab(index) { 
@@ -578,40 +588,41 @@ export default {
             }
             this.payment_total = response.data.total
             this.payments = response.data.payment_details.map(payment => {
-                let totalDueAmount = 0
-                payment.payments.forEach(payment => {
-                    totalDueAmount = Number(totalDueAmount) + Number(payment.amount)
-                })
-                const totalPayable = Number(Number(totalDueAmount) - (Number(Number(this.cut_percentage) / 100) * Number(totalDueAmount)))
+                const sales_amount = Number(payment.order_amount)
+                const totalPayable = Number(Number(sales_amount) - (Number(Number(this.cut_percentage) / 100) * Number(sales_amount)))
                 return !is_paid ? {
-                    'vendor ID': payment.id,
+                    'order ID': payment.ord_id,
+                    'order_id': payment.id,
                     'store ID': payment.store.id,
-                    'vendor name': payment.fullname,
-                    'vendor email': payment.personal_email,
-                    'vendor mobile': payment.personal_mobile,
-                    'vendor alt mobile': payment.personal_alt_mobile,
+                    'vendor ID': payment.vendor.id,
+                    'vendor name': payment.vendor.fullname,
+                    'vendor email': payment.vendor.personal_email,
+                    'vendor mobile': payment.vendor.personal_mobile,
+                    'vendor alt mobile': payment.vendor.personal_alt_mobile,
                     'store name': payment.store.name,
-                    'bank name': payment.bank_details.bank_name,
-                    'account holder name': payment.bank_details.account_holder_name,
-                    'account number': payment.bank_details.account_number,
-                    'IFSC code': payment.bank_details.ifsc_code,
-                    'sales amount': `₹ ${parseFloat(totalDueAmount).toFixed(2)}`,
-                    'payable amount': `₹ ${parseFloat(totalPayable).toFixed(2)}`,
+                    'bank name': payment.vendor_bank.bank_name,
+                    'account holder name': payment.vendor_bank.account_holder_name,
+                    'account number': payment.vendor_bank.account_number,
+                    'IFSC code': payment.vendor_bank.ifsc_code,
+                    'sales amount (₹)': parseFloat(sales_amount).toFixed(2),
+                    'payable amount (₹)': parseFloat(totalPayable).toFixed(2),
                     full_data: payment
                 } : {
-                    'vendor ID': payment.id,
+                    'order ID': payment.ord_id,
+                    'order_id': payment.id,
                     'store ID': payment.store.id,
-                    'vendor name': payment.fullname,
-                    'vendor email': payment.personal_email,
-                    'vendor mobile': payment.personal_mobile,
-                    'vendor alt mobile': payment.personal_alt_mobile,
+                    'vendor ID': payment.vendor.id,
+                    'vendor name': payment.vendor.fullname,
+                    'vendor email': payment.vendor.personal_email,
+                    'vendor mobile': payment.vendor.personal_mobile,
+                    'vendor alt mobile': payment.vendor.personal_alt_mobile,
                     'store name': payment.store.name,
-                    'bank name': payment.bank_details.bank_name,
-                    'account holder name': payment.bank_details.account_holder_name,
-                    'account number': payment.bank_details.account_number,
-                    'IFSC code': payment.bank_details.ifsc_code,
-                    'sales amount': `₹ ${parseFloat(totalDueAmount).toFixed(2)}`,
-                    'paid amount': `₹ ${parseFloat(totalPayable).toFixed(2)}`,
+                    'bank name': payment.vendor_bank.bank_name,
+                    'account holder name': payment.vendor_bank.account_holder_name,
+                    'account number': payment.vendor_bank.account_number,
+                    'IFSC code': payment.vendor_bank.ifsc_code,
+                    'sales amount (₹)': parseFloat(sales_amount).toFixed(2),
+                    'paid amount (₹)': parseFloat(totalPayable).toFixed(2),
                     'payment reference id': payment.payments[0].payment_reference,
                     full_data: payment
                 }
@@ -619,6 +630,9 @@ export default {
             if (!is_paid) {
                 this.payment_heading = [
                     {
+                        name: 'order ID'
+                    },
+                    {
                         name: 'vendor ID'
                     },
                     {
@@ -652,15 +666,18 @@ export default {
                         name: 'IFSC code'
                     },
                     {
-                        name: 'sales amount'
+                        name: 'sales amount (₹)'
                     },
                     {
-                        name: 'payable amount'
+                        name: 'payable amount (₹)'
                     },
                 ]
             } else {
                 this.payment_heading = [
                     {
+                        name: 'order ID'
+                    },
+                    {
                         name: 'vendor ID'
                     },
                     {
@@ -694,10 +711,10 @@ export default {
                         name: 'IFSC code'
                     },
                     {
-                        name: 'sales amount'
+                        name: 'sales amount (₹)'
                     },
                     {
-                        name: 'paid amount'
+                        name: 'paid amount (₹)'
                     },
                     {
                         name: 'payment reference id'

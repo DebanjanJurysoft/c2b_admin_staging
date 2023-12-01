@@ -539,6 +539,7 @@ export default {
             this.loader = true
             await this.mountedFunction()
             await this.changeTab(this.tabs.indexOf(this.tabs.find( e => e.id == this.selected_tab.id)))
+            this.$emit('reloadDashboard')
             this.loader = false
         },
         formatSerial(number) {

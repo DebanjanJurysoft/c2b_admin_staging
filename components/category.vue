@@ -128,7 +128,7 @@ export default {
     async mounted() {
         this.loader = true
         await this.fetchCategories()
-        await this.fetchSubCategories('Electronics')
+        await this.fetchSubCategories()
         this.loader = false
     },
     methods: {
@@ -252,6 +252,7 @@ export default {
                 const path = '/get-categories-and-services'
                 const response = await this.$axios.get(path)
                 this.category_list = response.data.categories
+                this.$emit('reloadDashboard')
             } catch (error) {
                console.log(error); 
             }
@@ -264,6 +265,7 @@ export default {
                 const path = `/fetch-sub-category-for-admin?category=${selectedCategory.category_name.includes('&') ? selectedCategory.category_name.replace('&', '%26') : selectedCategory.category_name}`
                 const response = await this.$axios.get(path)
                 this.sub_category_list = response.data.subCategories
+                this.$emit('reloadDashboard')
             } catch (error) {
                console.log(error); 
             }

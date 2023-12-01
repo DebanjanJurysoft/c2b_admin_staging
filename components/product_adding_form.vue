@@ -146,7 +146,10 @@
                                         gap: 10px;
                                     "
                                 >
-                                    <img style="height: 100px !important; width: 100px !important; border-radius: 16px;" :src="image.image_url" v-for="(image, image_index) in selected_images" :key="image_index" alt="Image">
+                                    <div class="d-flex flex-column gap8" style="height: max-content; width: max-content;" v-for="(image, image_index) in selected_images" :key="image_index">
+                                        <img style="height: 100px !important; width: 100px !important; border-radius: 16px;" :src="image.image_url" alt="Image">
+                                        <button @click.prevent="deleteImage(image, image_index)" class="w100 btn btn-danger"><i class="fa fa-trash mr-2"></i>Delete</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +158,7 @@
                         <div class="d-flex flex-row w-100">
                             <div class="d-flex flex-column align-items-left w-100">
                                 <div class="w-100">
-                                    <label class="input-label">Price (₹): </label>
+                                    <label class="input-label">Selling Price (₹): </label>
                                 </div>
                                 <div class="w-100">
                                     <b-form-input v-model="foodData.price" placeholder="Price"></b-form-input>
@@ -165,7 +168,7 @@
                         <div class="d-flex flex-row w-100">
                             <div class="d-flex flex-column align-items-left w-100">
                                 <div class="w-100">
-                                    <label class="input-label">Compare Price (₹): </label>
+                                    <label class="input-label">Actual Price (MRP) (₹): </label>
                                 </div>
                                 <div class="w-100">
                                     <b-form-input placeholder="Compare Price" v-model="foodData.compare_price"></b-form-input>
@@ -189,6 +192,16 @@
                                 </div>
                                 <div class="w-100">
                                     <b-form-input placeholder="Packing Charges" v-model="foodData.packing_charges"></b-form-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row w-100">
+                            <div class="d-flex flex-column align-items-left w-100">
+                                <div class="w-100">
+                                    <label class="input-label">Weight (In KG): </label>
+                                </div>
+                                <div class="w-100">
+                                    <b-form-input placeholder="Weight (In KG)" v-model="foodData.weight"></b-form-input>
                                 </div>
                             </div>
                         </div>
@@ -240,6 +253,7 @@ export default {
                 openTime: null,
                 closeTime: null,
                 compare_price: null,
+                weight: null,
                 gst: null,
                 packing_charges: null,
             },
@@ -264,6 +278,80 @@ export default {
         }
     },
     methods: {
+        async deleteImage(image, image_index) { 
+            try {
+                if (image.id != 0) {
+                    await this.deleteWithPopup('/delete-product-image', 'product_image_id', image.id, image_index)
+                } else {
+                    this.$toast.show('The dummy image cannot be deleted.', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'error'
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async deleteWithPopup(path, key, data_id, index = null) {
+            try {
+                const h = this.$createElement
+                const id = `DeleteModal${id}`
+                this.$bvToast.hide(id)
+                const $closeButton = h(
+                'b-button',
+                {
+                    on: {
+                        click: () => {
+                            this.$bvToast.hide(id)
+                        }
+                    },
+                    class: 'btn btn-primary mx-1',
+                    style: 'margin: 0 auto;'
+                },
+                'No'
+                )
+                const $acceptButton = h(
+                'b-button',
+                {
+                    on: {
+                        click: async () => {
+                            let data = {}
+                            data[key] = data_id
+                            const deleteresponse = await this.$axios.post(path, data)
+                            this.$toast.show(deleteresponse.data.message, {
+                                duration: 1500,
+                                position: 'top-right',
+                                keepOnHover: true,
+                                type: deleteresponse.data.status
+                            })
+                            if (index != null) {
+                                this.selected_images.splice(index, 1)
+                            }
+                            this.$bvToast.hide(id)
+                        }
+                    },
+                    class: 'btn btn-danger mx-1',
+                },
+                'Yes'
+                )
+                const $buttonContainer = h(
+                    'div',
+                    {
+                        class: 'text-center my-2',
+                    },
+                    [$closeButton, $acceptButton]
+                )
+                this.$bvToast.toast($buttonContainer, {
+                    id: id,
+                    title: `Are you sure?`,
+                    noCloseButton: true,
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async resetForm() {
             this.category_list = []
             this.selected_images = []
@@ -294,7 +382,12 @@ export default {
                 if (response.data.code == 401) {
                     await this.logout()
                 }
-                this.vendor_list = response.data.vendors
+                this.vendor_list = response.data.vendors.map(e => {
+                    return {
+                        ...e,
+                        fullname: `${e.fullname} (${e.store.name})`
+                    }
+                })
                 this.vendor_list.unshift({
                     id: null,
                     fullname: 'Select a vendor'
@@ -399,6 +492,8 @@ export default {
                         packing_charges: Joi.number().allow(null).default(0),
                         free_delivery: Joi.boolean().required().default(false),
                         free_delivery_if_more: Joi.number().allow(null).allow(0),
+                        weight: Joi.number().allow(null).default(0.5),
+                        packing_charges: Joi.number().allow(null).default(0),
                         category: Joi.object({
                             id: Joi.number().integer().required(),
                             category_name: Joi.string().required(),
@@ -431,6 +526,8 @@ export default {
                         tags: Joi.string().allow(null).allow(''),
                         free_delivery: Joi.boolean().required().default(false),
                         free_delivery_if_more: Joi.number().allow(null).allow(0),
+                        weight: Joi.number().allow(null).default(0.5),
+                        packing_charges: Joi.number().allow(null).default(0),
                         category: Joi.object({
                             id: Joi.number().integer().required(),
                             category_name: Joi.string().required(),
@@ -515,7 +612,7 @@ export default {
                     keepOnHover: true,
                     type: response.data.status
                 })
-                this.created_product_id = response.data.created_product
+                this.created_product_id = this.update_id ? {id: this.update_id} : response.data.created_product
                 await this.saveImage()
                 this.resetForm()
             } catch (error) {
@@ -574,6 +671,8 @@ export default {
             this.foodData.hasTime = Boolean(data.has_time)
             this.foodData.openTime = data.open_time
             this.foodData.closeTime = data.close_time
+            this.foodData.packing_charges = data.packing_charges
+            this.foodData.weight = data.weight
             this.selected_images = data.images_of_products
         },
         async logout() {
