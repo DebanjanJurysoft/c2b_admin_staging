@@ -221,7 +221,9 @@ export default {
                 const formData = new FormData()
                 formData.append('web_image', this.web_banner)
                 formData.append('app_image', this.app_banner)
-                formData.append('social_link', this.social_media_link)
+                if (this.social_media_link) {
+                    formData.append('social_link', this.social_media_link)
+                }
                 formData.append('active', true)
                 const path = '/add-banner'
                 const response = await this.$axios.post(path, formData)
