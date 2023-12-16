@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <img src="~/static/images/small-logo.png" width="80" style="padding: 10px;" alt="illustration">
+            <img src="/images/small-logo.png" width="80" style="padding: 10px;" alt="illustration">
         </div>
         <div class="login-container">
             <div class="row vertical-center-login">
