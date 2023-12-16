@@ -1,12 +1,12 @@
 <template>
     <div>
         <div>
-            <img src="/images/small-logo.png" width="80" style="padding: 10px;" alt="illustration">
+            <img src="/icon/small-logo.png" width="80" style="padding: 10px;" alt="illustration">
         </div>
         <div class="login-container">
             <div class="row vertical-center-login">
                 <div class="col-6 col-md-6 col-sm-12">
-                    <img src="/images/login-illustration.svg" alt="image">
+                    <img src="/icon/login-illustration.svg" alt="image">
                 </div>
                 <div class="col-6 col-md-6 col-sm-12">
                     <div class="login-input-container d-flex flex-row justify-content-center" style="width: 80% !important;">
