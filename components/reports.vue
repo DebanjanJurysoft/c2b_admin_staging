@@ -71,27 +71,6 @@ export default {
                     even_image: '/icons/pie-fill.svg',
                     overlay: false
                 },
-                {
-                    name: 'Report-1',
-                    callBackFunction: this.downloadReportOne,
-                    odd_image: '/icons/pie-empty.svg',
-                    even_image: '/icons/pie-fill.svg',
-                    overlay: false
-                },
-                {
-                    name: 'Report-1',
-                    callBackFunction: this.downloadReportOne,
-                    odd_image: '/icons/pie-empty.svg',
-                    even_image: '/icons/pie-fill.svg',
-                    overlay: false
-                },
-                {
-                    name: 'Report-1',
-                    callBackFunction: this.downloadReportOne,
-                    odd_image: '/icons/pie-empty.svg',
-                    even_image: '/icons/pie-fill.svg',
-                    overlay: false
-                },
             ]
         }
     }, 
