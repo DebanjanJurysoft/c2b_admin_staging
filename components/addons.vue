@@ -374,7 +374,12 @@ export default {
                 if (response.data.code == 401) {
                     await this.logout()
                 }
-                this.vendor_list = response.data.vendors
+                this.vendor_list = response.data.vendors.map(e => {
+                    return {
+                        ...e,
+                        fullname: `${e.fullname} (${e.store.name})`
+                    }
+                })
                 this.vendor_list.unshift({
                     id: null,
                     fullname: 'Select a vendor'

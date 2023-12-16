@@ -381,9 +381,10 @@ export default {
                     await this.logout()
                 }
                 this.vendor_list = response.data.vendors.map(e => {
+                    console.log(e);
                     return {
                         value: e.id,
-                        text: e.fullname
+                        text: `${e.fullname} (${e.store.name})`
                     }
                 })
                 this.vendor_list.unshift({

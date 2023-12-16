@@ -1,6 +1,6 @@
 <template>
     <div class="topbar-container">
-        <div class="search-container" :style="selectedMenu.name == 'home' ? 'visibility: hidden' : ''">
+        <div class="search-container" :style="selectedMenu.noSearch ? 'visibility: hidden' : ''">
             <i class="fa fa-search"></i>
             <input type="text" @input.prevent="changeSearchData" v-model="selectedMenu.searchText" :placeholder="`Search ${selectedMenu.name}`">
         </div>

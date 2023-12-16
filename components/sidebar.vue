@@ -46,6 +46,7 @@ export default {
                     id: 1,
                     name: 'home',
                     text: 'home',
+                    noSearch: true,
                     normal_img: '/icons/home-black.svg',
                     active_img: '/icons/home-white.svg'
                 },
@@ -73,6 +74,7 @@ export default {
                 {
                     id: 4,
                     name: 'inventory',
+                    noSearch: true,
                     text: 'inventory',
                     normal_img: '/icons/Inventory-black.svg',
                     active_img: '/icons/Inventory-white.svg',
@@ -89,6 +91,7 @@ export default {
                         {
                             id: 10,
                             name: 'banners',
+                            noSearch: true,
                             text: 'banners',
                             normal_img: '/icons/banner-black.svg',
                             active_img: '/icons/banner-white.svg'
@@ -110,6 +113,7 @@ export default {
                             id: 13,
                             name: 'sub-category',
                             text: 'sub-category',
+                            noSearch: true,
                             normal_img: '/icons/category-black.svg',
                             active_img: '/icons/category-white.svg'
                         },
@@ -126,6 +130,7 @@ export default {
                     id: 5,
                     name: 'orders',
                     text: 'orders',
+                    noSearch: true,
                     normal_img: '/icons/order-black.svg',
                     active_img: '/icons/order-white.svg'
                 },
@@ -133,6 +138,7 @@ export default {
                     id: 6,
                     name: 'payments',
                     text: 'payments',
+                    noSearch: true,
                     normal_img: '/icons/payment-black.svg',
                     active_img: '/icons/payment-white.svg'
                 },
@@ -140,8 +146,25 @@ export default {
                     id: 18,
                     name: 'plans',
                     text: 'plans',
+                    noSearch: true,
                     normal_img: '/icons/plans-black.svg',
                     active_img: '/icons/plans-white.svg'
+                },
+                {
+                    id: 20,
+                    name: 'notifications',
+                    text: 'notifications',
+                    noSearch: true,
+                    normal_img: '/icons/notification-black.svg',
+                    active_img: '/icons/notification-white.svg'
+                },
+                {
+                    id: 21,
+                    name: 'reports',
+                    text: 'reports',
+                    noSearch: true,
+                    normal_img: '/icons/reports-black.svg',
+                    active_img: '/icons/reports-white.svg'
                 },
                 {
                     id: 7,
@@ -154,6 +177,7 @@ export default {
                     id: 8,
                     name: 'account',
                     text: 'account',
+                    noSearch: true,
                     normal_img: '/icons/profile-black.svg',
                     active_img: '/icons/profile-white.svg',
                     collapsable: true,
@@ -163,6 +187,7 @@ export default {
                             id: 14,
                             name: 'privacy policy',
                             text: 'privacy policy',
+                            noSearch: true,
                             normal_img: '/icons/product-black.svg',
                             active_img: '/icons/product-white.svg'
                         },
@@ -170,6 +195,7 @@ export default {
                             id: 15,
                             name: 'feedback',
                             text: 'feedback',
+                            noSearch: true,
                             normal_img: '/icons/product-black.svg',
                             active_img: '/icons/product-white.svg'
                         },

@@ -411,6 +411,9 @@
                                         <vSelect 
                                             class="v-select"
                                             multiple
+                                            @change="() => {
+                                                console.log('ven', vendor_data.store.selected_service)
+                                            }"
                                             :disabled="!vendor_data.store.will_Edit"
                                             v-model="vendor_data.store.selected_service"
                                             :label="'name'"
@@ -467,6 +470,24 @@
                             </div>
                         </div>
                         <div v-if="vendor_data.store.type_market_place == 'PRODUCT'">
+                            <div class="d-flex flex-row my-2" v-if="vendor_data.store.selected_product.find(e => e.category_name == 'Food Court')">
+                                <div class="col-12">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="col-3">
+                                            <label class="input-label">Mall Name: </label>
+                                        </div>
+                                        <div class="col-9">
+                                            <vSelect 
+                                                class="v-select"
+                                                :disabled="!vendor_data.store.will_Edit"
+                                                v-model="vendor_data.store.selected_mall"
+                                                :label="'name'"
+                                                :options="malls_list"
+                                            ></vSelect>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="d-flex flex-row">
                                 <div class="col-6">
                                     <div class="d-flex flex-column align-items-left">
@@ -835,7 +856,9 @@
                             </div>
                             <div class="col-6" v-if="vendor_data.bank.cancelled_cheque_url">
                                 <div class="d-flex flex-column align-items-left">
-                                    <img :src="vendor_data.bank.cancelled_cheque_url" alt="Cancelled Cheque" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                    <a :href="vendor_data.bank.cancelled_cheque_url" target="_blank">
+                                        <img :src="vendor_data.bank.cancelled_cheque_url" alt="Cancelled Cheque" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -903,6 +926,7 @@ export default {
                 otp_verified: false,
                 otp: null,
                 personal: {
+                    // new_filling: true,
                     will_Edit: false,
                     first_name: null,
                     last_name: null,
@@ -927,6 +951,7 @@ export default {
                     identity_proof_file_url: null,
                 },
                 store: {
+                    // new_filling: true,
                     will_Edit: false,
                     type_market_place: 'PRODUCT',
                     selected_product: [],
@@ -999,9 +1024,11 @@ export default {
                     fssai_file_url: null,
                     store_image: null,
                     packing_charges: 10,
-                    conv_fee: 10
+                    conv_fee: 10,
+                    selected_mall: null,
                 },
                 bank: {
+                    new_filling: true,
                     will_Edit: false,
                     account_holder_name: null,
                     account_number: null,
@@ -1011,8 +1038,9 @@ export default {
                     ifsc_code: null,
                     cancelled_cheque: null,
                     cancelled_cheque_url: null,
-                }
+                },
             },
+            malls_list: [],
             file: null,
         }
     },
@@ -1021,6 +1049,7 @@ export default {
         await this.fetchCategoryAndServices()
         await this.fetchDeliveryTypesList()
         await this.fetchBanks()
+        await this.fetchMalls()
         if (this.vendor_data_for_edit?.id) {
             // console.log(this.vendor_data_for_edit);
             this.placeData()
@@ -1051,6 +1080,17 @@ export default {
         this.loader = false
     },
     methods: {
+        async fetchMalls() {
+            try {
+                const response = await this.$axios.get('/get-malls')
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.malls_list = response.data.malls
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async logout() {
             await this.$auth.logout()
             this.$router.push('/login')
@@ -1112,6 +1152,7 @@ export default {
                 password: null
             }
             // vendor personal details 
+            // this.vendor_data.personal.new_filling = this.vendor_data_for_edit ? true : false
             this.vendor_data.personal.first_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.first_name : null
             this.vendor_data.personal.last_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.last_name : null
             this.vendor_data.personal.dob = this.vendor_data_for_edit ? this.vendor_data_for_edit?.dob : null
@@ -1132,6 +1173,7 @@ export default {
             this.vendor_data.personal.identity_proof  = this.vendor_data_for_edit?.identity_proof_name ? this.vendor_data_for_edit?.identity_proof_name?.toUpperCase() : null
             this.vendor_data.personal.identity_proof_file_url  = this.vendor_data_for_edit ? this.vendor_data_for_edit?.identity_proof_file_url : null
             // vendor store details 
+            // this.vendor_data.store.new_filling = this.vendor_data_for_edit?.store ? true : false
             this.vendor_data.store.type_market_place  = this.vendor_data_for_edit?.store?.type_market_place ? this.vendor_data_for_edit?.store?.type_market_place?.toUpperCase() : null
             this.vendor_data.store.selected_product  = this.vendor_data_for_edit?.vendor_product_associations ? this.vendor_data_for_edit?.vendor_product_associations?.map(e => {
                 return {
@@ -1161,7 +1203,10 @@ export default {
             this.vendor_data.store.conv_fee  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.conv_fee : null
             this.vendor_data.store.gst_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.gst_file_url : null
             this.vendor_data.store.fssai_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.fssai_file_url : null
+            this.vendor_data.store.selected_mall  = this.vendor_data_for_edit?.store?.mall_stores_association ? this.vendor_data_for_edit?.store?.mall_stores_association.mall : null
 
+
+            this.vendor_data.bank.new_filling = this.vendor_data_for_edit?.vendor_bank_detail ? true : false
             this.vendor_data.bank.account_holder_name  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.account_holder_name : null
             this.vendor_data.bank.account_number  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.account_holder_name : null
             this.vendor_data.bank.bank  = this.vendor_data_for_edit?.vendor_bank_detail ? this.bank_list.find(e => e.id == this.vendor_data_for_edit?.vendor_bank_detail?.bank_id && e.bank_name == this.vendor_data_for_edit?.vendor_bank_detail?.bank_name) : null
@@ -1285,6 +1330,7 @@ export default {
                     state: this.vendor_data.store.state,
                     pincode: this.vendor_data.store.pincode,
                     landmark: this.vendor_data.store.landmark,
+                    mall: this.vendor_data.store.selected_mall.id,
                     lat: this.vendor_data.store.lat,
                     lng: this.vendor_data.store.lng,
                     type_market_place: this.vendor_data.store.type_market_place,
@@ -1350,7 +1396,7 @@ export default {
                 }
                 const response = await this.$axios({
                     method: 'post',
-                    url: this.isEdit ? '/update-vendor-bank-details' : '/vendor-bank-details',
+                    url: this.isEdit && !this.vendor_data.bank.new_filling ? '/update-vendor-bank-details' : '/vendor-bank-details',
                     data: formData
                 })
                 if (response.data.code == 401) {

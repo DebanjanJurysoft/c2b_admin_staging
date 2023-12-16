@@ -31,12 +31,28 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="d-flex flex-row w100">
+                        <div class="d-flex flex-row w100"
+                        @click.prevent="() => {
+                            if (mall.stores_in_mall.length) {
+                                showStores(mall)
+                            } else {
+                                $toast.show('No stores in the mall.', {
+                                    duration: 1500,
+                                    position: 'top-right',
+                                    keepOnHover: true, 
+                                    type: 'error'
+                                })
+                            }
+                        }"
+                        >
                             <div class="w20 d-flex flex-row">
                                 <img style="width: 100px !important; object-fit: scale-down !important;" :src="mall.image_url" alt="Mall Image">
                             </div>
                             <div class="w80 d-flex flex-column">
                                 <span class="text-heading fontSize16"><strong><strong>address: </strong></strong>{{ mall.address }}</span>
+                                <div class="d-flex  justify-content-between">
+                                    <span class="text-heading fontSize16"><strong><strong>Available Stores: </strong></strong>{{ mall.stores_in_mall.length }}</span>
+                                </div>
                                 <div class="d-flex flex-row justify-content-between">
                                     <span class="text-heading w50 fontSize14">
                                         <strong class="pr-3"><strong>Lattitude</strong></strong>
@@ -51,6 +67,20 @@
                         </div>
                     </div>
                 </div>
+                <b-modal
+                    id="mallStores" 
+                    hide-footer 
+                    hide-header 
+                    no-close-on-backdrop 
+                    centered 
+                ><div class="d-flex flex-row align-items-center justify-content-between" v-if="selected_mall">
+                        <span class="text-heading">Stores in ({{ selected_mall.name }})</span>
+                        <span class="text-danger cursor-pointer" @click.prevent="closeModal"><i class="fa fa-times mr-1"></i></span>
+                    </div>
+                    <div class="d-flex flex-column" v-if="selected_mall">
+                        <span class="text-heading" v-for="(store, store_index) in selected_mall.stores_in_mall" :key="store_index">{{ `${store_index + 1}. ${store.store.name}` }}</span>
+                    </div>
+                </b-modal>
                 <div class="w50 d-flex flex-column" v-if="showForm">
                     <div class="d-flex flex-row justify-content-between mb-3 py-3">
                         <span class="text-heading fontSize25">{{ form_title }}</span>
@@ -141,6 +171,7 @@ export default {
                 lng: null,
             },
             showForm: false,
+            selected_mall: null
         }
     },
     async mounted() {
@@ -149,6 +180,13 @@ export default {
         this.loader = false
     },
     methods: {
+        showStores(data) {
+            this.selected_mall = data
+            this.$bvModal.show('mallStores')
+        },
+        closeModal() {
+            this.$bvModal.hide('mallStores')
+        },
         async logout() {
             await this.$auth.logout()
             this.$router.push('/login')

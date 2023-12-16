@@ -6,7 +6,7 @@
         <div class="login-container">
             <div class="row vertical-center-login">
                 <div class="col-6 col-md-6 col-sm-12">
-                    <img src="~/static/images/login-illustration.svg" alt="image">
+                    <img src="/images/login-illustration.svg" alt="image">
                 </div>
                 <div class="col-6 col-md-6 col-sm-12">
                     <div class="login-input-container d-flex flex-row justify-content-center" style="width: 80% !important;">

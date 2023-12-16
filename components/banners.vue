@@ -33,14 +33,14 @@
             >
                 <div class="d-flex flex-row align-items-center justify-content-between">
                     <span class="text-heading">Add Banner For Vendor</span>
-                    <span class="text-danger cursor-pointer" @click.prevent="closeModal"><i class="fa fa-times mr-1"></i> Close</span>
+                    <span class="text-danger cursor-pointer" @click.prevent="closeModal"><i class="fa fa-times mr-1"></i></span>
                 </div>
                 <div class="d-flex flex-column align-items-center w100 px-4 pt-4">
                     <div class="d-flex flex-row align-items-center w100 mb-3">
-                        <div class="w50">
+                        <div class="w30">
                             <label class="input-label">Vendor: </label>
                         </div>
-                        <div class="w50">
+                        <div class="w70">
                             <b-form-select 
                                 type="text" 
                                 style="
@@ -54,25 +54,31 @@
                             />
                         </div>
                     </div>
-                    <div class="d-flex flex-row align-items-center w100 mb-3">
-                        <div class="w50">
-                            <label class="input-label">App Banner: </label>
+                    <div class="d-flex flex-column align-items-center w100 mb-3">
+                        <div class="d-flex flex-row align-items-center w100">
+                            <div class="w30">
+                                <label class="input-label fontSize14">App Banner: </label>
+                            </div>
+                            <div class="w70">
+                                <b-form-file placeholder="Drop or Choose" v-model="app_banner" accept="image/*, video/*"></b-form-file>
+                            </div>
                         </div>
-                        <div class="w50">
-                            <b-form-file v-model="app_banner" accept="image/*" plain></b-form-file>
-                        </div>
+                        <span class="w100 text-heading text-danger fontSize12"><sup>*</sup>Image / Video (Max Size: 20MB)<sup>*</sup></span>
                     </div>
-                    <div class="d-flex flex-row align-items-center w100 mb-3">
-                        <div class="w50">
-                            <label class="input-label">Web Banner: </label>
+                    <div class="d-flex flex-column align-items-center w100">
+                        <div class="d-flex flex-row align-items-center w100">
+                            <div class="w30">
+                            <label class="input-label fontSize14">Web Banner: </label>
                         </div>
-                        <div class="w50">
-                            <b-form-file v-model="web_banner" accept="image/*" plain></b-form-file>
+                        <div class="w70">
+                            <b-form-file placeholder="Drop or Choose" v-model="web_banner" accept="image/*, video/*"></b-form-file>
                         </div>
+                        </div>
+                        <span class="w100 text-heading text-danger fontSize12"><sup>*</sup>Image / Video (Max Size: 20MB)<sup>*</sup></span>
                     </div>
                     <div class="d-flex flex-row align-items-center w100 mb-3">
                         <div class="w30">
-                            <label class="input-label">Social Media Link: </label>
+                            <label class="input-label fontSize14">Social Media Link: </label>
                         </div>
                         <div class="w70">
                             <b-form-input v-model="social_media_link" placeholder="Social Media Link"></b-form-input>
@@ -91,28 +97,34 @@
                 centered 
             ><div class="d-flex flex-row align-items-center justify-content-between">
                     <span class="text-heading">Add Banner For Admin</span>
-                    <span class="text-danger cursor-pointer" @click.prevent="closeModal"><i class="fa fa-times mr-1"></i> Close</span>
+                    <span class="text-danger cursor-pointer" @click.prevent="closeModal"><i class="fa fa-times mr-1"></i></span>
                 </div>
                 <div class="d-flex flex-column align-items-center w100 px-4 pt-4">
-                    <div class="d-flex flex-row align-items-center w100 mb-3">
-                        <div class="w50">
-                            <label class="input-label">App Banner: </label>
+                    <div class="d-flex flex-column align-items-center w100 mb-3">
+                        <div class="d-flex flex-row align-items-center w100">
+                            <div class="w30">
+                                <label class="input-label fontSize14">App Banner: </label>
+                            </div>
+                            <div class="w70">
+                                <b-form-file placeholder="Drop or Choose" v-model="app_banner" accept="image/*, video/*"></b-form-file>
+                            </div>
                         </div>
-                        <div class="w50">
-                            <b-form-file v-model="app_banner" accept="image/*" plain></b-form-file>
-                        </div>
+                        <span class="w100 text-heading text-danger fontSize12"><sup>*</sup>Image / Video (Max Size: 20MB)<sup>*</sup></span>
                     </div>
-                    <div class="d-flex flex-row align-items-center w100 mb-3">
-                        <div class="w50">
-                            <label class="input-label">Web Banner: </label>
+                    <div class="d-flex flex-column align-items-center w100">
+                        <div class="d-flex flex-row align-items-center w100">
+                            <div class="w30">
+                                <label class="input-label fontSize14">Web Banner: </label>
+                            </div>
+                            <div class="w70">
+                                <b-form-file placeholder="Drop or Choose" v-model="web_banner" accept="image/*, video/*"></b-form-file>
+                            </div>
                         </div>
-                        <div class="w50">
-                            <b-form-file v-model="web_banner" accept="image/*" plain></b-form-file>
-                        </div>
+                        <span class="w100 text-heading text-danger fontSize12"><sup>*</sup>Image / Video (Max Size: 20MB)<sup>*</sup></span>
                     </div>
                     <div class="d-flex flex-row align-items-center w100 mb-3">
                         <div class="w30">
-                            <label class="input-label">Social Media Link: </label>
+                            <label class="input-label fontSize14">Social Media Link: </label>
                         </div>
                         <div class="w70">
                             <b-form-input v-model="social_media_link" placeholder="Social Media Link"></b-form-input>
@@ -213,6 +225,12 @@ export default {
                 this.loader = false
             } catch (error) {
                 console.log(error);
+                this.$toast.show(error.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: 'error'
+                })
             }
         },
         async addBannerAdmin() { 
@@ -276,7 +294,7 @@ export default {
                 this.vendor_list = response.data.vendors.map(e => {
                     return {
                         value: e.id,
-                        text: e.fullname
+                        text: `${e.fullname} (${e.store.name})`
                     }
                 })
                 this.vendor_list.unshift({
@@ -436,14 +454,18 @@ export default {
                 await this.logout()
             }
             this.total_banners = response.data.banner_total
+            const videoExtensions = ['mp4', 'webm', 'mkv', 'avi', 'mov', 'wmv'];
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
             const mapped_banner = response.data.banners.map(banner => {
                 return {
                     'vendor Name': banner.vendor ? banner.vendor.fullname : 'ADMIN',
-                    'app image': banner.app_banner_url,
+                    'app image': imageExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A',
+                    'app video': videoExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A',
                     'show in app': banner.show_in_app,
                     "social media link": banner.social_link ? banner.social_link : 'N/A',
                     "today's offer": banner.is_today_offer,
-                    'web image': banner.web_banner_url,
+                    'web image': imageExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A',
+                    'web video': videoExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A',
                     full_data: banner
                 }
             })
@@ -470,6 +492,16 @@ export default {
                     type: 'IMAGE',
                     onclick: true,
                     onclick_emit: 'view_web_banner'
+                },
+                {
+                    name: 'app video',
+                    icon: 'fa fa-mobile',
+                    type: 'VIDEO',
+                },
+                {
+                    name: 'web video',
+                    icon: 'fa fa-window-maximize',
+                    type: 'VIDEO',
                 },
                 {
                     name: 'show in app',

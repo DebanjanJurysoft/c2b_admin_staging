@@ -1,5 +1,6 @@
 <template>
-    <div class="row" @mousemove="isUsing">
+    <!-- <div class="row" @mousemove="isUsing"> -->
+    <div class="row" >
     <!-- <div class="row"> -->
         <Sidebar @setNewActive="setNewActive" :selectedMenu="selectedMenu" ref="childComponentRef"  />
         <div class="pages-container">
@@ -20,6 +21,8 @@
             <Category :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'sub-category'"/>
             <Stores :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'stores'"/>
             <Malls :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'malls'"/>
+            <Notifications :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'notifications'"/>
+            <Reports :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'reports'"/>
         </div>
     </div>
 </template>
@@ -32,6 +35,7 @@ import Category from '../components/category.vue';
 import Customers from '../components/customers.vue';
 import Dashboard from '../components/dashboard.vue';
 import Orders from '../components/orders.vue';
+import Reports from '../components/reports.vue';
 import Payments from '../components/payments.vue';
 import Products from '../components/products.vue';
 import Sidebar from '../components/sidebar.vue';
@@ -42,6 +46,7 @@ import Addons from '../components/addons.vue';
 import Stores from '../components/stores.vue';
 import Malls from '../components/malls.vue';
 import PrivacyPolicy from '../components/privacy_policy.vue';
+import Notifications from '../components/notifications.vue';
 
 export default {
     async beforeCreate() {
@@ -98,12 +103,12 @@ export default {
         
         localStorage.removeItem('navData')
         this.changeTab()
-        this.isUsing()
-        if (typeof document.hidden !== "undefined") {
-            document.addEventListener("visibilitychange", this.handleVisibilityChange);
-        } else {
-            console.log("Page Visibility API is not supported in this browser");
-        }
+        // this.isUsing()
+        // if (typeof document.hidden !== "undefined") {
+        //     document.addEventListener("visibilitychange", this.handleVisibilityChange);
+        // } else {
+        //     console.log("Page Visibility API is not supported in this browser");
+        // }
     },
     beforeDestroy() {
         // Disconnect the Socket.IO connection when the page is destroyed
@@ -123,22 +128,22 @@ export default {
                 }
             }, 100);
         },
-        handleVisibilityChange() {
-            this.tabIsActive = !document.hidden;
-            if (!this.tabIsActive) {
-                this.isUsing()
-            }
-        }, 
+        // handleVisibilityChange() {
+        //     this.tabIsActive = !document.hidden;
+        //     if (!this.tabIsActive) {
+        //         this.isUsing()
+        //     }
+        // }, 
         async logout() {
             await this.$auth.logout()
             this.$router.push('/login')
         },
-        async isUsing() { 
-            clearTimeout(this.not_active_timer)
-            this.not_active_timer = setTimeout(async () => {
-                await this.logout()
-            }, this.not_use_max_time);
-        },
+        // async isUsing() { 
+        //     clearTimeout(this.not_active_timer)
+        //     this.not_active_timer = setTimeout(async () => {
+        //         await this.logout()
+        //     }, this.ad);
+        // },
         updateNewActive(selected) {
             this.selectedMenu = selected;
         },
@@ -152,7 +157,7 @@ export default {
             this.selectedMenu = selected;
         }
     },
-    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy }
+    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy, Notifications, Reports }
 }
 </script>
 

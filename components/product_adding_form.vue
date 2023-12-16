@@ -59,6 +59,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="d-flex flex-row w-100"  v-if="selected_category && !innerLoader">
+                    <div class="d-flex flex-column align-items-left w-100">
+                        <div class="w-100">
+                            <label class="input-label">Sub-Category: </label>
+                        </div>
+                        <div class="w-100">
+                            <vSelect
+                                style="width: 100% !important;"
+                                label="name"
+                                multiple
+                                v-model="selected_sub_category"
+                                :options="sub_category_list">
+                            </vSelect>
+                        </div>
+                    </div>
+                </div>
                 <template 
                     v-if="selected_category && ['Food', 'Food Court'].includes(category_list.find(e => e.id == selected_category).category_name)"
                 >
@@ -218,11 +234,13 @@
 </template>
 
 <script>
-import Joi from 'joi'
+import Joi from 'joi';
+import vSelect from 'vue-select';
 import LoaderComp from './loader.vue';
 export default {
     components: {
-        LoaderComp
+        LoaderComp,
+        vSelect
     },
     props: [
         'edit_data',
@@ -238,6 +256,8 @@ export default {
             loader: false,
             category_list: [],
             selected_category: null,
+            sub_category_list: [],
+            selected_sub_category: [],
             vendor_list: [],
             files: [],
             image_url_list: [],
@@ -261,6 +281,12 @@ export default {
         }
     },
     watch: {
+        async selected_category(val) {
+            if (val) { 
+                console.log(val);
+                this.fetchSubCategories()
+            }
+        },
         async selected_vendor(val) {
             if (val) { 
                 this.fetchCategories()
@@ -396,6 +422,21 @@ export default {
                 console.log(error);
             }
         },
+        async fetchSubCategories() {
+            try {
+                this.innerLoader = true
+                const path = `/fetch-sub-category-for-admin?category=${this.category_list.find(e => e.id == this.selected_category).category_name}`
+                console.log(path);
+                const response = await this.$axios.get(path)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.sub_category_list = response.data.subCategories.map(e => ({id: e.id, name: e.name}))
+                this.innerLoader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async fetchCategories() {
             try {
                 this.innerLoader = true
@@ -409,25 +450,6 @@ export default {
                     id: null,
                     category_name: 'Select a category'
                 })
-                this.innerLoader = false
-            } catch (error) {
-                console.log(error);
-            }
-        },
-        async fetchSubCategories() {
-            try {
-                this.innerLoader = true
-                const path = `/get-categories?vendor_id=${this.selected_vendor}`
-                const response = await this.$axios.get(path)
-                // console.log(response);
-                if (response.data.code == 401) {
-                    await this.logout()
-                }
-                this.category_list = response.data.categories
-                // this.category_list.unshift({
-                //     id: null,
-                //     category_name: 'Select a category'
-                // })
                 this.innerLoader = false
             } catch (error) {
                 console.log(error);
@@ -573,6 +595,7 @@ export default {
                     gst: this.foodData.gst,
                     food_type: this.selected_food_type,
                     category: category,
+                    sub_categories: this.selected_sub_category,
                     size: 'l',
                     available: true,
                     has_time: this.foodData.hasTime,
@@ -589,6 +612,7 @@ export default {
                     gst: this.foodData.gst,
                     food_type: this.selected_food_type,
                     category: category,
+                    sub_categories: this.selected_sub_category,
                     size: 'l',
                     available: true,
                     has_time: this.foodData.hasTime,
@@ -659,9 +683,17 @@ export default {
             }
         },
         async placeProductData(data) {
+            this.loader = true
             this.update_id = data.id
             this.selected_vendor = data.vendor_id
             this.selected_category = data.category_id
+            await this.fetchSubCategories()
+            this.selected_sub_category = data?.vendor_sub_category_product_associations?.length ? data.vendor_sub_category_product_associations.map(e => {
+                return {
+                    id: e.sub_category_id,
+                    name: e.vendor_sub_category.name
+                }
+            }) : []
             this.selected_food_type = data.food_type
             this.foodData.title = data.name
             this.foodData.description = data.description
@@ -674,6 +706,7 @@ export default {
             this.foodData.packing_charges = data.packing_charges
             this.foodData.weight = data.weight
             this.selected_images = data.images_of_products
+            this.loader = false
         },
         async logout() {
             await this.$auth.logout()
