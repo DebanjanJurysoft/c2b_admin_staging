@@ -21,7 +21,7 @@ export default {
         href: "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css",
         rel: "stylesheet",
       },
-      { rel: "icon", type: "image/x-icon", href: "/images/small-logo.png" },
+      { type: "image/*", href: "/icon/small-logo.png" },
     ],
   },
   server: {
