@@ -141,6 +141,7 @@ export default {
             this.title = null
             this.message = null
             this.selected_users = []
+            this.checkAllSelected()
             this.$bvModal.hide('NotificationModal')
         },
         sendMessageToUsers() {
