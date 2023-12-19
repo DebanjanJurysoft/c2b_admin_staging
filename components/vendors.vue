@@ -452,10 +452,10 @@ export default {
     async mounted() { 
         this.loader = true
         const data = await this.checkTab()
-        if (data) {
+        if (!data) {
             this.selected_tab = this.tabs[0]
-            await this.reloadPage()
         }
+        await this.mountedFunction()
         this.loader = false
     },
     watch: {
