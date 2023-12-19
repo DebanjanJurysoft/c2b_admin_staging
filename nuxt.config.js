@@ -13,6 +13,7 @@ export default {
       { name: "format-detection", content: "telephone=no" },
     ],
     link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/icons/small-logo.png' },
       {
         rel: "stylesheet",
         href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css",
@@ -21,12 +22,11 @@ export default {
         href: "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css",
         rel: "stylesheet",
       },
-      { type: "image/*", href: "/icon/small-logo.png" },
     ],
   },
-  server: {
-    host: 0
-  },
+  // server: {
+  //   host: 0
+  // },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
