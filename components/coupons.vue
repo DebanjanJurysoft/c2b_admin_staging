@@ -183,6 +183,17 @@ export default {
     async mounted() {
         await this.fetchCoupons()
     },
+    props: ['searchText'],
+    watch: {
+        searchText(val) {
+            clearTimeout(this.timer)
+            this.timer = setTimeout(async () => {
+                this.loader = true
+                await this.fetchCoupons()
+                this.loader = false
+            }, 300);
+        },
+    },
     methods: {
         formatDate(today) {
             const year = today.getFullYear();
@@ -347,7 +358,11 @@ export default {
         async fetchCoupons() {
             this.loader = true
             try {
-                const response = await this.$axios.get('/get-coupons')
+                let path = '/get-coupons'
+                if (this.searchText) {
+                    path = `${path}?q=${this.searchText}`
+                }
+                const response = await this.$axios.get(path)
                 if (response.data.code == 401) {
                     await this.logout()
                 }

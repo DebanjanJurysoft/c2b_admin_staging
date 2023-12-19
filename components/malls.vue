@@ -179,6 +179,17 @@ export default {
         await this.fetchMalls()
         this.loader = false
     },
+    props: ['searchText'],
+    watch: {
+        searchText(val) {
+                clearTimeout(this.timer)
+                this.timer = setTimeout(async () => {
+                    this.loader = true
+                    await this.fetchMalls()
+                    this.loader = false
+                }, 300);
+            }
+    },
     methods: {
         showStores(data) {
             this.selected_mall = data
@@ -235,7 +246,11 @@ export default {
         },
         async fetchMalls() {
             try {
-                const response = await this.$axios.get('/get-malls')
+                let path = '/get-malls'
+                if (this.searchText) {
+                    path = `${path}?q=${this.searchText}`
+                }
+                const response = await this.$axios.get(path)
                 if (response.data.code == 401) {
                     await this.logout()
                 }

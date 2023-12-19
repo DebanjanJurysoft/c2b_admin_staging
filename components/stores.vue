@@ -1564,10 +1564,21 @@ export default {
       },
     };
   },
+  props: ['searchText'],
   async mounted() {
     this.loader = true;
     await this.fetchStores();
     this.loader = false;
+  },
+  watch: {
+    searchText(val) {
+            clearTimeout(this.timer)
+            this.timer = setTimeout(async () => {
+                this.loader = true
+                await this.fetchStores()
+                this.loader = false
+            }, 300);
+        }
   },
   methods: {
     async saveBranchImage() {
@@ -2250,7 +2261,11 @@ export default {
     },
     async fetchStores() {
       try {
-        const response = await this.$axios.get("/fetch-all-stores");
+        let path = "/fetch-all-stores"
+        if (this.searchText) {
+          path = path + `?q=${this.searchText}`
+        }
+        const response = await this.$axios.get(path);
         if (response.data.code == 401) {
           await this.logout();
         }

@@ -237,7 +237,16 @@ export default {
         await this.mountedMethod()
         this.loader = false
     },
+    props: ['searchText'],
     watch: {
+        searchText(val) {
+            clearTimeout(this.timer)
+            this.timer = setTimeout(async () => {
+                this.loader = true
+                await this.mountedMethod()
+                this.loader = false
+            }, 300);
+        },
         per_page() {
             this.page = 0
             this.fetchDataForPage()
@@ -560,6 +569,9 @@ export default {
         async fetchAddons(approve, page = 1, per_page = 7) {
             try {
                 let path = `/fetch-add-ons?approve=${approve}`
+                if (this.searchText) {
+                    path += `&q=${this.searchText}`
+                }
                 if (page) {
                     path += `&page=${page}`
                 }

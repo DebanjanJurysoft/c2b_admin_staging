@@ -64,6 +64,7 @@ export default {
                 id: 1,
                 name: 'home',
                 text: 'home',
+                noSearch: true,
                 normal_img: '/icons/home-black.svg',
                 active_img: '/icons/home-white.svg'
             },
