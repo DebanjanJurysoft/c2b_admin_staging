@@ -479,8 +479,9 @@ export default {
                 if (this.localStorageServer.inner_nav) {
                     this.changeTab(this.tabs.indexOf(this.tabs.find(e => e.id == this.localStorageServer.inner_nav.id)))
                 }
+                return true
             }
-            return true
+            return false
         },
         isValidHttpUrl(string) {
             let url;
