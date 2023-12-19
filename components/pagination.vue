@@ -14,9 +14,17 @@
 <script>
 export default {
     props: ['selected_tab', 'per_page', 'total_rows', 'data_list', 'page'],
+    data() {
+        return {
+            timer: null
+        }
+    },
     watch: {
         page(val) {
-            this.$emit('changePage', val)
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+                this.$emit('changePage', val)
+            }, 500);
         }
     }
 }
