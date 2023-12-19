@@ -425,7 +425,7 @@ export default {
         async fetchSubCategories() {
             try {
                 this.innerLoader = true
-                const path = `/fetch-sub-category-for-admin?category=${this.category_list.find(e => e.id == this.selected_category).category_name}`
+                const path = `/fetch-sub-category?category=${this.category_list.find(e => e.id == this.selected_category).category_name}`
                 console.log(path);
                 const response = await this.$axios.get(path)
                 if (response.data.code == 401) {
