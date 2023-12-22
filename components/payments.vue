@@ -39,6 +39,12 @@
                     <button 
                         class="button" 
                         v-b-tooltip.hover
+                        @click.prevent="exportInBankFormat"
+                        title="Exprort selected data in bank format."
+                    ><i class="fa fa-table mr-2"></i>Export selected data</button>
+                    <button 
+                        class="button" 
+                        v-b-tooltip.hover
                         @click.prevent="openUploadPaymentData"
                         title="Please upload only csv file."
                     ><i class="fa fa-upload mr-2"></i>Upload Paid Data</button>
@@ -58,7 +64,7 @@
                     ><i class="fa fa-table mr-2"></i>Export All Data</button>
                 </div>
             </div>
-            <Table :style="selected_tab.id == 2 ? 'height: 450px !important;' : ''" @openDetails="openDetails" :headings="payment_heading" :data_rows="payments" :page="page" :rows="per_page"/>
+            <Table :note="selected_tab.id == 2 ? { text: 'Click on the row to select', class: 'text-danger' } : null" @selectIndexOnClick="selectIndexOnClick" :selected_indexes="selectedIndex" :selectable="selected_tab.id == 2" :style="selected_tab.id == 2 ? 'height: 450px !important;' : ''"  :headings="payment_heading" :data_rows="payments" :page="page" :rows="per_page"/>
             <Pagination @changePage="changePage" :data_list="payments" :per_page="per_page" :total_rows="payment_total" :page="page"/>
             <SidebarComponent @openDetails="openDetails" :visible="show_details" :title="'Product Details'" :product_details="product_details"/>
             <b-modal id="showDataModal" size="xl" hide-footer hide-header no-close-on-backdrop>
@@ -143,6 +149,7 @@ export default {
             validationLoading: false,
             loader: false,
             selected_file: null,
+            selectedIndex: [],
             selected_tab: {
                 id: 1,
                 name: 'unpaid',
@@ -190,6 +197,81 @@ export default {
         },
     },
     methods: {
+        async exportInBankFormat() {
+            try {
+                const data = this.payments.filter((e, i) => this.selectedIndex.includes(i))
+                const headings = [
+                    'PYMT_PROD_TYPE_CODE',
+                    'PYMT_MODE',
+                    'DEBIT_ACC_NO',
+                    'BNF_NAME',
+                    'BENE_ACC_NO',
+                    'BENE_IFSC',
+                    'AMOUNT',
+                    'DEBIT_NARR',
+                    'CREDIT_NARR',
+                    'MOBILE_NUM',
+                    'EMAIL_ID',
+                    'REMARK',
+                    'PYMT_DATE',
+                    'REF_NO',
+                    'ADDL_INFO1',
+                    'ADDL_INFO2',
+                    'ADDL_INFO3',
+                    'ADDL_INFO4',
+                    'ADDL_INFO5',
+                ]
+                const csv_data_mapped = data.map(e => {
+                    return {
+                        PYMT_PROD_TYPE_CODE: e['order ID'],
+                        PYMT_MODE: '',
+                        DEBIT_ACC_NO: '',
+                        BNF_NAME: e['account holder name'],
+                        BENE_ACC_NO: e['account name'],
+                        BENE_IFSC: e['IFSC code'],
+                        AMOUNT: e['paid amount (₹)'],
+                        DEBIT_NARR: '',
+                        CREDIT_NARR: '',
+                        MOBILE_NUM: e['vendor mobile'],
+                        EMAIL_ID: e['vendor email'],
+                        REMARK: e?.full_data?.payments[0]?.reason || '',
+                        PYMT_DATE: new Date(e?.full_data?.payments[0]?.updatedAt).toLocaleDateString() || '',
+                        REF_NO: e['payment reference id'],
+                        ADDL_INFO1: '',
+                        ADDL_INFO2: '',
+                        ADDL_INFO3: '',
+                        ADDL_INFO4: '',
+                        ADDL_INFO5: '',
+                    }
+                })
+                const csv_data = await Promise.all(csv_data_mapped)
+                const filename = `selected_payments_in_bank_format.csv`
+                let csv = papaparse.unparse({ data: csv_data, fields: headings });
+                if (csv == null) return;
+                var blob = new Blob([csv]);
+                if (window.navigator.msSaveOrOpenBlob)
+                    // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+                    window.navigator.msSaveBlob(blob, args.filename);
+                else {
+                    var a = window.document.createElement("a");
+                    a.href = window.URL.createObjectURL(blob, { type: "text/plain" });
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click(); // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+                    document.body.removeChild(a);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        selectIndexOnClick(index) {
+            if (this.selectedIndex.includes(index)) {
+                const indexOfAvl = this.selectedIndex.indexOf(index)
+                this.selectedIndex.splice(indexOfAvl)
+            } else {
+                this.selectedIndex.push(index)
+            }
+        },
         handleFileUpload(event) {
             this.file = event.target.files[0];
             this.parseFile();

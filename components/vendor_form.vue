@@ -1052,7 +1052,7 @@ export default {
         await this.fetchMalls()
         if (this.vendor_data_for_edit?.id) {
             // console.log(this.vendor_data_for_edit);
-            this.placeData()
+            await this.placeData()
         } else {
             this.progress = [
                 {
@@ -1086,7 +1086,11 @@ export default {
                 if (response.data.code == 401) {
                     await this.logout()
                 }
-                this.malls_list = response.data.malls
+                this.malls_list = response.data.malls.map(e => {
+                    delete e.stores_in_mall
+                    return e
+                })
+                console.log(this.malls_list);
             } catch (error) {
                 console.log(error);
             }
@@ -1203,7 +1207,7 @@ export default {
             this.vendor_data.store.conv_fee  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.conv_fee : null
             this.vendor_data.store.gst_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.gst_file_url : null
             this.vendor_data.store.fssai_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.fssai_file_url : null
-            this.vendor_data.store.selected_mall  = this.vendor_data_for_edit?.store?.mall_stores_association ? this.vendor_data_for_edit?.store?.mall_stores_association.mall : null
+            this.vendor_data.store.selected_mall  = this.vendor_data_for_edit?.store?.mall_stores_associations ? this.vendor_data_for_edit?.store?.mall_stores_associations?.mall : null
 
 
             this.vendor_data.bank.new_filling = this.vendor_data_for_edit?.vendor_bank_detail ? true : false

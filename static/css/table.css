@@ -9,6 +9,7 @@
     margin-top: 10px;
     /* height: 400px; */
 }
+
 .heading {
     max-width: 200px !important;
     white-space: nowrap;
@@ -24,13 +25,15 @@
     text-transform: capitalize;
     font-style: normal;
     font-weight: 400;
-    line-height: 18px; /* 150% */
+    line-height: 18px;
+    /* 150% */
     white-space: nowrap;
     overflow: hidden;
     /* justify-content: center; */
-    text-align: center;
+    /* text-align: center; */
     text-overflow: ellipsis;
 }
+
 .main-table {
     table-layout: auto;
     overflow-x: auto;
@@ -38,7 +41,8 @@
     border-collapse: collapse;
     padding: 10px 15px;
 }
-.heading > i {
+
+.heading>i {
     padding-right: 5px;
 }
 
@@ -58,7 +62,11 @@
     background: var(--foundation-pri-light, #FDEDEC);
 }
 
-.table-rows > td {
+.table-rows-selected {
+    background: var(--foundation-pri-light, #FDEDEC);
+}
+
+.table-rows>td {
     padding: 16px 24px;
     color: var(--gray-900, #101828);
     /* Text sm/Medium */
@@ -68,8 +76,27 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 200;
-    line-height: 20px; /* 142.857% */
+    line-height: 20px;
+    /* 142.857% */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+
+.table-note {
+    position: relative;
+    transition: smooth;
+    background: transparent !important;
+    animation: move-in-steps 8s steps(1000) infinite;
+}
+
+@keyframes move-in-steps {
+    0% {
+        left: -20%;
+    }
+
+    100% {
+        left: 100%;
+    }
 }

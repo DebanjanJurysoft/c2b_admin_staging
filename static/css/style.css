@@ -707,6 +707,19 @@ body {
   height: 100% !important;
 }
 
+.fontSize8 {
+  font-size: 12px !important;
+}
+.fontSize9 {
+  font-size: 13px !important;
+}
+.fontSize10 {
+  font-size: 14px !important;
+}
+.fontSize11 {
+  font-size: 15px !important;
+}
+
 .fontSize12 {
   font-size: 12px !important;
 }

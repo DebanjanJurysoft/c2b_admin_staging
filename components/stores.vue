@@ -1565,11 +1565,6 @@ export default {
     };
   },
   props: ['searchText'],
-  async mounted() {
-    this.loader = true;
-    await this.fetchStores();
-    this.loader = false;
-  },
   watch: {
     searchText(val) {
             clearTimeout(this.timer)
@@ -1579,6 +1574,11 @@ export default {
                 this.loader = false
             }, 300);
         }
+  },
+  async mounted() {
+    this.loader = true;
+    await this.fetchStores();
+    this.loader = false;
   },
   methods: {
     async saveBranchImage() {

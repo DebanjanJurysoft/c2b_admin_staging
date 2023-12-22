@@ -22,7 +22,7 @@
                     <Pagination @changePage="changePage" :data_list="addon_data" :per_page="per_page" :total_rows="total_addons" :page="page"/>
                 </div>
             </div>
-            <Table v-if="selected_tab.id == 1 || selected_tab.id == 2" @callFunction="checkWhatIsCalled" :headings="addon_heading" :data_rows="addon_data" :file_name="`${selected_tab.name}_list.csv`" :page="page" :rows="per_page"/>
+            <Table v-if="selected_tab.id == 1 || selected_tab.id == 2" @callFunction="checkWhatIsCalled" @openSpecific="openSpecific" :headings="addon_heading" :data_rows="addon_data" :file_name="`${selected_tab.name}_list.csv`" :page="page" :rows="per_page"/>
             <Pagination v-if="selected_tab.id == 1 || selected_tab.id == 2" @changePage="changePage" :data_list="addon_data" :per_page="per_page" :total_rows="total_addons" :page="page"/>
             <b-modal id="addEditAddons" hide-footer hide-header no-close-on-backdrop centered>
                 <div class="d-flex flex-row align-items-center justify-content-between">
@@ -165,7 +165,7 @@
                                 <span class="text-heading text-primary">Addons<i class="fa fa-long-arrow-right ml-3" aria-hidden="true"></i></span>
                             </div>
                             <div class="d-flex flex-column w30" style="gap: 15px !important;">
-                                <div class="w100 card" v-for="(addon, addon_index) in mapping_data.addOns" v-if="mapping_data.productData.find(e => e.product_id == product.id && e.category_id == product.category_id && e.addon_id == addon.id)">
+                                <div class="w100 card" v-for="(addon, addon_index) in mapping_data.addOns" :key="addon_index">
                                     <span v-if="mapping_data.productData.find(e => e.product_id == product.id && e.category_id == product.category_id && e.addon_id == addon.id)" class="text-heading text-primary">{{ addon.name }}</span>
                                 </div>
                             </div>
@@ -253,6 +253,32 @@ export default {
         },
     },
     methods: {
+        async openSpecific(data) {
+            if (data.type == 'enable_disable') {
+                // this.banner_in_app(data.data.full_data.id, data.data['show in app'])
+                console.log(data);
+                const sendDData = {
+                    vendor_id: data.data.full_data.vendor_id,
+                    addon_id: data.data.full_data.id,
+                    name: data.data.full_data.name,
+                    price: data.data.full_data.price,
+                    compare_price: data.data.full_data.compared_price,
+                    gst: data.data.full_data.gst,
+                    available: data.data['Available']
+                }
+                const response = await this.$axios({
+                    method: 'POST',
+                    url: '/edit-add-on',
+                    data: sendDData
+                })
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+            }
+        },
         async saveAddonMapes() {
             try {
                 const path = '/map-product-with-addons'
@@ -506,12 +532,14 @@ export default {
                     const approvedAddons = await this.fetchAddons(true, this.page, this.per_page)
                     this.total_addons = approvedAddons.total
                     const mappedApprovedAddons = approvedAddons.addons.map(addon => {
+                        console.log(addon);
                         return {
                             // 'Vendor Name': addon.vendor.fullname,
                             // 'Store Name': addon.vendor.store.name,
                             'Addon Name': addon.name,
                             'Price': `₹ ${addon.price}`,
                             'Compare Price': `₹ ${addon.compared_price}`,
+                            'Available': Boolean(addon.available),
                             'Date': new Date(addon.createdAt).toLocaleDateString(),
                             'Time': new Date(addon.createdAt).toLocaleTimeString(),
                             full_data: addon
@@ -541,6 +569,13 @@ export default {
                             icon: 'fa fa-eye',
                         },
                         {
+                            name: 'Available',
+                            icon: 'fa fa-eye',
+                            type: 'SWITCH',
+                            onclick: true,
+                            onclick_emit: 'enable_disable'
+                        },
+                        {
                             name: "Date",
                             icon: 'fa fa-eye',
                         },
@@ -554,6 +589,15 @@ export default {
             this.$emit('reloadDashboard')
             window.scrollTo(0, 0);
             this.loader = false
+        },
+        async fetchMappingDataForProduct(product_id, category_id) {
+            try {
+                let query = `/fetch-mapped-product-with-addons?product_id=${product_id}&category_id=${category_id}`
+                const response = await this.$axios.get(query)
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
         },
         async fetchMappingData() {
             try {

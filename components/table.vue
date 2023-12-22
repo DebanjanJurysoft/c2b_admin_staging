@@ -1,5 +1,6 @@
 <template>
   <div class="table-container" v-if="data_rows.length > 0">
+    <span v-if="note" :class="note.class" class="fontSize16 table-note"><span class="px-2 ">*</span>{{ note.text }} <span class="px-2">*</span></span>
     <table class="main-table">
       <thead>
         <th class="heading">
@@ -27,6 +28,7 @@
           class="table-rows"
           v-for="(row, row_index) in data_rows"
           :key="row_index"
+          v-if="!selectable"
         >
           <td @click.prevent="onClickOpenDetails(row_index)">
             {{ (Number(rows || 0) * (Number(page || 1) - 1)) + row_index + 1 }}
@@ -60,7 +62,121 @@
                 :href="row[head.name]"
                 target="_blank"
               ><strong>{{head.name}}</strong></a>
-              <div v-else-if="head.type == 'SWITCH' && row[head.name] != 'N/A'" class="d-flex flex-row justify-content-center">
+              <div v-else-if="head.type == 'SWITCH' && row[head.name] != 'N/A'" class="d-flex flex-row">
+                <b-form-checkbox  
+                  @change="
+                    head.onclick && !head.onclick_emit
+                    ? onClickOpenDetails(row_index)
+                    : head.onclick_emit
+                    ? onClickOpen(row_index, head, row)
+                    : ''
+                  " 
+                  v-model="row[head.name]" switch></b-form-checkbox>
+              </div>
+                <b-form-select 
+                  @change="
+                    head.onclick && !head.onclick_emit
+                    ? onClickOpenDetails(row_index)
+                    : head.onclick_emit
+                    ? onClickOpen(row_index, head, row)
+                    : ''
+                  " 
+                  v-else-if="head.type == 'DROPDOWN'" 
+                  style="max-width: max-content !important; min-width: max-content !important; width: max-content !important;" 
+                  v-model="row[head.name]" 
+                  :placeholder="head.name" 
+                  :options="head.dropdown_data"
+                ></b-form-select>
+                <span v-else>N/A</span>
+            </td>
+            <td
+              :style="head.onclick ? 'cursor: pointer;' : ''"
+              @click.prevent="
+                head.onclick && !head.onclick_emit
+                  ? onClickOpenDetails(row_index)
+                  : head.onclick_emit
+                  ? onClickOpen(row_index, head)
+                  : ''
+              "
+              :key="head_index"
+              v-if="head.name != 'action' && !head.type"
+              v-b-tooltip.hover
+              :title="row[head.name]"
+            >
+              {{ row[head.name] }}
+            </td>
+            <td v-if="head.name == 'action'" class="d-flex flex-row" style="width: max-content !important; max-width: max-content !important; gap: 16px;">
+              <template v-for="(buttons, action_button_index) in head.buttons">
+                <i
+                  v-b-tooltip.hover
+                  :title="
+                    buttons.emit_name.charAt(0).toUpperCase() +
+                    buttons.emit_name.slice(1)
+                  "
+                  @click.prevent="emitData(buttons.emit_name, row)"
+                  v-if="!buttons.text"
+                  class="px-1"
+                  :style="`color: ${buttons.color}; cursor: pointer;`"
+                  :key="action_button_index"
+                  :class="buttons.icon"
+                ></i>
+                <b-button
+                  v-b-tooltip.hover
+                  :title="
+                    buttons.emit_name.charAt(0).toUpperCase() +
+                    buttons.emit_name.slice(1)
+                  "
+                  v-if="buttons.text"
+                  @click.prevent="emitData(buttons.emit_name, row)"
+                  :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
+                  ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
+                  >{{ buttons.text }}</b-button
+                >
+              </template>
+            </td>
+          </template>
+        </tr>
+        <tr
+          class="table-rows"
+          v-for="(row, row_index) in data_rows"
+          :key="row_index"
+          @click.prevent="clickOnRow(row_index)"
+          v-if="selectable"
+          :class="selectable && selected_indexes && selected_indexes.includes(row_index) ? 'table-rows-selected cursor-pointer' : ''"
+        >
+          <td @click.prevent="onClickOpenDetails(row_index)">
+            {{ (Number(rows || 0) * (Number(page || 1) - 1)) + row_index + 1 }}
+          </td>
+          <template v-for="(head, head_index) in headings">
+            <td v-if="head.type" style="max-width: max-content !important; min-width: max-content !important; width: max-content !important; text-overflow: clip !important; ">
+              <img
+                v-if="head.type == 'IMAGE' && row[head.name] != 'N/A'"
+                style="height: 30px !important; width: 130px !important; object-fit: cover !important;"
+                :style="head.onclick ? 'cursor: pointer;' : ''"
+                :src="row[head.name]"
+                @click.prevent="
+                  head.onclick && !head.onclick_emit
+                    ? onClickOpenDetails(row_index)
+                    : head.onclick_emit
+                    ? onClickOpen(row_index, head)
+                    : ''
+                "
+                alt="image"
+              />
+              <span class="d-flex" v-if="head.type == 'VIDEO' && row[head.name] != 'N/A'">
+                <a
+                :href="row[head.name]"
+                target="_blank"
+                >
+                  <strong>Video</strong>
+                </a>
+              </span>
+              <a
+                v-else-if="head.type == 'FILE' && row[head.name] != 'N/A'"
+                :href="row[head.name]"
+                target="_blank"
+              ><strong>{{head.name}}</strong></a>
+              <div v-else-if="head.type == 'SWITCH' && row[head.name] != 'N/A'" class="d-flex flex-row">
                 <b-form-checkbox  
                   @change="
                     head.onclick && !head.onclick_emit
@@ -148,8 +264,13 @@
 <script>
 import papaparse from "papaparse";
 export default {
-  props: ["headings", "data_rows", "file_name", 'page', 'rows'],
+  props: ["headings", "data_rows", "file_name", 'page', 'rows', 'selectable', 'selected_indexes', 'note'],
   methods: {
+    clickOnRow(index) {
+      if (this.selectable) {
+        this.$emit('selectIndexOnClick', index)
+      }
+    },
     emitData(emitMethod, data) {
       this.$emit("callFunction", {
         emitMethod,
