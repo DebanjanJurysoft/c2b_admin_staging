@@ -165,8 +165,9 @@
                                 <span class="text-heading text-primary">Addons<i class="fa fa-long-arrow-right ml-3" aria-hidden="true"></i></span>
                             </div>
                             <div class="d-flex flex-column w30" style="gap: 15px !important;">
-                                <div class="w100 card" v-for="(addon, addon_index) in mapping_data.addOns" :key="addon_index">
-                                    <span v-if="mapping_data.productData.find(e => e.product_id == product.id && e.category_id == product.category_id && e.addon_id == addon.id)" class="text-heading text-primary">{{ addon.name }}</span>
+                                <div class="w100 border rounded d-flex flex-row justify-content-between" v-for="(addon, addon_index) in mapping_data.addOns" :key="addon_index" v-if="mapping_data.productData.find(e => e.product_id == product.id && e.category_id == product.category_id && e.addon_id == addon.id)" >
+                                    <span v-if="mapping_data.productData.find(e => e.product_id == product.id && e.category_id == product.category_id && e.addon_id == addon.id)" class="text-heading text-primary w90">{{ addon.name }}</span>
+                                    <button class="btn btn-outline-danger w10" style="width: max-content !important;" @click.prevent="deleteAddOnFromProduct(mapping_data.productData.find(e => e.product_id == product.id && e.category_id == product.category_id && e.addon_id == addon.id))"><i class="fa fa-times"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -253,6 +254,61 @@ export default {
         },
     },
     methods: {
+        async deleteAddOnFromProduct(data) {
+            await this.deleteWithPopup('/remove-addon-from-product', 'addon_association_id', data.id)
+        },
+        async deleteWithPopup(path, key, data_id) {
+            try {
+                const h = this.$createElement
+                const id = `DeleteModal${id}`
+                this.$bvToast.hide(id)
+                const $closeButton = h(
+                'b-button',
+                {
+                    on: { click: () => this.$bvToast.hide(id) },
+                    class: 'btn btn-primary mx-1',
+                    style: 'margin: 0 auto;'
+                },
+                'No'
+                )
+                const $acceptButton = h(
+                'b-button',
+                {
+                    on: {
+                        click: async () => {
+                            let data = {}
+                            data[key] = data_id
+                            const deleteresponse = await this.$axios.post(path, data)
+                            await this.fetchMappingData()
+                            this.$toast.show(deleteresponse.data.message, {
+                                duration: 1500,
+                                position: 'top-right',
+                                keepOnHover: true,
+                                type: deleteresponse.data.status
+                            })
+                            this.$bvToast.hide(id)
+                        }
+                    },
+                    class: 'btn btn-danger mx-1',
+                },
+                'Yes'
+                )
+                const $buttonContainer = h(
+                    'div',
+                    {
+                        class: 'text-center my-2',
+                    },
+                    [$closeButton, $acceptButton]
+                )
+                this.$bvToast.toast($buttonContainer, {
+                    id: id,
+                    title: `Are you sure?`,
+                    noCloseButton: true,
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async openSpecific(data) {
             if (data.type == 'enable_disable') {
                 // this.banner_in_app(data.data.full_data.id, data.data['show in app'])

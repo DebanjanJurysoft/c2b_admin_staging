@@ -20,6 +20,9 @@
                                 title="Reload"
                                 class="button float-right ml-3" 
                                 @click.prevent="reloadPage"><i class="fa fa-refresh"></i></button>
+                            <b-form-select @change="reloadPage" style="width: max-content;" v-if="selected_tab.id == 1 && filter_waiting_vendor_list.length > 1" value-field="store_id" text-field="store name" v-model="selected_vendor_data" :options="filter_waiting_vendor_list"></b-form-select>
+                            <b-form-select @change="reloadPage" style="width: max-content;" v-if="selected_tab.id == 2 && filter_approved_vendor_list.length > 1" value-field="store_id" text-field="store name" v-model="selected_vendor_data" :options="filter_approved_vendor_list"></b-form-select>
+                            <b-form-select @change="reloadPage" style="width: max-content;" v-if="selected_tab.id == 3 && filter_rejected_vendor_list.length > 1" value-field="store_id" text-field="store name" v-model="selected_vendor_data" :options="filter_rejected_vendor_list"></b-form-select>
                         </div>
                     </div>
                     <div class="flex-fill d-flex flex-row-reverse" style="width: max-content !important;">
@@ -185,6 +188,7 @@ export default {
         return {
             type: 'ADD',
             loader: false,
+            selected_vendor_data: null,
             selected_tab: {
                 id: 1,
                 name: 'vendors_approval',
@@ -268,17 +272,17 @@ export default {
                             border: 'none',
                         },
                         {
-                            icon: 'fa fa-ban',
-                            emit_name: 'disapprove',
-                            text: 'Disapprove',
-                            color: 'red',
-                            border: 'none',
-                        },
-                        {
                             emit_name: 'approve',
                             icon: 'fa fa-check',
                             text: 'Approve',
                             color: 'green',
+                            border: 'none',
+                        },
+                        {
+                            icon: 'fa fa-ban',
+                            emit_name: 'disapprove',
+                            text: 'Disapprove',
+                            color: 'red',
                             border: 'none',
                         },
                     ]
@@ -431,6 +435,9 @@ export default {
             waiting_vendor_list: [],
             approved_vendor_list: [],
             rejected_vendor_list: [],
+            filter_waiting_vendor_list: [],
+            filter_approved_vendor_list: [],
+            filter_rejected_vendor_list: [],
             selected_vendor_id: null,
             modal_title: '',
             rejection_reason: null,
@@ -738,7 +745,10 @@ export default {
             try {
                 let query = `/approved-vendor?page=${this.page ? this.page : 1}&per_page=${this.per_page}`
                 if (this.searchText && this.searchText != '') {
-                    query = query + `&vendor_name=${this.searchText}`
+                    query = query + `&vendor_name=${this.searchText}&store_name=${this.searchText}`
+                }
+                if (this.selected_vendor_data) {
+                    query = query + `&store_id=${this.selected_vendor_data}`
                 }
                 const response = await this.$axios.get(query)
                 if (response.data.code == 401) {
@@ -749,6 +759,7 @@ export default {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
                         'vendor fullname': e.first_name && e.last_name ? `${e.first_name} ${e.last_name}` : 'N/A',
                         'store name': e.store ? e.store.name : 'N/A',
+                        'store_id': e.store ? e.store.id : null,
                         'fssai no': e.store ? e.store.fssai_number : 'N/A',
                         'gst no': e.store ? e.store.gst_number : 'N/A',
                         'phone': e.personal_mobile ? e.personal_mobile : 'N/A',
@@ -762,6 +773,18 @@ export default {
                         full_data: e
                     }
                 })
+                if (this.selected_tab.id == 2) {
+                    this.filter_approved_vendor_list = response.data.filter_data.map(e => {
+                        return {
+                            'store name': e.store ? e.store.name : 'N/A',
+                            'store_id': e.store ? e.store.id : null,
+                        }
+                    })
+                    this.filter_approved_vendor_list.unshift({
+                        store_id: null,
+                        "store name": 'Select a store'
+                    })
+                }
                 this.approved_vendor_list_total = response.data.total
                 this.tabs.forEach(e => {
                     if (e.name == 'approved_vendors') {
@@ -778,6 +801,9 @@ export default {
                 if (this.searchText && this.searchText != '') {
                     query = query + `&vendor_name=${this.searchText}`
                 }
+                if (this.selected_vendor_data) {
+                    query = query + `&store_id=${this.selected_vendor_data}`
+                }
                 const response = await this.$axios.get(query)
                 if (response.data.code == 401) {
                     await this.logout()
@@ -787,6 +813,7 @@ export default {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
                         'vendor fullname': e.first_name && e.last_name ? `${e.first_name} ${e.last_name}` : 'N/A',
                         'store name': e.store ? e.store.name : 'N/A',
+                        'store_id': e.store ? e.store.id : null,
                         'reason': e.rejected_vendor.reason ? e.rejected_vendor.reason : 'N/A',
                         'fssai no': e.store ? e.store.fssai_number : 'N/A',
                         'gst no': e.store ? e.store.gst_number : 'N/A',
@@ -800,6 +827,18 @@ export default {
                         full_data: e
                     }
                 })
+                if (this.selected_tab.id == 3) {
+                    this.filter_rejected_vendor_list = response.data.filter_data.map(e => {
+                        return {
+                            'store name': e.store ? e.store.name : 'N/A',
+                            'store_id': e.store ? e.store.id : null,
+                        }
+                    })
+                    this.filter_rejected_vendor_list.unshift({
+                        store_id: null,
+                        "store name": 'Select a store'
+                    })
+                }
                 this.rejected_vendor_list_total = response.data.total
                 this.tabs.forEach(e => {
                     if (e.name == 'vendors_disapproved') {
@@ -816,6 +855,9 @@ export default {
                 if (this.searchText && this.searchText != '') {
                     query = query + `&vendor_name=${this.searchText}`
                 }
+                if (this.selected_vendor_data) {
+                    query = query + `&store_id=${this.selected_vendor_data}`
+                }
                 const response = await this.$axios.get(query)
                 if (response.data.code == 401) {
                     await this.logout()
@@ -825,6 +867,7 @@ export default {
                         'vendor name': e.fullname ? e.fullname : 'N/A',
                         'vendor fullname': e.first_name && e.last_name ? `${e.first_name} ${e.last_name}` : 'N/A',
                         'store name': e.store ? e.store.name : 'N/A',
+                        'store_id': e.store ? e.store.id : null,
                         'fssai no': e.store ? e.store.fssai_number : 'N/A',
                         'gst no': e.store ? e.store.gst_number : 'N/A',
                         'phone': e.personal_mobile ? e.personal_mobile : 'N/A',
@@ -837,6 +880,18 @@ export default {
                         full_data: e
                     }
                 })
+                if (this.selected_tab.id == 1) {
+                    this.filter_waiting_vendor_list = response.data.filter_data.map(e => {
+                        return {
+                            'store name': e.store ? e.store.name : 'N/A',
+                            'store_id': e.store ? e.store.id : null,
+                        }
+                    })
+                    this.filter_waiting_vendor_list.unshift({
+                        store_id: null,
+                        "store name": 'Select a store'
+                    })
+                }
                 this.waiting_vendor_list_total = response.data.total
                 this.tabs.forEach(e => {
                     if (e.name == 'vendors_approval') {

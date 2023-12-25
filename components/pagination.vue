@@ -19,12 +19,15 @@ export default {
             timer: null
         }
     },
+    mounted() {
+        console.log(this.page);
+    },
     watch: {
         page(val) {
             clearTimeout(this.timer)
             this.timer = setTimeout(() => {
                 this.$emit('changePage', val)
-            }, 500);
+            }, 300);
         }
     }
 }

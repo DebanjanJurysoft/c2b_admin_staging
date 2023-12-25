@@ -81,7 +81,7 @@
                         <span class="text-heading" v-for="(store, store_index) in selected_mall.stores_in_mall" :key="store_index">{{ `${store_index + 1}. ${store.store.name}` }}</span>
                     </div>
                 </b-modal>
-                <div class="w50 d-flex flex-column" v-if="showForm">
+                <div class="w50 d-flex flex-column position-sticky" style="height: max-content; top: 0px;" v-if="showForm">
                     <div class="d-flex flex-row justify-content-between mb-3 py-3">
                         <span class="text-heading fontSize25">{{ form_title }}</span>
                         <span @click.prevent="closeForm" class="plan-edit-delete-button plan-button-delete">

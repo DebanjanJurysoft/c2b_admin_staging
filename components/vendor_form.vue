@@ -595,6 +595,18 @@
                                     </div>
                                 </div>
                                 <div class="d-flex flex-row">
+                                    <div class="col-12">
+                                        <div class="d-flex flex-row py-3">
+                                            <div class="col-6">
+                                                <label class="input-label fontSize18">Available Scheduled Order: </label>
+                                            </div>
+                                            <div class="col-6 d-flex flex-row-reverse">
+                                                <b-form-checkbox :disabled="!vendor_data.store.will_Edit" v-model="vendor_data.store.scheduled_order" switch></b-form-checkbox>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row">
                                     <div class="col-6">
                                         <div class="d-flex flex-column align-items-left">
                                             <div class="col-12">
@@ -1018,6 +1030,7 @@ export default {
                             status: null
                         },
                     ],
+                    scheduled_order: false,
                     gst_file: null,
                     fssai_file: null,
                     gst_file_url: null,
@@ -1203,6 +1216,7 @@ export default {
             this.vendor_data.store.landmark  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.landmark : null
             this.vendor_data.store.lat  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lat : null
             this.vendor_data.store.lng  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lng : null
+            this.vendor_data.store.scheduled_order  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.scheduled_order : false
             this.vendor_data.store.packing_charges  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.packing_charges : null
             this.vendor_data.store.conv_fee  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.conv_fee : null
             this.vendor_data.store.gst_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.gst_file_url : null
@@ -1334,6 +1348,7 @@ export default {
                     state: this.vendor_data.store.state,
                     pincode: this.vendor_data.store.pincode,
                     landmark: this.vendor_data.store.landmark,
+                    scheduled_order: this.vendor_data.store.scheduled_order,
                     mall: this.vendor_data.store.selected_mall.id,
                     lat: this.vendor_data.store.lat,
                     lng: this.vendor_data.store.lng,

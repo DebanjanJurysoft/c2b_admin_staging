@@ -66,6 +66,54 @@
         :product_details="product_details"
       />
     </div>
+    <b-modal
+      id="orderDetailsModal" 
+      hide-footer 
+      lazy
+      size="xl"
+      header-bg-variant="dark"
+      header-text-variant="light"
+      title="Order details" 
+    >
+      <table class="main-table" v-if="order_details">
+        <thead>
+          <th class="heading">SL</th>
+          <th class="heading">Product</th>
+          <th class="heading">Category</th>
+          <th class="heading">Quantity</th>
+          <th class="heading">Unit Price</th>
+          <th class="heading">Sub Total Price</th>
+        </thead>
+        <tbody>
+          <tr class="table-rows" v-for="(order, order_index) in order_details.order_details">
+            <td>{{ order_index + 1 }}</td>
+            <td>{{ order.product.name }}</td>
+            <td>{{ order.category_table_association.category_name }}</td>
+            <td>X {{ order.quantity }}</td>
+            <td>
+              {{ `₹ ${(
+                parseFloat(order.product.price).toFixed(2)
+              ).toLocaleString("en-IN")}` }}
+            </td>
+            <td>
+              {{ `₹ ${(
+                parseFloat(Number(order.product.price) * Number(order.quantity)).toFixed(2)
+              ).toLocaleString("en-IN")}` }}
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-rows">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Total Price</td>
+            <td>{{ `₹ ${(parseFloat(findTotal(order_details)).toFixed(2)).toLocaleString("en-IN")}` }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -120,41 +168,33 @@ export default {
           onclick: true,
         },
         {
-          name: "product name",
-          icon: "fa fa-product-hunt",
-          onclick: true,
-        },
-        {
-          name: "product id",
-          icon: "fa fa-product-hunt",
-          onclick: true,
-        },
-        {
-          name: "scheduled at",
-          icon: "fa fa-product-hunt",
-        },
-        {
-          name: "quantity",
-          icon: "fa fa-times",
-        },
-        {
-          name: "unit price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "total price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "Order Status",
-          icon: "fa fa-check",
+          name: "order status",
+          icon: "bx bxs-package",
           type: "DROPDOWN",
           onclick: true,
-          onclick_emit: "changeStatus",
+          onclick_emit: 'changeStatus',
+          dropdown_data: [
+            {
+              value: null,
+              text: "Accept or reject",
+            },
+            {
+              value: true,
+              text: "Accept",
+            },
+            {
+              value: false,
+              text: "Reject",
+            },
+          ],
+
         },
         {
-          name: "delivery type",
-          icon: "bx bx-package",
+          name: "product list",
+          icon: "fa fa-shopping-basket",
+          type: 'a',
+          onclick: true,
+          onclick_emit: 'show_products'
         },
         {
           name: "date",
@@ -178,29 +218,19 @@ export default {
         },
         {
           name: "order id",
+          icon: "bx bxs-package"
+        },
+        {
+          name: "accept / reject",
           icon: "bx bxs-package",
-          onclick: true,
-        },
-        {
-          name: "product name",
-          icon: "fa fa-product-hunt",
-          onclick: true,
-        },
-        {
-          name: "product id",
-          icon: "fa fa-product-hunt",
-          onclick: true,
-        },
-        {
-          name: "scheduled at",
-          icon: "fa fa-product-hunt",
-        },
-        {
-          name: "Accept/Reject",
-          icon: "fa fa-first-order",
           type: "DROPDOWN",
           onclick: true,
+          onclick_emit: 'accept_reject',
           dropdown_data: [
+            {
+              value: null,
+              text: "Accept or reject",
+            },
             {
               value: true,
               text: "Accept",
@@ -210,23 +240,13 @@ export default {
               text: "Reject",
             },
           ],
-          onclick_emit: "accept_reject",
         },
         {
-          name: "quantity",
-          icon: "fa fa-times",
-        },
-        {
-          name: "unit price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "total price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "delivery type",
-          icon: "bx bx-package",
+          name: "product list",
+          icon: "fa fa-shopping-basket",
+          type: 'a',
+          onclick: true,
+          onclick_emit: 'show_products'
         },
         {
           name: "date",
@@ -254,34 +274,11 @@ export default {
           onclick: true,
         },
         {
-          name: "product name",
-          icon: "fa fa-product-hunt",
+          name: "product list",
+          icon: "fa fa-shopping-basket",
+          type: 'a',
           onclick: true,
-        },
-        {
-          name: "product id",
-          icon: "fa fa-product-hunt",
-          onclick: true,
-        },
-        {
-          name: "scheduled at",
-          icon: "fa fa-product-hunt",
-        },
-        {
-          name: "quantity",
-          icon: "fa fa-times",
-        },
-        {
-          name: "unit price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "total price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "delivery type",
-          icon: "bx bx-package",
+          onclick_emit: 'show_products'
         },
         {
           name: "date",
@@ -304,39 +301,16 @@ export default {
           icon: "fa fa-shopping-basket",
         },
         {
+          name: "product list",
+          icon: "fa fa-shopping-basket",
+          type: 'a',
+          onclick: true,
+          onclick_emit: 'show_products'
+        },
+        {
           name: "order id",
           icon: "bx bxs-package",
           onclick: true,
-        },
-        {
-          name: "product name",
-          icon: "fa fa-product-hunt",
-          onclick: true,
-        },
-        {
-          name: "product id",
-          icon: "fa fa-product-hunt",
-          onclick: true,
-        },
-        {
-          name: "scheduled at",
-          icon: "fa fa-product-hunt",
-        },
-        {
-          name: "quantity",
-          icon: "fa fa-times",
-        },
-        {
-          name: "unit price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "total price",
-          icon: "fa fa-times",
-        },
-        {
-          name: "delivery type",
-          icon: "bx bx-package",
         },
         {
           name: "date",
@@ -354,6 +328,7 @@ export default {
       product_details: null,
       show_details: false,
       order_status_list: [],
+      order_details: null
     };
   },
   async mounted() {
@@ -366,11 +341,22 @@ export default {
     },
   },
   methods: {
-    async updateStatus(order_details_id, status_id) {
+    findTotal(data) {
+      let total = 0
+      for (const order of data.order_details) {
+        total = total + Number(order.product.price) * Number(order.quantity)
+      }
+      return total
+    },
+    openModalForOrderDetails(data) {
+      this.order_details = data
+      this.$bvModal.show('orderDetailsModal')
+    },
+    async updateStatus(order_id, status_id) {
       try {
         this.loader = true;
         const data = {
-          order_details_id,
+          order_id,
           status_id,
         };
         const response = await this.$axios.post("/change-order-status", data);
@@ -398,13 +384,8 @@ export default {
             text: e.status_name,
           };
         });
-        this.pending_order_heading.forEach((e) => {
-          if (e.name == "Order Status") {
-            e["dropdown_data"] = this.order_status_list;
-          }
-        });
         this.accepted_order_heading.forEach((e) => {
-          if (e.name == "Order Status") {
+          if (e.name == "order status") {
             e["dropdown_data"] = this.order_status_list;
           }
         });
@@ -480,6 +461,7 @@ export default {
       this.show_details = !this.show_details;
     },
     async changePage(page_no) {
+      this.loader = true
       this.page = page_no;
       switch (this.selected_tab.id) {
         case 1:
@@ -513,21 +495,23 @@ export default {
     async openSpecific(data) {
       if (data.type == "accept_reject") {
         if (
-          data.data["Accept/Reject"] !== null &&
-          data.data["Accept/Reject"] !== undefined
+          data.data["accept / reject"] !== null &&
+          data.data["accept / reject"] !== undefined
         )
           await this.accept_reject(data);
       }
       if (data.type == "changeStatus") {
-        await this.updateStatus(data.data.id, data.data["Order Status"]);
+        await this.updateStatus(data.data.id, data.data["order status"]);
+      }
+      if (data.type == "show_products") {
+        this.openModalForOrderDetails(data.data.full_data)
       }
     },
     async accept_reject(data) {
-      console.log(data);
       this.loader = true;
       const response = await this.$axios.post("/accept-reject-order-vendor", {
-        order_details_id: data.data.id,
-        accept: data.data["Accept/Reject"],
+        order_id: data.data.id,
+        accept: data.data["accept / reject"],
       });
       this.$toast.show(response.data.message, {
         duration: 1500,
@@ -536,12 +520,11 @@ export default {
         type: response.data.status,
       });
       await this.mountedMethod();
-      if (data.data["Accept/Reject"]) this.changeTab(1);
+      if (data.data["accept / reject"]) this.changeTab(1);
       else this.changeTab(2);
       this.loader = false;
     },
     async mountedMethod(tab = null) {
-      console.log(tab);
       this.loader = true;
       switch (tab) {
         case null:
@@ -624,35 +607,22 @@ export default {
       }
       this.pending_order_total = response.data.total;
       this.pending_orders = response.data.orders.map((order) => {
+        const vendor = order.order_details[0].product.vendor
         return {
-          "vendor name": order.product.vendor.fullname,
-          "store name": order.product.vendor.store.name,
-          "order id": order.order.ord_id,
-          "product name": order.product.name,
-          "product id": `${order.category_table_association.category_name}-${order.product.id}`,
-          "scheduled at": order.order.schedule_order_date ? order.order.schedule_order_date : 'N/A',
-          "product category": order.category_table_association.category_name,
-          quantity: order.quantity,
-          "accept/reject": order.accepted,
-          "unit price": `₹ ${parseFloat(order.product.price).toLocaleString(
-            "en-IN"
-          )}`,
-          "scheduled at": order.order.schedule_order_date ? `${new Date(Number(order.order.schedule_order_date)).toLocaleDateString()} ${new Date(Number(order.order.schedule_order_date)).toLocaleTimeString()}` : 'N/A',
+          "vendor name": vendor.fullname,
+          "store name": vendor.store.name,
+          "order id": order.ord_id,
+          "accept / reject": null,
+          'product list': `${order.order_details.length} ${order.order_details.length == 1 ? 'Product' : 'Products'}`,
           "total price": `₹ ${(
-            parseFloat(order.quantity) * parseFloat(order.product.price)
+            parseFloat(order.order_amount).toFixed(2)
           ).toLocaleString("en-IN")}`,
-          "delivery type": order.delivery_type.type,
           date: order.createdAt
             ? new Date(order.createdAt).toLocaleDateString()
             : "N/A",
           time: order.createdAt
             ? new Date(order.createdAt).toLocaleTimeString()
             : "N/A",
-          "Order Status": order.order_status_id ? order.order_status_id : null,
-          total_price:
-            parseFloat(order.quantity) * parseFloat(order.product.price),
-          unit_ptice: parseFloat(order.product.price),
-          quantity: order.quantity,
           id: order.id,
           full_data: order,
         };
@@ -664,55 +634,50 @@ export default {
       });
     },
     async fetchAcceptedOrders() {
-      let query = `/fetch-orders-admin?page=${
-        this.page ? this.page : 1
-      }&per_page=${this.per_page}&accepted=true`;
-      if (this.searchText && this.searchText != "") {
-        query = query + `&q=${this.searchText}`;
-      }
-      const response = await this.$axios.get(query);
-      if (response.data.code == 401) {
-        await this.logout();
-      }
-      this.accepted_order_total = response.data.total;
-      const data = response.data.orders.map((order) => {
-        return {
-          "vendor name": order.product.vendor.fullname,
-          "store name": order.product.vendor.store.name,
-          "order id": order.order.ord_id,
-          "product name": order.product.name,
-          "product id": `${order.category_table_association.category_name}-${order.product.id}`,
-          "scheduled at": order.order.schedule_order_date ? `${new Date(Number(order.order.schedule_order_date)).toLocaleDateString()} ${new Date(Number(order.order.schedule_order_date)).toLocaleTimeString()}` : 'N/A',
-          "product category": order.category_table_association.category_name,
-          quantity: order.quantity,
-          "unit price": `₹ ${parseFloat(order.product.price).toLocaleString(
-            "en-IN"
-          )}`,
-          "total price": `₹ ${(
-            parseFloat(order.quantity) * parseFloat(order.product.price)
-          ).toLocaleString("en-IN")}`,
-          "delivery type": order.delivery_type.type,
-          date: order.createdAt
-            ? new Date(order.createdAt).toLocaleDateString()
-            : "N/A",
-          time: order.createdAt
-            ? new Date(order.createdAt).toLocaleTimeString()
-            : "N/A",
-          "Order Status": order.order_status_id ? order.order_status_id : null,
-          total_price:
-            parseFloat(order.quantity) * parseFloat(order.product.price),
-          unit_ptice: parseFloat(order.product.price),
-          quantity: order.quantity,
-          id: order.id,
-          full_data: order,
-        };
-      });
-      this.accepted_orders = await Promise.all(data);
-      this.tabs.forEach((e) => {
-        if (e.name == "accepted_orders") {
-          e.text = `accepted orders (${this.accepted_order_total})`;
+      try {
+        let query = `/fetch-orders-admin?page=${
+          this.page ? this.page : 1
+        }&per_page=${this.per_page}&accepted=true`;
+        if (this.searchText && this.searchText != "") {
+          query = query + `&q=${this.searchText}`;
         }
-      });
+        const response = await this.$axios.get(query);
+        if (response.data.code == 401) {
+          await this.logout();
+        }
+        this.accepted_order_total = response.data.total;
+        const data = response.data.orders.map((order) => {
+          const vendor = order.order_details[0].product.vendor
+          const order_details = order.order_details[0]
+          return {
+            "vendor name": vendor.fullname,
+            "store name": vendor.store.name,
+            "order id": order.ord_id,
+            'order status': order_details.order_status_id,
+            'product list': `${order.order_details.length} ${order.order_details.length == 1 ? 'Product' : 'Products'}`,
+            "total price": `₹ ${(
+              parseFloat(order.order_amount).toFixed(2)
+            ).toLocaleString("en-IN")}`,
+            date: order.createdAt
+              ? new Date(order.createdAt).toLocaleDateString()
+              : "N/A",
+            time: order.createdAt
+              ? new Date(order.createdAt).toLocaleTimeString()
+              : "N/A",
+            id: order.id,
+            full_data: order,
+          };
+        });
+        this.accepted_orders = [];
+        this.accepted_orders = await Promise.all(data);
+        this.tabs.forEach((e) => {
+          if (e.name == "accepted_orders") {
+            e.text = `accepted orders (${this.accepted_order_total})`;
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     async fetchRejectedOrders() {
       let query = `/fetch-orders-admin?page=${
@@ -727,32 +692,21 @@ export default {
       }
       this.rejected_order_total = response.data.total;
       this.rejected_orders = response.data.orders.map((order) => {
+        const vendor = order.order_details[0].product.vendor
         return {
-          "vendor name": order.product.vendor.fullname,
-          "store name": order.product.vendor.store.name,
-          "order id": order.order.ord_id,
-          "product name": order.product.name,
-          "product id": `${order.category_table_association.category_name}-${order.product.id}`,
-          "scheduled at": order.order.schedule_order_date ? `${new Date(Number(order.order.schedule_order_date)).toLocaleDateString()} ${new Date(Number(order.order.schedule_order_date)).toLocaleTimeString()}` : 'N/A',
-          "product category": order.category_table_association.category_name,
-          quantity: order.quantity,
-          "unit price": `₹ ${parseFloat(order.product.price).toLocaleString(
-            "en-IN"
-          )}`,
+          "vendor name": vendor.fullname,
+          "store name": vendor.store.name,
+          "order id": order.ord_id,
+          'product list': `${order.order_details.length} ${order.order_details.length == 1 ? 'Product' : 'Products'}`,
           "total price": `₹ ${(
-            parseFloat(order.quantity) * parseFloat(order.product.price)
+            parseFloat(order.order_amount).toFixed(2)
           ).toLocaleString("en-IN")}`,
-          "delivery type": order.delivery_type.type,
           date: order.createdAt
             ? new Date(order.createdAt).toLocaleDateString()
             : "N/A",
           time: order.createdAt
             ? new Date(order.createdAt).toLocaleTimeString()
             : "N/A",
-          total_price:
-            parseFloat(order.quantity) * parseFloat(order.product.price),
-          unit_ptice: parseFloat(order.product.price),
-          quantity: order.quantity,
           id: order.id,
           full_data: order,
         };
@@ -776,32 +730,21 @@ export default {
       }
       this.delivered_order_total = response.data.total;
       this.delivered_orders = response.data.orders.map((order) => {
+        const vendor = order.order_details[0].product.vendor
         return {
-          "vendor name": order.product.vendor.fullname,
-          "store name": order.product.vendor.store.name,
-          "order id": order.order.ord_id,
-          "product name": order.product.name,
-          "product id": `${order.category_table_association.category_name}-${order.product.id}`,
-          "scheduled at": order.order.schedule_order_date ? `${new Date(Number(order.order.schedule_order_date)).toLocaleDateString()} ${new Date(Number(order.order.schedule_order_date)).toLocaleTimeString()}` : 'N/A',
-          "product category": order.category_table_association.category_name,
-          quantity: order.quantity,
-          "unit price": `₹ ${parseFloat(order.product.price).toLocaleString(
-            "en-IN"
-          )}`,
+          "vendor name": vendor.fullname,
+          "store name": vendor.store.name,
+          "order id": order.ord_id,
+          'product list': `${order.order_details.length} ${order.order_details.length == 1 ? 'Product' : 'Products'}`,
           "total price": `₹ ${(
-            parseFloat(order.quantity) * parseFloat(order.product.price)
+            parseFloat(order.order_amount).toFixed(2)
           ).toLocaleString("en-IN")}`,
-          "delivery type": order.delivery_type.type,
           date: order.createdAt
             ? new Date(order.createdAt).toLocaleDateString()
             : "N/A",
           time: order.createdAt
             ? new Date(order.createdAt).toLocaleTimeString()
             : "N/A",
-          total_price:
-            parseFloat(order.quantity) * parseFloat(order.product.price),
-          unit_ptice: parseFloat(order.product.price),
-          quantity: order.quantity,
           id: order.id,
           full_data: order,
         };

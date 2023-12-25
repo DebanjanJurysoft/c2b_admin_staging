@@ -24,6 +24,14 @@
                                 text-field="category_name"
                                 :options="category_list_filter"
                             ></b-form-select>
+                            <b-form-select 
+                                @input="filterCategory"
+                                style="width: max-content;"
+                                v-model="selected_vendor" 
+                                value-field="id"
+                                text-field="fullname"
+                                :options="vendor_list"
+                            ></b-form-select>
                         </div>
                     </div>
                     <div class="w-25 d-flex flex-row-reverse align-items-center" v-if="selected_tab.id != 4">
@@ -292,6 +300,8 @@ export default {
                 },
             ],
             waiting_product_list: [],
+            vendor_list: [],
+            selected_vendor: null,
             approve_product_list: [],
             rejected_product_list: [],
             category_list_filter: [],
@@ -333,6 +343,27 @@ export default {
         }
     },
     methods: {
+        async fetchApprovedVendorsData() {
+            try {
+                let query = `/approved-vendor`
+                const response = await this.$axios.get(query)
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.vendor_list = response.data.vendors.map(e => {
+                    return {
+                        ...e,
+                        fullname: `${e.fullname} (${e.store.name})`
+                    }
+                })
+                this.vendor_list.unshift({
+                    id: null,
+                    fullname: 'Select a vendor'
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
         reloadData() {
             if (this.selected_tab.id == 4) {
                 this.mountedFunction()
@@ -484,6 +515,7 @@ export default {
             await this.fetchApprovedVendors()
             await this.fetchRejectedVendors()
             await this.fetchCategoryList()
+            await this.fetchApprovedVendorsData()
             this.$emit('reloadDashboard')
         },
         openSpecific(data) {
@@ -622,6 +654,9 @@ export default {
         async fetchApprovedVendors() {
             try {
                 let query = `/approved-product?page=${this.page ? this.page : 1}&per_page=${this.per_page}`
+                if (this.selected_vendor) {
+                    query = query + `&vendor_id=${this.selected_vendor}`
+                }
                 if (this.searchText && this.searchText != '') {
                     query = query + `&q=${this.searchText}`
                 }
@@ -665,6 +700,9 @@ export default {
         async fetchRejectedVendors() {
             try {
                 let query = `/rejected-product?page=${this.page ? this.page : 1}&per_page=${this.per_page}`
+                if (this.selected_vendor) {
+                    query = query + `&vendor_id=${this.selected_vendor}`
+                }
                 if (this.searchText && this.searchText != '') {
                     query = query + `&q=${this.searchText}`
                 }
@@ -709,6 +747,9 @@ export default {
         async fetchProductsWaitingForApproval() {
             try {
                 let query = `/get-products-for-approval?page=${this.page ? this.page : 1}&per_page=${this.per_page}`
+                if (this.selected_vendor) {
+                    query = query + `&vendor_id=${this.selected_vendor}`
+                }
                 if (this.searchText && this.searchText != '') {
                     query = query + `&q=${this.searchText}`
                 }

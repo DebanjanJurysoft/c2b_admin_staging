@@ -65,6 +65,7 @@
                             <label class="input-label">Sub-Category: </label>
                         </div>
                         <div class="w-100">
+                            <pre>{{ selected_sub_category }}</pre>
                             <vSelect
                                 style="width: 100% !important;"
                                 label="name"
@@ -688,12 +689,15 @@ export default {
             this.selected_vendor = data.vendor_id
             this.selected_category = data.category_id
             await this.fetchSubCategories()
+            console.log(data);
             this.selected_sub_category = data?.vendor_sub_category_product_associations?.length ? data.vendor_sub_category_product_associations.map(e => {
+                console.log(e);
                 return {
                     id: e.sub_category_id,
                     name: e.vendor_sub_category.name
                 }
             }) : []
+            console.log(this.selected_sub_category);
             this.selected_food_type = data.food_type
             this.foodData.title = data.name
             this.foodData.description = data.description

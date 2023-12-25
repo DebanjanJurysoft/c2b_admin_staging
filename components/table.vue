@@ -58,6 +58,17 @@
                 </a>
               </span>
               <a
+                @click.prevent="
+                    head.onclick && !head.onclick_emit
+                    ? onClickOpenDetails(row_index)
+                    : head.onclick_emit
+                    ? onClickOpen(row_index, head, row)
+                    : ''
+                  " 
+                href="#"
+                v-else-if="head.type == 'a' && row[head.name]"
+              ><strong>{{ row[head.name] ? row[head.name] : head.name }}</strong></a>
+              <a
                 v-else-if="head.type == 'FILE' && row[head.name] != 'N/A'"
                 :href="row[head.name]"
                 target="_blank"
@@ -172,10 +183,13 @@
                 </a>
               </span>
               <a
+                v-else-if="head.type == 'a' && row[head.name]"
+              ><strong>{{ row[head.name] ? row[head.name] : head.name }}</strong></a>
+              <a
                 v-else-if="head.type == 'FILE' && row[head.name] != 'N/A'"
                 :href="row[head.name]"
                 target="_blank"
-              ><strong>{{head.name}}</strong></a>
+              ><strong>{{row[head.name] ? row[head.name] : head.name}}</strong></a>
               <div v-else-if="head.type == 'SWITCH' && row[head.name] != 'N/A'" class="d-flex flex-row">
                 <b-form-checkbox  
                   @change="

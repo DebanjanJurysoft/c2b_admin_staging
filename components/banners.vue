@@ -176,7 +176,7 @@ export default {
                 },
             ],
             banner_headings: [],
-            total_banners: null,
+            total_banners: 0,
             per_page_options: Array.from(Array(15).keys()).map(e => e + 1),
             per_page: 5,
             page_number: 1,
@@ -192,7 +192,8 @@ export default {
     async mounted() {
         this.loader = true
         await this.fetchBannerCount()
-        await this.fetchBanners()
+        await this.changePage(1)
+
         this.loader = false
     },
     watch: {
@@ -426,8 +427,7 @@ export default {
         },
         changeTab(index) {
             this.selected_tab = this.tabs[index]
-            this.page_number = 1
-            this.changePage()
+            this.changePage(1)
         },
         openSpecific(data) {
             if (data.type == 'show_app') {
