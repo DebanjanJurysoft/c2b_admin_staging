@@ -83,9 +83,14 @@
           <th class="heading">Quantity</th>
           <th class="heading">Unit Price</th>
           <th class="heading">Sub Total Price</th>
+          <th class="heading d-flex flex-row align-items-center gap10 justify-content-center" v-if="selected_tab.id == 4">
+            Select All <b-form-checkbox v-model="selectAll" @change="() => {
+              order_details.forEach(order => order.checked = selectAll)
+            }"></b-form-checkbox>
+          </th>
         </thead>
         <tbody>
-          <tr class="table-rows" v-for="(order, order_index) in order_details.order_details">
+          <tr class="table-rows" v-for="(order, order_index) in order_details" :key="order_index">
             <td>{{ order_index + 1 }}</td>
             <td>{{ order.product.name }}</td>
             <td>{{ order.category_table_association.category_name }}</td>
@@ -100,6 +105,9 @@
                 parseFloat(Number(order.product.price) * Number(order.quantity)).toFixed(2)
               ).toLocaleString("en-IN")}` }}
             </td>
+            <td v-if="selected_tab.id == 4" class="text-center">
+              <b-form-checkbox v-model="order.checked" @change="selectAll = order_details.filter(e => e.checked == true).length == order_details.length"></b-form-checkbox>
+            </td>
           </tr>
         </tbody>
         <tfoot>
@@ -110,6 +118,13 @@
             <td></td>
             <td>Total Price</td>
             <td>{{ `₹ ${(parseFloat(findTotal(order_details)).toFixed(2)).toLocaleString("en-IN")}` }}</td>
+            <td v-if="selected_tab.id == 4" class="d-flex gap10 justify-content-center">
+              <button class="btn btn-success btn-sm"
+                v-b-tooltip.hover
+                title="Accept"
+                @click.prevent="accept_reject(order_details)"
+              ><i class="fa fa-check mr-2"></i>Accept</button>
+            </td>
           </tr>
         </tfoot>
       </table>
@@ -122,6 +137,8 @@ export default {
   data() {
     return {
       loader: false,
+      selectAll: true,
+      selectedOrder: null,
       selected_tab: {
         id: 1,
         name: "accepted_orders",
@@ -220,27 +237,27 @@ export default {
           name: "order id",
           icon: "bx bxs-package"
         },
-        {
-          name: "accept / reject",
-          icon: "bx bxs-package",
-          type: "DROPDOWN",
-          onclick: true,
-          onclick_emit: 'accept_reject',
-          dropdown_data: [
-            {
-              value: null,
-              text: "Accept or reject",
-            },
-            {
-              value: true,
-              text: "Accept",
-            },
-            {
-              value: false,
-              text: "Reject",
-            },
-          ],
-        },
+        // {
+        //   name: "accept / reject",
+        //   icon: "bx bxs-package",
+        //   type: "DROPDOWN",
+        //   onclick: true,
+        //   onclick_emit: 'accept_reject',
+        //   dropdown_data: [
+        //     {
+        //       value: null,
+        //       text: "Accept or reject",
+        //     },
+        //     {
+        //       value: true,
+        //       text: "Accept",
+        //     },
+        //     {
+        //       value: false,
+        //       text: "Reject",
+        //     },
+        //   ],
+        // },
         {
           name: "product list",
           icon: "fa fa-shopping-basket",
@@ -339,17 +356,31 @@ export default {
     per_page() {
       this.changePage(this.page);
     },
+    searchText(val) {
+      clearTimeout(this.timer)
+      this.timer = setTimeout(async () => {
+        this.loader = true
+        await this.changeTab(this.tabs.indexOf(this.selected_tab))
+        this.loader = false
+      }, 300);
+    }
   },
   methods: {
     findTotal(data) {
       let total = 0
-      for (const order of data.order_details) {
+      for (const order of data) {
         total = total + Number(order.product.price) * Number(order.quantity)
       }
       return total
     },
     openModalForOrderDetails(data) {
-      this.order_details = data
+      this.selectedOrder = data.id
+      this.order_details = data.order_details.map(e => {
+        return {
+          ...e,
+          checked: true
+        }
+      })
       this.$bvModal.show('orderDetailsModal')
     },
     async updateStatus(order_id, status_id) {
@@ -509,10 +540,15 @@ export default {
     },
     async accept_reject(data) {
       this.loader = true;
-      const response = await this.$axios.post("/accept-reject-order-vendor", {
-        order_id: data.data.id,
-        accept: data.data["accept / reject"],
-      });
+      this.$bvModal.hide('orderDetailsModal')
+      const accepted_order_ids = data.filter(e => e.checked == true).map(e => e.id)
+      const rejected_order_ids = data.filter(e => e.checked == false).map(e => e.id)
+      const payload_data = {
+        order_id: this.selectedOrder,
+        accepted_order_ids: accepted_order_ids.length ? accepted_order_ids : null,
+        rejected_order_ids: rejected_order_ids.length ? rejected_order_ids : null
+      }
+      const response = await this.$axios.post("/accept-reject-order-vendor", payload_data);
       this.$toast.show(response.data.message, {
         duration: 1500,
         position: "top-right",
@@ -520,8 +556,8 @@ export default {
         type: response.data.status,
       });
       await this.mountedMethod();
-      if (data.data["accept / reject"]) this.changeTab(1);
-      else this.changeTab(2);
+      this.changeTab(1);
+      this.selectAll = false
       this.loader = false;
     },
     async mountedMethod(tab = null) {
@@ -680,42 +716,46 @@ export default {
       }
     },
     async fetchRejectedOrders() {
-      let query = `/fetch-orders-admin?page=${
-        this.page ? this.page : 1
-      }&per_page=${this.per_page}&status=13&accepted=false`;
-      if (this.searchText && this.searchText != "") {
-        query = query + `&q=${this.searchText}`;
-      }
-      const response = await this.$axios.get(query);
-      if (response.data.code == 401) {
-        await this.logout();
-      }
-      this.rejected_order_total = response.data.total;
-      this.rejected_orders = response.data.orders.map((order) => {
-        const vendor = order.order_details[0].product.vendor
-        return {
-          "vendor name": vendor.fullname,
-          "store name": vendor.store.name,
-          "order id": order.ord_id,
-          'product list': `${order.order_details.length} ${order.order_details.length == 1 ? 'Product' : 'Products'}`,
-          "total price": `₹ ${(
-            parseFloat(order.order_amount).toFixed(2)
-          ).toLocaleString("en-IN")}`,
-          date: order.createdAt
-            ? new Date(order.createdAt).toLocaleDateString()
-            : "N/A",
-          time: order.createdAt
-            ? new Date(order.createdAt).toLocaleTimeString()
-            : "N/A",
-          id: order.id,
-          full_data: order,
-        };
-      });
-      this.tabs.forEach((e) => {
-        if (e.name == "rejected_orders") {
-          e.text = `rejected orders (${this.rejected_order_total})`;
+      try {
+        let query = `/fetch-orders-admin?page=${
+          this.page ? this.page : 1
+        }&per_page=${this.per_page}&status=13&accepted=false`;
+        if (this.searchText && this.searchText != "") {
+          query = query + `&q=${this.searchText}`;
         }
-      });
+        const response = await this.$axios.get(query);
+        if (response.data.code == 401) {
+          await this.logout();
+        }
+        this.rejected_order_total = response.data.total;
+        this.rejected_orders = response.data.orders.map((order) => {
+          const vendor = order.order_details[0].product.vendor
+          return {
+            "vendor name": vendor.fullname,
+            "store name": vendor.store.name,
+            "order id": order.ord_id,
+            'product list': `${order.order_details.length} ${order.order_details.length == 1 ? 'Product' : 'Products'}`,
+            "total price": `₹ ${(
+              parseFloat(order.order_amount).toFixed(2)
+            ).toLocaleString("en-IN")}`,
+            date: order.createdAt
+              ? new Date(order.createdAt).toLocaleDateString()
+              : "N/A",
+            time: order.createdAt
+              ? new Date(order.createdAt).toLocaleTimeString()
+              : "N/A",
+            id: order.id,
+            full_data: order,
+          };
+        });
+        this.tabs.forEach((e) => {
+          if (e.name == "rejected_orders") {
+            e.text = `rejected orders (${this.rejected_order_total})`;
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     async fetchDeliveredOrders() {
       let query = `/fetch-orders-admin?page=${

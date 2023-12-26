@@ -130,7 +130,7 @@ export default {
                     id: 5,
                     name: 'orders',
                     text: 'orders',
-                    noSearch: true,
+                    // noSearch: true,
                     normal_img: '/icons/order-black.svg',
                     active_img: '/icons/order-white.svg'
                 },
