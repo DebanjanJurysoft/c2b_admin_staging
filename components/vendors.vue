@@ -213,7 +213,7 @@ export default {
             ],
             waiting_vendor_heading: [
                 {
-                    name: 'vendor name',
+                    name: 'vendor ID',
                     icon: 'fa fa-shopping-basket',
                     onclick: true
                 },
@@ -290,7 +290,7 @@ export default {
             ],
             approved_vendors_heading: [
                 {
-                    name: 'vendor name',
+                    name: 'vendor ID',
                     icon: 'fa fa-shopping-basket',
                     onclick: true
                 },
@@ -367,7 +367,7 @@ export default {
             ],
             rejected_vendors_heading: [
                 {
-                    name: 'vendor name',
+                    name: 'vendor ID',
                     icon: 'fa fa-shopping-basket',
                     onclick: true
                 },
@@ -756,7 +756,7 @@ export default {
                 }
                 this.approved_vendor_list = response.data.vendors.map(e => {
                     return {
-                        'vendor name': e.fullname ? e.fullname : 'N/A',
+                        'vendor ID': e.id ? e.id : 'N/A',
                         'vendor fullname': e.first_name && e.last_name ? `${e.first_name} ${e.last_name}` : 'N/A',
                         'store name': e.store ? e.store.name : 'N/A',
                         'store_id': e.store ? e.store.id : null,
@@ -810,7 +810,7 @@ export default {
                 }
                 this.rejected_vendor_list = response.data.vendors.map(e => {
                     return {
-                        'vendor name': e.fullname ? e.fullname : 'N/A',
+                        'vendor ID': e.id ? e.id : 'N/A',
                         'vendor fullname': e.first_name && e.last_name ? `${e.first_name} ${e.last_name}` : 'N/A',
                         'store name': e.store ? e.store.name : 'N/A',
                         'store_id': e.store ? e.store.id : null,
@@ -864,7 +864,7 @@ export default {
                 }
                 this.waiting_vendor_list = response.data.vendors.map(e => {
                     return {
-                        'vendor name': e.fullname ? e.fullname : 'N/A',
+                        'vendor ID': e.id ? e.id : 'N/A',
                         'vendor fullname': e.first_name && e.last_name ? `${e.first_name} ${e.last_name}` : 'N/A',
                         'store name': e.store ? e.store.name : 'N/A',
                         'store_id': e.store ? e.store.id : null,
