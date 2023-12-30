@@ -1348,7 +1348,7 @@ export default {
                     state: this.vendor_data.store.state,
                     pincode: this.vendor_data.store.pincode,
                     landmark: this.vendor_data.store.landmark,
-                    scheduled_order: this.vendor_data.store.scheduled_order,
+                    scheduled_order: this.vendor_data.store.scheduled_order ? Boolean(this.vendor_data.store.scheduled_order) : false,
                     mall: this.vendor_data.store.selected_mall.id,
                     lat: this.vendor_data.store.lat,
                     lng: this.vendor_data.store.lng,
