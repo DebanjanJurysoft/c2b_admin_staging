@@ -6,7 +6,15 @@
         <div v-if="!loader" class="tabs-content">
             <div class="progress-state">
                 <template v-for="(progress_item, progress_index) in progress.filter(e => e.disable === false)" >
-                    <div @click.prevent="in_progress_index = progress_index" class="progress" :class="progress_item.completed ? 'progress-completed' : ''" style="cursor: pointer;" :key="progress_index" >
+                    <div @click.prevent="() => {
+                        in_progress_index = progress_index
+                        progress[progress_index].completed = true
+                        progress.forEach((e, i) => {
+                            if (i > progress_index) {
+                                e.completed = false
+                            }
+                        })
+                    }" class="progress" :class="progress_item.completed ? 'progress-completed' : ''" style="cursor: pointer;" :key="progress_index" >
                         <i style="progress_item.completed ? 'color: #30D158;' : 'color: #1C1C1E' " class='bx bx-check-circle mr-2'></i>
                         <span>{{progress_item.name}}</span>
                     </div>
@@ -1172,7 +1180,7 @@ export default {
             // this.vendor_data.personal.new_filling = this.vendor_data_for_edit ? true : false
             this.vendor_data.personal.first_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.first_name : null
             this.vendor_data.personal.last_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.last_name : null
-            this.vendor_data.personal.dob = this.vendor_data_for_edit ? this.vendor_data_for_edit?.dob : null
+            this.vendor_data.personal.dob = this.vendor_data_for_edit ? new Date(this.vendor_data_for_edit?.dob) : null
             this.vendor_data.personal.gender = this.vendor_data_for_edit?.gender ? this.vendor_data_for_edit?.gender.toUpperCase() : null
             this.vendor_data.personal.email = this.vendor_data_for_edit ? this.vendor_data_for_edit?.personal_email : null
             this.vendor_data.personal.phone = this.vendor_data_for_edit ? this.vendor_data_for_edit?.personal_mobile : null
@@ -1216,7 +1224,7 @@ export default {
             this.vendor_data.store.landmark  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.landmark : null
             this.vendor_data.store.lat  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lat : null
             this.vendor_data.store.lng  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lng : null
-            this.vendor_data.store.scheduled_order  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.scheduled_order : false
+            this.vendor_data.store.scheduled_order  = this.vendor_data_for_edit?.store ? Boolean(this.vendor_data_for_edit?.store?.scheduled_order) : false
             this.vendor_data.store.packing_charges  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.packing_charges : null
             this.vendor_data.store.conv_fee  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.conv_fee : null
             this.vendor_data.store.gst_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.gst_file_url : null

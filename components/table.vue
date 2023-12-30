@@ -49,7 +49,7 @@
                 "
                 alt="image"
               />
-              <span class="d-flex" v-if="head.type == 'VIDEO' && row[head.name] != 'N/A'">
+              <span class="d-flex" v-else-if="head.type == 'VIDEO' && row[head.name] != 'N/A'">
                 <a
                 :href="row[head.name]"
                 target="_blank"
