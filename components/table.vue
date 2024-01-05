@@ -118,31 +118,60 @@
             </td>
             <td v-if="head.name == 'action'" class="d-flex flex-row" style="width: max-content !important; max-width: max-content !important; gap: 16px;">
               <template v-for="(buttons, action_button_index) in head.buttons">
-                <i
-                  v-b-tooltip.hover
-                  :title="
-                    buttons.emit_name.charAt(0).toUpperCase() +
-                    buttons.emit_name.slice(1)
-                  "
-                  @click.prevent="emitData(buttons.emit_name, row)"
-                  v-if="!buttons.text"
-                  class="px-1"
-                  :style="`color: ${buttons.color}; cursor: pointer;`"
-                  :key="action_button_index"
-                  :class="buttons.icon"
-                ></i>
-                <b-button
-                  v-b-tooltip.hover
-                  :title="
-                    buttons.emit_name.charAt(0).toUpperCase() +
-                    buttons.emit_name.slice(1)
-                  "
-                  v-if="buttons.text"
-                  @click.prevent="emitData(buttons.emit_name, row)"
-                  :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
-                  ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
-                  >{{ buttons.text }}</b-button
-                >
+                <template v-if="buttons.condition">
+                  <i
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    v-if="!buttons.text && (buttons.condition && row[buttons.condition])"
+                    class="px-1"
+                    :style="`color: ${buttons.color}; cursor: pointer;`"
+                    :key="action_button_index"
+                    :class="buttons.icon"
+                  ></i>
+                  <b-button
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    v-if="buttons.text && (buttons.condition && row[buttons.condition])"
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
+                    ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
+                    >{{ buttons.text }}</b-button
+                  >
+                </template>
+                <template v-else>
+                  <i
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    v-if="!buttons.text"
+                    class="px-1"
+                    :style="`color: ${buttons.color}; cursor: pointer;`"
+                    :key="action_button_index"
+                    :class="buttons.icon"
+                  ></i>
+                  <b-button
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    v-if="buttons.text"
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
+                    ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
+                    >{{ buttons.text }}</b-button
+                  >
+                </template>
               </template>
             </td>
           </template>
@@ -235,31 +264,60 @@
             </td>
             <td v-if="head.name == 'action'" class="d-flex flex-row" style="width: max-content !important; max-width: max-content !important; gap: 16px;">
               <template v-for="(buttons, action_button_index) in head.buttons">
-                <i
-                  v-b-tooltip.hover
-                  :title="
-                    buttons.emit_name.charAt(0).toUpperCase() +
-                    buttons.emit_name.slice(1)
-                  "
-                  @click.prevent="emitData(buttons.emit_name, row)"
-                  v-if="!buttons.text"
-                  class="px-1"
-                  :style="`color: ${buttons.color}; cursor: pointer;`"
-                  :key="action_button_index"
-                  :class="buttons.icon"
-                ></i>
-                <b-button
-                  v-b-tooltip.hover
-                  :title="
-                    buttons.emit_name.charAt(0).toUpperCase() +
-                    buttons.emit_name.slice(1)
-                  "
-                  v-if="buttons.text"
-                  @click.prevent="emitData(buttons.emit_name, row)"
-                  :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
-                  ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
-                  >{{ buttons.text }}</b-button
-                >
+                <template v-if="buttons.condition">
+                  <i
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    v-if="!buttons.text && (buttons.condition && row[buttons.condition])"
+                    class="px-1"
+                    :style="`color: ${buttons.color}; cursor: pointer;`"
+                    :key="action_button_index"
+                    :class="buttons.icon"
+                  ></i>
+                  <b-button
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    v-if="buttons.text && (buttons.condition && row[buttons.condition])"
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
+                    ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
+                    >{{ buttons.text }}</b-button
+                  >
+                </template>
+                <template v-else>
+                  <i
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    v-if="!buttons.text"
+                    class="px-1"
+                    :style="`color: ${buttons.color}; cursor: pointer;`"
+                    :key="action_button_index"
+                    :class="buttons.icon"
+                  ></i>
+                  <b-button
+                    v-b-tooltip.hover
+                    :title="
+                      buttons.emit_name.charAt(0).toUpperCase() +
+                      buttons.emit_name.slice(1)
+                    "
+                    v-if="buttons.text"
+                    @click.prevent="emitData(buttons.emit_name, row)"
+                    :style="`background: ${buttons.color} !important; color: #fff; cursor: pointer; border: ${buttons.border} !important;`"
+                    ><i v-if="buttons.icon" :class="buttons.icon" class="mr-2"></i
+                    >{{ buttons.text }}</b-button
+                  >
+                </template>
               </template>
             </td>
           </template>

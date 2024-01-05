@@ -316,7 +316,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex flex-row">
+                                <!-- <div class="d-flex flex-row">
                                     <div class="col-6">
                                          <div class="d-flex flex-column align-items-left">
                                             <div class="col-12">
@@ -337,7 +337,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <div class="d-flex flex-row">
@@ -541,7 +541,7 @@
                                 </div>
                             </div>
                             <div class="d-flex flex-row">
-                                <div class="col-6">
+                                <!-- <div class="col-6">
                                     <div class="d-flex flex-column align-items-left">
                                         <div class="col-12">
                                             <label class="input-label">Alt Phone: </label>
@@ -550,8 +550,8 @@
                                             <b-form-input type="text" v-model="vendor_data.store.alt_mobile" placeholder="Alternative Phone Number"/>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-6">
+                                </div> -->
+                                <div class="col-12">
                                     <div class="d-flex flex-column align-items-left">
                                         <div class="col-12">
                                             <label class="input-label">Email: </label>
@@ -1234,7 +1234,7 @@ export default {
 
             this.vendor_data.bank.new_filling = this.vendor_data_for_edit?.vendor_bank_detail ? true : false
             this.vendor_data.bank.account_holder_name  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.account_holder_name : null
-            this.vendor_data.bank.account_number  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.account_holder_name : null
+            this.vendor_data.bank.account_number  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.account_number : null
             this.vendor_data.bank.bank  = this.vendor_data_for_edit?.vendor_bank_detail ? this.bank_list.find(e => e.id == this.vendor_data_for_edit?.vendor_bank_detail?.bank_id && e.bank_name == this.vendor_data_for_edit?.vendor_bank_detail?.bank_name) : null
             this.vendor_data.bank.city  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.city : null
             this.vendor_data.bank.branch  = this.vendor_data_for_edit?.vendor_bank_detail ? this.vendor_data_for_edit?.vendor_bank_detail?.branch : null

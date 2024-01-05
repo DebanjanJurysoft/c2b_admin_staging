@@ -277,6 +277,7 @@ export default {
                             text: 'Approve',
                             color: 'green',
                             border: 'none',
+                            condition: 'showapprovebutton'
                         },
                         {
                             icon: 'fa fa-ban',
@@ -877,6 +878,7 @@ export default {
                         'date': e.createdAt ? new Date(e.createdAt).toLocaleDateString() : 'N/A',
                         'time': e.createdAt ? new Date(e.createdAt).toLocaleTimeString() : 'N/A',
                         id: e.id,
+                        showapprovebutton: (e.id && e.store.id && e.vendor_bank_detail.id) != null,
                         full_data: e
                     }
                 })
