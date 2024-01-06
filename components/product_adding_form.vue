@@ -65,7 +65,6 @@
                             <label class="input-label">Sub-Category: </label>
                         </div>
                         <div class="w-100">
-                            <pre>{{ selected_sub_category }}</pre>
                             <vSelect
                                 style="width: 100% !important;"
                                 label="name"
