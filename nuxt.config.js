@@ -25,7 +25,7 @@ export default {
     ],
   },
   server: {
-    host: 0,
+    host: 'localhost',
     port: 5050,
   },
 
