@@ -1101,6 +1101,13 @@ export default {
         this.loader = false
     },
     methods: {
+        formatDate(today) {
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(today.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            return formattedDate
+        },
         async fetchMalls() {
             try {
                 const response = await this.$axios.get('/get-malls')
@@ -1168,6 +1175,7 @@ export default {
             this.vendor_data.personal.identity_proof_file_url = URL.createObjectURL(event)
         },
         placeData() {
+            console.log(this.vendor_data_for_edit);
             // vendor id
             this.created_vendor_id = this.vendor_data_for_edit?.id 
             // vendor login details
@@ -1176,11 +1184,12 @@ export default {
                 username: this.vendor_data_for_edit ? this.vendor_data_for_edit?.username : null,
                 password: null
             }
+            console.log(new Date(this.vendor_data_for_edit?.dob));
             // vendor personal details 
             // this.vendor_data.personal.new_filling = this.vendor_data_for_edit ? true : false
             this.vendor_data.personal.first_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.first_name : null
             this.vendor_data.personal.last_name = this.vendor_data_for_edit ? this.vendor_data_for_edit?.last_name : null
-            this.vendor_data.personal.dob = this.vendor_data_for_edit ? new Date(this.vendor_data_for_edit?.dob) : null
+            this.vendor_data.personal.dob = this.vendor_data_for_edit ? this.formatDate(new Date(this.vendor_data_for_edit?.dob)) : null
             this.vendor_data.personal.gender = this.vendor_data_for_edit?.gender ? this.vendor_data_for_edit?.gender.toUpperCase() : null
             this.vendor_data.personal.email = this.vendor_data_for_edit ? this.vendor_data_for_edit?.personal_email : null
             this.vendor_data.personal.phone = this.vendor_data_for_edit ? this.vendor_data_for_edit?.personal_mobile : null

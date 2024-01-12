@@ -459,13 +459,13 @@ export default {
             const mapped_banner = response.data.banners.map(banner => {
                 return {
                     'vendor Name': banner.vendor ? banner.vendor.fullname : 'ADMIN',
-                    'app image': imageExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A',
-                    'app video': videoExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A',
+                    'app image': banner.app_banner_url ? imageExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A' : 'N/A',
+                    'app video': banner.app_banner_url ? videoExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A' : 'N/A',
                     'show in app': banner.show_in_app,
                     "social media link": banner.social_link ? banner.social_link : 'N/A',
                     "today's offer": banner.is_today_offer,
-                    'web image': imageExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A',
-                    'web video': videoExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A',
+                    'web image': banner.web_banner_url ?  imageExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A' : 'N/A',
+                    'web video': banner.web_banner_url ? videoExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A' : 'N/A',
                     full_data: banner
                 }
             })
@@ -542,24 +542,26 @@ export default {
             this.total_banners = response.data.banner_total
             const mapped_banner = response.data.banners.map(banner => {
                 return {
-                    'vendor Name': banner.vendor.fullname,
-                    'app image': banner.app_banner_url,
-                    // 'show in app': banner.show_in_app,
+                    'vendor Name': banner.vendor ? banner.vendor.fullname : 'ADMIN',
+                    'app image': imageExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A',
+                    'app video': banner.app_banner_url ? videoExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A' : 'N/A',
+                    'show in app': banner.show_in_app,
                     "social media link": banner.social_link ? banner.social_link : 'N/A',
-                    'web image': banner.web_banner_url,
+                    "today's offer": banner.is_today_offer,
+                    'web image': imageExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A',
+                    'web video': banner.web_banner_url ? videoExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A' : 'N/A',
                     full_data: banner
                 }
             })
             this.banner_headings = [
-                {
+            {
                     name: 'vendor Name',
                     icon: 'fa fa-user-o',
                 },
                 {
                     name: 'social media link',
                     icon: 'fa fa-user-o',
-                    type: 'FILE',
-                    onclick: true,
+                    type: 'FILE'
                 },
                 {
                     name: 'app image',
@@ -575,11 +577,30 @@ export default {
                     onclick: true,
                     onclick_emit: 'view_web_banner'
                 },
-                // {
-                //     name: 'show in app',
-                //     icon: 'fa fa-eye',
-                //     type: 'SWITCH'
-                // },
+                {
+                    name: 'app video',
+                    icon: 'fa fa-mobile',
+                    type: 'VIDEO',
+                },
+                {
+                    name: 'web video',
+                    icon: 'fa fa-window-maximize',
+                    type: 'VIDEO',
+                },
+                {
+                    name: 'show in app',
+                    icon: 'fa fa-eye',
+                    type: 'SWITCH',
+                    onclick: true,
+                    onclick_emit: 'show_app'
+                },
+                {
+                    name: "today's offer",
+                    icon: 'fa fa-eye',
+                    type: 'SWITCH',
+                    onclick: true,
+                    onclick_emit: 'today_offer'
+                },
                 {
                     name: 'action',
                     icon: 'fa fa-cog',

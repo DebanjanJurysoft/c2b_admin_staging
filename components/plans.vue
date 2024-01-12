@@ -379,6 +379,7 @@ export default {
             try {
                 if (data.enable_edit) {
                     delete data.enable_edit
+                    delete data.sub_count
                 }
                 delete data.id
                 const response = await this.$axios({
