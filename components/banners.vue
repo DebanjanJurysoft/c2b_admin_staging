@@ -539,6 +539,8 @@ export default {
             if (response.data.code == 401) {
                 await this.logout()
             }
+            const videoExtensions = ['mp4', 'webm', 'mkv', 'avi', 'mov', 'wmv'];
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
             this.total_banners = response.data.banner_total
             const mapped_banner = response.data.banners.map(banner => {
                 return {
