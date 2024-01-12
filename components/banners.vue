@@ -545,12 +545,12 @@ export default {
             const mapped_banner = response.data.banners.map(banner => {
                 return {
                     'vendor Name': banner.vendor ? banner.vendor.fullname : 'ADMIN',
-                    'app image': imageExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A',
+                    'app image': banner.app_banner_url ? imageExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A' : 'N/A',
                     'app video': banner.app_banner_url ? videoExtensions.includes(banner.app_banner_url.split('.').pop()) ? banner.app_banner_url : 'N/A' : 'N/A',
                     'show in app': banner.show_in_app,
                     "social media link": banner.social_link ? banner.social_link : 'N/A',
                     "today's offer": banner.is_today_offer,
-                    'web image': imageExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A',
+                    'web image': banner.web_banner_url ? imageExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A': 'N/A',
                     'web video': banner.web_banner_url ? videoExtensions.includes(banner.web_banner_url.split('.').pop()) ? banner.web_banner_url : 'N/A' : 'N/A',
                     full_data: banner
                 }
