@@ -47,7 +47,7 @@
             <Pagination @changePage="changePage" v-if="selected_tab.id == 2" :data_list="approved_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
             <Pagination @changePage="changePage" v-if="selected_tab.id == 3" :data_list="rejected_vendor_list" :per_page="per_page" :total_rows="total_rows" :selected_tab="selected_tab" :page="page"/>
         </div>
-        <b-modal id="addVendor" size="lg" style="height: max-content !important;" hide-footer no-close-on-backdrop centered :title="modal_title">
+        <b-modal id="addVendor" size="lg" style="height: max-content !important;" hide-footer no-close-on-backdrop centered :title="modal_title" @close="closeAddVendorModal">
             <Vendor_form style="height: max-content !important;" :type="type" :vendor_data_for_edit="selected_vendor_for_edit"  @closeModal="closeAddVendorModal" />
         </b-modal>
         <b-modal id="rejectVendorModal" hide-footer no-close-on-backdrop centered :title="modal_title">
@@ -59,10 +59,10 @@
                 max-rows="6"
             ></b-form-textarea>
             <div class="d-flex text-center py-2">
-                <span @click.prevent="rejectVendor" :class="rejection_reason ? 'logout-button' : 'disabled-button'">Reject</span>
+                <span @click.prevent="rejection_reason ? rejectVendor : () => {}" :class="rejection_reason ? 'logout-button' : 'disabled-button'">Reject</span>
             </div>
         </b-modal>
-        <b-modal id="showVendorDetailsModal" centered :hide-footer="selected_tab.id != 1" scrollable :footer-class="selected_tab.id != 1 ? '' : 'justify-content-center'" >
+        <b-modal id="showVendorDetailsModal" centered :hide-footer="selected_tab.id != 1" scrollable :footer-class="selected_tab.id != 1 ? '' : 'justify-content-center'">
             <template #modal-header>
                 <!-- Emulate built in modal header close button action -->
                 <h5>{{ `SL No: ${formatSerial(view_vendor_data ? view_vendor_data.id : 0)}` }}</h5>
