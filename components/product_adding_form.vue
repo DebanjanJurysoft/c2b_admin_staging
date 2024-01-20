@@ -289,7 +289,7 @@ export default {
         },
         async selected_vendor(val) {
             if (val) { 
-                this.fetchCategories()
+                await this.fetchCategories()
             }
         },
         async visible(val) {
@@ -682,13 +682,19 @@ export default {
                 console.log(error);
             }
         },
+        async setVendor(vendor_id) {
+            this.selected_vendor = vendor_id
+            await this.fetchCategories()
+        },
+        async setCategory(category_id) {
+            this.selected_category = category_id
+            await this.fetchSubCategories()
+        },
         async placeProductData(data) {
             this.loader = true
             this.update_id = data.id
-            this.selected_vendor = data.vendor_id
-            this.selected_category = data.category_id
-            await this.fetchSubCategories()
-            console.log(data);
+            await this.setVendor(data.vendor_id)
+            await this.setCategory(data.category_id)
             this.selected_sub_category = data?.vendor_sub_category_product_associations?.length ? data.vendor_sub_category_product_associations.map(e => {
                 console.log(e);
                 return {
