@@ -165,7 +165,7 @@
                                         <label class="input-label">DOB: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="date" v-model="vendor_data.personal.dob" />
+                                        <b-form-input :disabled="!vendor_data.personal.will_Edit" type="date" v-model="vendor_data.personal.dob" :max="formatDate(new Date())"/>
                                     </div>
                                 </div>
                             </div>
@@ -1095,6 +1095,9 @@ export default {
                     disable: false
                 },
             ]
+            this.vendor_data.personal.will_Edit = true
+            this.vendor_data.store.will_Edit = true
+            this.vendor_data.bank.will_Edit = true
             this.vendor_data.verify_otp = false
             this.vendor_data.otp_verified = false
         }
@@ -1550,6 +1553,12 @@ export default {
                 })
                 if (response.data.code == 200) {
                     this.vendor_data.otp_verified = true
+                    this.type = 'EDIT'
+                    this.vendor_login_details = {
+                        vendor_id: this.created_vendor_id,
+                        username: this.vendor_data.profile.email,
+                        password: null
+                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -1557,6 +1566,19 @@ export default {
         },
         async sendOtp() {
             try {
+                if (!this.vendor_data.profile.fullname || !this.vendor_data.profile.fullname.trim()) {
+                    throw 'Enter valid fullname.'
+                }
+                if (!this.vendor_data.profile.email || !this.vendor_data.profile.email.trim()) {
+                    throw 'Enter valid email / phone number.'
+                }
+                if (!this.vendor_data.profile.password || !this.vendor_data.profile.password.trim()) {
+                    throw 'Enter valid password.'
+                }
+                if (!this.vendor_data.profile.confirm_password || !this.vendor_data.profile.confirm_password.trim()) {
+                    if (this.vendor_data.profile.password != this.vendor_data.profile.confirm_password) throw 'Password and confirm password has to be same.'
+                    throw 'Enter valid confirm password.'
+                }
                 const { validEmail, validPhone } = this.isValid(this.vendor_data.profile.email)
                 if (validPhone) {
                     this.vendor_data.profile.email = `91${this.vendor_data.profile.email}`
@@ -1588,7 +1610,12 @@ export default {
                     this.vendor_data.verify_otp = true
                 }
             } catch (error) {
-                console.log(error);
+                this.$toast.show(error.message || error, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: 'error'
+                })
             }
         }
     }
