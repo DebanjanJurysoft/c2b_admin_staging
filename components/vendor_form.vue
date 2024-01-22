@@ -175,7 +175,7 @@
                                         <label class="input-label">Gender: </label>
                                     </div>
                                     <div class="col-12">
-                                        <b-form-select :disabled="!vendor_data.personal.will_Edit" v-model="vendor_data.personal.gender" :options="gender_list"></b-form-select>
+                                        <b-form-select placeholder="Select Gender" :disabled="!vendor_data.personal.will_Edit" v-model="vendor_data.personal.gender" :options="gender_list"></b-form-select>
                                     </div>
                                 </div>
                             </div>
@@ -480,18 +480,20 @@
                         <div v-if="vendor_data.store.type_market_place == 'PRODUCT'">
                             <div class="d-flex flex-row my-2" v-if="vendor_data.store.selected_product.find(e => e.category_name == 'Food Court')">
                                 <div class="col-12">
+                                    <pre>{{ vendor_data.store.selected_mall }}</pre>
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         <div class="col-3">
                                             <label class="input-label">Mall Name: </label>
                                         </div>
                                         <div class="col-9">
-                                            <vSelect 
+                                            <b-form-select 
                                                 class="v-select"
                                                 :disabled="!vendor_data.store.will_Edit"
                                                 v-model="vendor_data.store.selected_mall"
-                                                :label="'name'"
+                                                :text-field="'name'"
+                                                :value-field="'id'"
                                                 :options="malls_list"
-                                            ></vSelect>
+                                            ></b-form-select>
                                         </div>
                                     </div>
                                 </div>
@@ -930,10 +932,26 @@ export default {
             services_list: [],
             bank_list: [],
             date: null,
-            gender_list: ['MALE', 'FEMALE', 'OTHERS'],
-            type_market_place_list: ['PRODUCT', 'SERVICES'],
+            gender_list: [
+                {value: null, text: 'Select a Gender'},
+                {value: 'MALE', text: 'MALE'},
+                {value: 'FEMALE', text: 'FEMALE'},
+                {value: 'OTHERS', text: 'OTHERS'}, 
+            ],
+            type_market_place_list: [
+                {value: null, text: 'Select market place type'},
+                {value: 'PRODUCT', text: 'PRODUCT'},
+                {value: 'SERVICES', text: 'SERVICES'}
+            ],
             delivery_types_list: [],
-            identity_proof_list: ['PAN CARD', 'AADHAR CARD', 'VOTER CARD', 'PASSPORT', 'DRIVING LICENSE'],
+            identity_proof_list: [
+                { value: null, text: 'Select a identity proof type'},
+                { value: 'PAN CARD', text: 'PAN CARD'},
+                { value: 'AADHAR CARD', text: 'AADHAR CARD'},
+                { value: 'VOTER CARD', text: 'VOTER CARD'},
+                { value: 'PASSPORT', text: 'PASSPORT'},
+                { value: 'DRIVING LICENSE', text: 'DRIVING LICENSE'},
+            ],
             created_vendor_id: null,
             vendor_data: {
                 profile: {
@@ -1121,7 +1139,10 @@ export default {
                     delete e.stores_in_mall
                     return e
                 })
-                console.log(this.malls_list);
+                this.malls_list.unshift({
+                    id: null,
+                    name: 'Select a mall'
+                })
             } catch (error) {
                 console.log(error);
             }
@@ -1241,7 +1262,7 @@ export default {
             this.vendor_data.store.conv_fee  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.conv_fee : null
             this.vendor_data.store.gst_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.gst_file_url : null
             this.vendor_data.store.fssai_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.fssai_file_url : null
-            this.vendor_data.store.selected_mall  = this.vendor_data_for_edit?.store?.mall_stores_associations ? this.vendor_data_for_edit?.store?.mall_stores_associations?.mall : null
+            this.vendor_data.store.selected_mall  = this.vendor_data_for_edit?.store?.mall_stores_associations && this.vendor_data_for_edit?.store?.mall_stores_associations?.mall ? this.vendor_data_for_edit?.store?.mall_stores_associations?.mall?.id : null
 
 
             this.vendor_data.bank.new_filling = this.vendor_data_for_edit?.vendor_bank_detail ? true : false
@@ -1369,7 +1390,7 @@ export default {
                     pincode: this.vendor_data.store.pincode,
                     landmark: this.vendor_data.store.landmark,
                     scheduled_order: this.vendor_data.store.scheduled_order ? Boolean(this.vendor_data.store.scheduled_order) : false,
-                    mall: this.vendor_data.store.selected_mall.id,
+                    mall: this.vendor_data.store.selected_mall,
                     lat: this.vendor_data.store.lat,
                     lng: this.vendor_data.store.lng,
                     type_market_place: this.vendor_data.store.type_market_place,
