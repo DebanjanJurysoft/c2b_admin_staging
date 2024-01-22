@@ -357,7 +357,7 @@
                                         <label class="input-label">Identity Proof File: </label>
                                     </div>
                                     <div class="d-flex flex-column col-12">
-                                        <b-form-file :disabled="!vendor_data.personal.will_Edit" @input="changeIdentityImage($event)" v-model="vendor_data.personal.identity_proof_file" ref="file-input" class="mb-2"></b-form-file>
+                                        <b-form-file :disabled="!vendor_data.personal.will_Edit" @input="changeIdentityImage($event)" v-model="vendor_data.personal.identity_proof_file" ref="file-input" accept=".jpg, .jpeg, .png" class="mb-2"></b-form-file>
                                         <div class="d-flex" v-if="vendor_data.personal.identity_proof_file_url" >
                                             <a :href="vendor_data.personal.identity_proof_file_url" target="_blank">
                                                 <img :src="vendor_data.personal.identity_proof_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
@@ -621,7 +621,7 @@
                                                 <label class="input-label">GST File: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-file :disabled="!vendor_data.store.will_Edit" @input="handleFileUploadForGst($event)" v-model="vendor_data.store.gst_file" ref="file-input" plain class="mb-2"></b-form-file>
+                                                <b-form-file :disabled="!vendor_data.store.will_Edit" @input="handleFileUploadForGst($event)" v-model="vendor_data.store.gst_file" ref="file-input" plain class="mb-2" accept=".jpg, .jpeg, .png" ></b-form-file>
                                                 <div class="d-flex" v-if="vendor_data.store.gst_file_url" >
                                                     <a :href="vendor_data.store.gst_file_url" target="_blank">
                                                         <img :src="vendor_data.store.gst_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
@@ -636,7 +636,7 @@
                                                 <label class="input-label">FSSAI File: </label>
                                             </div>
                                             <div class="col-12">
-                                                <b-form-file :disabled="!vendor_data.store.will_Edit" @input="handleFileUploadFor($event)" v-model="vendor_data.store.fssai_file" ref="file-input" plain class="mb-2"></b-form-file>
+                                                <b-form-file :disabled="!vendor_data.store.will_Edit" @input="handleFileUploadFor($event)" v-model="vendor_data.store.fssai_file" ref="file-input" plain class="mb-2" accept=".jpg, .jpeg, .png" ></b-form-file>
                                                 <div class="d-flex" v-if="vendor_data.store.fssai_file_url" >
                                                     <a :href="vendor_data.store.fssai_file_url" target="_blank">
                                                         <img :src="vendor_data.store.fssai_file_url" alt="Image" style="width: 100px !important; height: 100px !important; border-radius: 16px !important; object-fit: scale-down !important;">
