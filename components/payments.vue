@@ -24,10 +24,10 @@
                         <span class="text-heading" style="padding-left: 0px;">End Date</span>
                         <input type="date" class="form-control" v-model="end_date" style="width: max-content;">
                     </div>
-                    <div class="d-flex flex-row" v-if="selected_tab.id == 1">
+                    <!-- <div class="d-flex flex-row" v-if="selected_tab.id == 1">
                         <span class="text-heading" style="padding-left: 0px;">Cut (%)</span>
                         <b-form-select style="width: 100px;" disabled @change="changeTab(0)" v-model="cut_percentage" :options="cut_percentage_options"></b-form-select>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="w15">
                     <!-- top pagination  -->
@@ -50,6 +50,10 @@
                     ><i class="fa fa-upload mr-2"></i>Upload Paid Data</button>
                 </div>
                 <div class="d-flex flex-row align-items-center" style="gap: 10px;" v-if="selected_tab.id == 1">
+                    <div class="d-flex flex-row" v-if="selected_tab.id == 1">
+                        <span class="text-heading" style="padding-left: 0px;">Cut (%)</span>
+                        <b-form-select style="width: 100px;" disabled @change="changeTab(0)" v-model="cut_percentage" :options="cut_percentage_options"></b-form-select>
+                    </div>
                     <button 
                         class="button" 
                         @click.prevent="exportScreenData"

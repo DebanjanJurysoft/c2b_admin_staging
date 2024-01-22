@@ -15,7 +15,7 @@
                     <Pagination @changePage="changePage" :data_list="customers" :per_page="per_page" :total_rows="total" :page="page"/>
                 </div>
             </div>
-            <Table @openSpecific="openSpecific" :headings="heading" :data_rows="customers"  :file_name="'user_list.csv'" :page="page" :rows="per_page"/>
+            <Table :note="{ text: 'Click On The Name / Address / Cart Items To See Details.', class: 'text-danger' }" @openSpecific="openSpecific" :headings="heading" :data_rows="customers"  :file_name="'user_list.csv'" :page="page" :rows="per_page"/>
             <Pagination @changePage="changePage" :data_list="customers" :per_page="per_page" :total_rows="total" :page="page"/>
             <SidebarComponent @openDetails="openDetails" :visible="show_details" :title="sidebar_title" v-if="customer_cart_details" :cart_details="customer_cart_details"/>
             <SidebarComponent @openDetails="openDetails" :visible="show_details" :title="sidebar_title" v-if="customer_addresses" :address_details="customer_addresses"/>
