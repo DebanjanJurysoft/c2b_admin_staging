@@ -119,11 +119,12 @@
             <td>Total Price</td>
             <td>{{ `₹ ${(parseFloat(findTotal(order_details)).toFixed(2)).toLocaleString("en-IN")}` }}</td>
             <td v-if="selected_tab.id == 4" class="d-flex gap10 justify-content-center">
-              <button class="btn btn-success btn-sm"
+              <button class="btn btn-sm"
+                :class="checkAcceptOrReject(order_details) ? 'btn-success' : 'btn-danger'"
                 v-b-tooltip.hover
                 title="Accept"
                 @click.prevent="accept_reject(order_details)"
-              ><i class="fa fa-check mr-2"></i>Accept</button>
+              ><i class="fa mr-2" :class="checkAcceptOrReject(order_details) ? 'fa-check' : 'fa-ban'"></i>{{ checkAcceptOrReject(order_details) ? 'Accept' : 'Reject'}}</button>
             </td>
           </tr>
         </tfoot>
@@ -366,6 +367,9 @@ export default {
     }
   },
   methods: {
+    checkAcceptOrReject(data) {
+      return data.length != data.filter(e => !e.checked).length
+    },
     findTotal(data) {
       let total = 0
       for (const order of data) {
