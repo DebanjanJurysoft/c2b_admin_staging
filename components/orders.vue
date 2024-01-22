@@ -661,7 +661,7 @@ export default {
             ? new Date(order.createdAt).toLocaleDateString()
             : "N/A",
           time: order.createdAt
-            ? new Date(order.createdAt).toLocaleTimeString()
+            ? new Date(order.createdAt).toLocaleTimeString('en-IN').toLocaleUpperCase()
             : "N/A",
           id: order.id,
           full_data: order,
@@ -702,7 +702,7 @@ export default {
               ? new Date(order.createdAt).toLocaleDateString()
               : "N/A",
             time: order.createdAt
-              ? new Date(order.createdAt).toLocaleTimeString()
+              ? new Date(order.createdAt).toLocaleTimeString('en-IN').toLocaleUpperCase()
               : "N/A",
             id: order.id,
             full_data: order,
@@ -746,7 +746,7 @@ export default {
               ? new Date(order.createdAt).toLocaleDateString()
               : "N/A",
             time: order.createdAt
-              ? new Date(order.createdAt).toLocaleTimeString()
+              ? new Date(order.createdAt).toLocaleTimeString('en-IN').toLocaleUpperCase()
               : "N/A",
             id: order.id,
             full_data: order,
@@ -787,7 +787,7 @@ export default {
             ? new Date(order.createdAt).toLocaleDateString()
             : "N/A",
           time: order.createdAt
-            ? new Date(order.createdAt).toLocaleTimeString()
+            ? new Date(order.createdAt).toLocaleTimeString('en-IN').toLocaleUpperCase()
             : "N/A",
           id: order.id,
           full_data: order,
