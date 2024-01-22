@@ -2316,7 +2316,9 @@ export default {
         if (response.data.code == 401) {
           await this.logout();
         }
-        this.vendor_delivery_types = response.data.delivery_types;
+        this.vendor_delivery_types = response.data.delivery_types.map(e => {
+          return e.delivery_type
+        });
         this.create_branch_data.vendor_delivery_types =
           this.vendor_delivery_types;
       } catch (error) {
