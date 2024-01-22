@@ -1128,7 +1128,7 @@
               <div class="d-flex flex-column px-3 w50">
                 <b-form-group label="PIN" class="mb-0">
                   <b-form-input
-                    type="text"
+                    type="number"
                     v-model="create_branch_data.pin"
                     placeholder="PIN"
                   />
@@ -1148,7 +1148,7 @@
               <div class="d-flex flex-column px-3 w50">
                 <b-form-group label="Lattitude" class="mb-0">
                   <b-form-input
-                    type="text"
+                    type="number"
                     v-model="create_branch_data.lat"
                     placeholder="Lattitude"
                   />
@@ -1157,7 +1157,7 @@
               <div class="d-flex flex-column px-3 w50">
                 <b-form-group label="Longitude" class="mb-0">
                   <b-form-input
-                    type="text"
+                    type="number"
                     v-model="create_branch_data.lng"
                     placeholder="Longitude"
                   />
@@ -1940,6 +1940,30 @@ export default {
       this.$router.push("/login");
     },
     async saveBranchDetails() {
+      if (!this.create_branch_data.pin || typeof this.create_branch_data.pin !== 'number') {
+        this.$toast.show('Enter a valid pincode', {
+          duration: 1500,
+          position: "top-right",
+          keepOnHover: true,
+          type: 'error',
+        });
+      }
+      if (!this.create_branch_data.lat || typeof this.create_branch_data.lat !== 'number') {
+        this.$toast.show('Enter a valid lattitude', {
+          duration: 1500,
+          position: "top-right",
+          keepOnHover: true,
+          type: 'error',
+        });
+      }
+      if (!this.create_branch_data.lng || typeof this.create_branch_data.lng !== 'number') {
+        this.$toast.show('Enter a valid longitude', {
+          duration: 1500,
+          position: "top-right",
+          keepOnHover: true,
+          type: 'error',
+        });
+      }
       this.loader = true;
       if (
         !this.create_branch_data.vendor_delivery_types.find(
