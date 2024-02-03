@@ -680,6 +680,7 @@ export default {
                     'order ID': payment.ord_id,
                     'order_id': payment.id,
                     'store ID': payment.store.id,
+                    'Payment REF ID': payment.payments[0].ref_id,
                     'vendor ID': payment.vendor.id,
                     'vendor name': payment.vendor.fullname,
                     'vendor email': payment.vendor.personal_email,
@@ -697,6 +698,7 @@ export default {
                     'order ID': payment.ord_id,
                     'order_id': payment.id,
                     'store ID': payment.store.id,
+                    'Payment REF ID': payment.payments[0].ref_id,
                     'vendor ID': payment.vendor.id,
                     'vendor name': payment.vendor.fullname,
                     'vendor email': payment.vendor.personal_email,
@@ -717,6 +719,9 @@ export default {
                 this.payment_heading = [
                     {
                         name: 'order ID'
+                    },
+                    {
+                        name: 'Payment REF ID'
                     },
                     {
                         name: 'vendor ID'
