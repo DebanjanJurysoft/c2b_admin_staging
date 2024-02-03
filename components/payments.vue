@@ -772,6 +772,9 @@ export default {
                         name: 'vendor ID'
                     },
                     {
+                        name: 'Payment REF ID'
+                    },
+                    {
                         name: 'vendor name'
                     },
                     {
