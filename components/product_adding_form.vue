@@ -1,18 +1,6 @@
 <template>
-    <b-sidebar 
-    id="product_add_form" 
-    backdrop 
-    :visible="visible" 
-    title="Sidebar" 
-    right 
-    shadow
-    backdrop-variant="dark"
-    no-close-on-backdrop
-    no-header
-    lazy
-    no-footer
-    width="500px"
-    >
+    <b-sidebar id="product_add_form" backdrop :visible="visible" title="Sidebar" right shadow backdrop-variant="dark"
+        no-close-on-backdrop no-header lazy no-footer width="500px">
         <div v-if="loader" class="loader">
             <LoaderComp />
         </div>
@@ -27,12 +15,8 @@
                         <label class="input-label">Vendor: </label>
                     </div>
                     <div class="w-100">
-                        <b-form-select
-                            style="width: 100% !important;"
-                            value-field="id"
-                            text-field="fullname"
-                            v-model="selected_vendor"
-                            :options="vendor_list">
+                        <b-form-select style="width: 100% !important;" value-field="id" text-field="fullname"
+                            v-model="selected_vendor" :options="vendor_list">
                         </b-form-select>
                     </div>
                 </div>
@@ -49,59 +33,69 @@
                             <label class="input-label">Category: </label>
                         </div>
                         <div class="w-100">
-                            <b-form-select
-                                style="width: 100% !important;"
-                                value-field="id"
-                                text-field="category_name"
-                                v-model="selected_category"
-                                :options="category_list">
+                            <b-form-select style="width: 100% !important;" value-field="id" text-field="category_name"
+                                v-model="selected_category" :options="category_list">
                             </b-form-select>
                         </div>
                     </div>
                 </div>
-                <div class="d-flex flex-row w-100"  v-if="selected_category && !innerLoader">
+                <div class="d-flex flex-row w-100" v-if="selected_category && !innerLoader">
                     <div class="d-flex flex-column align-items-left w-100">
                         <div class="w-100">
                             <label class="input-label">Sub-Category: </label>
                         </div>
                         <div class="w-100">
-                            <vSelect
-                                style="width: 100% !important;"
-                                label="name"
-                                multiple
-                                v-model="selected_sub_category"
+                            <vSelect style="width: 100% !important;" label="name" multiple v-model="selected_sub_category"
                                 :options="sub_category_list">
                             </vSelect>
                         </div>
                     </div>
                 </div>
-                <template 
-                    v-if="selected_category && ['Food', 'Food Court'].includes(category_list.find(e => e.id == selected_category).category_name)"
-                >
-                    <div class="d-flex flex-row w-100">
-                        <div class="d-flex flex-row align-items-center w-100">
-                            <div class="w-50">
-                                <label class="input-label">Food Type: </label>
+                <template>
+                    <div class="d-flex flex-column align-items-left w-100">
+                        <div class="w-100">
+                            <label class="input-label">Select attributes: </label>
+                        </div>
+                        <div class="w-100">
+                            <vSelect style="width: 100% !important;" label="attribute_name" multiple
+                                v-model="selected_attributes" :options="attributes_list">
+                            </vSelect>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column align-items-left w-100" v-if="selected_attributes.length">
+                        <div class="w-100">
+                            <label class="input-label">Attributes: </label>
+                        </div>
+                        <div class="w-100" v-for="(attribute, attr_index) in selected_attributes">
+                            <div class="w-100 selected_attribute_container">
+                                <div class="d-flex selected_attribute"
+                                v-for="(selected_data, selected_data_index) in attribute.attributes">
+                                <span>{{ selected_data }}</span>
+                                <i class="fa fa-times attribute_cross_button" @click.prevent="() => {
+                                    attribute.attributes.splice(selected_data_index, 1)
+                                }"></i>
+                                </div>
                             </div>
-                            <div class="w-50 pt-3 d-flex flex-row-reverse">
-                                <b-form-group
-                                v-slot="{ ariaDescribedby }"
-                                >
-                                    <b-form-radio-group
-                                        id="btn-radios-2"
-                                        v-model="selected_food_type"
-                                        :options="food_types"
-                                        :aria-describedby="ariaDescribedby"
-                                        :button-variant="selected_food_type == 'VEG' ? 'outline-success' : 'outline-danger'"
-                                        size="sm"
-                                        name="radio-btn-outline"
-                                        buttons
-                                    ></b-form-radio-group>
-                                </b-form-group>
-
+                            <b-form-input :placeholder="attribute.attribute_name" v-model="attribute.attribute"
+                            @input="inputAttribute($event, attr_index)"></b-form-input>
+                        </div>
+                        <div class="w-100">
+                            <div class="w-100">
+                                <label class="input-label">Combinations: </label>
+                            </div>
+                            <div class="py-2 d-flex flex-column" v-for="(attribute_value, attr_val_index) in attribute_values">
+                                <span>{{ Object.keys(attribute_value).filter(e => !['price', 'stock'].includes(e)).map(e => attribute_value[e]).join('-') }}</span>
+                                <div class="d-flex">
+                                    <b-form-input placeholder="Price" v-model="attribute_value.price"></b-form-input>
+                                    <b-form-input placeholder="Stock" v-model="attribute_value.stock"></b-form-input>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </template>
+                <!-- <template 
+                    v-if="selected_category && !['Food', 'Food Court'].includes(category_list.find(e => e.id == selected_category).category_name)"
+                >
                     <div class="d-flex flex-row w-100">
                         <div class="d-flex flex-column align-items-left w-100">
                             <div class="w-100">
@@ -125,18 +119,6 @@
                                     rows="3"
                                     max-rows="6"
                                 ></b-form-textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex flex-row w-100">
-                        <div class="d-flex flex-column align-items-left w-100">
-                            <div class="w-100">
-                                <label class="input-label">Product Timings: </label>
-                            </div>
-                            <div class="w-100 d-flex flex-row align-items-center" style="gap: 15px !important;">
-                                <b-form-checkbox class="w30" v-model="foodData.hasTime" switch><span class="text-heading" style="margin-left: 0px !important;">Has Time</span></b-form-checkbox>
-                                <b-form-timepicker class="w30" v-model="foodData.openTime" placeholder="time" locale="en"></b-form-timepicker>
-                                <b-form-timepicker class="w30" v-model="foodData.closeTime" placeholder="time" locale="en"></b-form-timepicker>
                             </div>
                         </div>
                     </div>
@@ -222,6 +204,144 @@
                             </div>
                         </div>
                     </div>
+                </template> -->
+                <template
+                    v-if="selected_category && ['Food', 'Food Court'].includes(category_list.find(e => e.id == selected_category).category_name)">
+                    <div class="d-flex flex-row w-100">
+                        <div class="d-flex flex-row align-items-center w-100">
+                            <div class="w-50">
+                                <label class="input-label">Food Type: </label>
+                            </div>
+                            <div class="w-50 pt-3 d-flex flex-row-reverse">
+                                <b-form-group v-slot="{ ariaDescribedby }">
+                                    <b-form-radio-group id="btn-radios-2" v-model="selected_food_type" :options="food_types"
+                                        :aria-describedby="ariaDescribedby"
+                                        :button-variant="selected_food_type == 'VEG' ? 'outline-success' : 'outline-danger'"
+                                        size="sm" name="radio-btn-outline" buttons></b-form-radio-group>
+                                </b-form-group>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row w-100">
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
+                                <label class="input-label">Product Title: </label>
+                            </div>
+                            <div class="w-100">
+                                <b-form-input v-model="foodData.title" placeholder="Product Title"></b-form-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row w-100">
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
+                                <label class="input-label">Product Description: </label>
+                            </div>
+                            <div class="w-100">
+                                <b-form-textarea id="textarea" v-model="foodData.description"
+                                    placeholder="Product Description.." rows="3" max-rows="6"></b-form-textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row w-100">
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
+                                <label class="input-label">Product Timings: </label>
+                            </div>
+                            <div class="w-100 d-flex flex-row align-items-center" style="gap: 15px !important;">
+                                <b-form-checkbox class="w30" v-model="foodData.hasTime" switch><span class="text-heading"
+                                        style="margin-left: 0px !important;">Has Time</span></b-form-checkbox>
+                                <b-form-timepicker class="w30" v-model="foodData.openTime" placeholder="time"
+                                    locale="en"></b-form-timepicker>
+                                <b-form-timepicker class="w30" v-model="foodData.closeTime" placeholder="time"
+                                    locale="en"></b-form-timepicker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row w-100">
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
+                                <label class="input-label">Product Images: </label>
+                            </div>
+                            <div class="w-100">
+                                <input @input="handleFile($event)" accept="image/*" type="file" id="files" name="files"
+                                    multiple />
+                            </div>
+                            <div class="d-flex flex-row" v-if="title == 'Edit Product'" style="
+                                    padding: 10px;
+                                    overflow-x: scroll !important;
+                                    width: 100% !important;
+                                    object-fit: cover;
+                                ">
+                                <div class="d-flex flex-row" style="
+                                        gap: 10px;
+                                    ">
+                                    <div class="d-flex flex-column gap8" style="height: max-content; width: max-content;"
+                                        v-for="(image, image_index) in selected_images" :key="image_index">
+                                        <img style="height: 100px !important; width: 100px !important; border-radius: 16px;"
+                                            :src="image.image_url" alt="Image">
+                                        <button @click.prevent="deleteImage(image, image_index)"
+                                            class="w100 btn btn-danger"><i class="fa fa-trash mr-2"></i>Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card d-flex flex-column p-3 mt-3" style="border-radius: 16px;">
+                        <div class="d-flex flex-row w-100">
+                            <div class="d-flex flex-column align-items-left w-100">
+                                <div class="w-100">
+                                    <label class="input-label">Selling Price (₹): </label>
+                                </div>
+                                <div class="w-100">
+                                    <b-form-input v-model="foodData.price" placeholder="Price"></b-form-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row w-100">
+                            <div class="d-flex flex-column align-items-left w-100">
+                                <div class="w-100">
+                                    <label class="input-label">Actual Price (MRP) (₹): </label>
+                                </div>
+                                <div class="w-100">
+                                    <b-form-input placeholder="Compare Price"
+                                        v-model="foodData.compare_price"></b-form-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row w-100">
+                            <div class="d-flex flex-column align-items-left w-100">
+                                <div class="w-100">
+                                    <label class="input-label">GST (%): </label>
+                                </div>
+                                <div class="w-100">
+                                    <b-form-input placeholder="GST" v-model="foodData.gst"></b-form-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row w-100">
+                            <div class="d-flex flex-column align-items-left w-100">
+                                <div class="w-100">
+                                    <label class="input-label">Packing Charges: </label>
+                                </div>
+                                <div class="w-100">
+                                    <b-form-input placeholder="Packing Charges"
+                                        v-model="foodData.packing_charges"></b-form-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row w-100">
+                            <div class="d-flex flex-column align-items-left w-100">
+                                <div class="w-100">
+                                    <label class="input-label">Weight (In KG): </label>
+                                </div>
+                                <div class="w-100">
+                                    <b-form-input placeholder="Weight (In KG)" v-model="foodData.weight"></b-form-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </template>
             </template>
             <div v-if="selected_vendor && !innerLoader" class="d-flex flex-row justify-content-center p-3 w-100">
@@ -248,8 +368,26 @@ export default {
         'title',
         'product_data'
     ],
-    data() { 
+    data() {
         return {
+            attributes_list: [
+                {
+                    id: 1,
+                    attribute_name: 'COLOR',
+                    attribute: null,
+                    attributes: []
+                },
+                {
+                    id: 2,
+                    attribute_name: 'SIZE',
+                    attribute: null,
+                    attributes: []
+                },
+            ],
+            selected_attributes: [],
+            attribute_values: [],
+
+
             update_id: null,
             innerLoader: false,
             selected_images: [],
@@ -282,13 +420,13 @@ export default {
     },
     watch: {
         async selected_category(val) {
-            if (val) { 
+            if (val) {
                 console.log(val);
                 this.fetchSubCategories()
             }
         },
         async selected_vendor(val) {
-            if (val) { 
+            if (val) {
                 await this.fetchCategories()
             }
         },
@@ -304,7 +442,54 @@ export default {
         }
     },
     methods: {
-        async deleteImage(image, image_index) { 
+        setAttributeValues(data) {
+            this.attribute_values = []
+            for (const iterator of data) {
+                let combo = {}
+                for (const iterator2 of iterator) {
+                    combo[Object.keys(iterator2)[0]] = iterator2[Object.keys(iterator2)[0]]
+                }
+                this.attribute_values.push({
+                    ...combo,
+                    price: null,
+                    stock: null
+                })
+            }
+        },
+        generateCombinations(attributeObjects) {
+            function generateCombinationsRecursive(index, currentCombination, result) {
+                if (index === attributeObjects.length) {
+                    result.push([...currentCombination]);
+                    return;
+                }
+
+                const currentObject = attributeObjects[index];
+
+                if (currentObject.attributes && currentObject.attributes.length > 0) {
+                    for (const attributeValue of currentObject.attributes) {
+                        currentCombination.push({ [currentObject.attribute_name]: attributeValue });
+                        generateCombinationsRecursive(index + 1, currentCombination, result);
+                        currentCombination.pop();
+                    }
+                } else {
+                    // If current object has no attributes, skip to the next object
+                    generateCombinationsRecursive(index + 1, currentCombination, result);
+                }
+            }
+
+            const result = [];
+            generateCombinationsRecursive(0, [], result);
+            this.setAttributeValues(result)
+        },
+        async inputAttribute(event, attr_index) {
+            const commaAtEnd = event[event.length - 1]
+            if (commaAtEnd == ',' ? true : false) {
+                this.selected_attributes[attr_index].attributes.push(event.replace(',', ''))
+                this.selected_attributes[attr_index].attribute = null
+            }
+            this.generateCombinations(this.selected_attributes)
+        },
+        async deleteImage(image, image_index) {
             try {
                 if (image.id != 0) {
                     await this.deleteWithPopup('/delete-product-image', 'product_image_id', image.id, image_index)
@@ -326,41 +511,41 @@ export default {
                 const id = `DeleteModal${id}`
                 this.$bvToast.hide(id)
                 const $closeButton = h(
-                'b-button',
-                {
-                    on: {
-                        click: () => {
-                            this.$bvToast.hide(id)
-                        }
+                    'b-button',
+                    {
+                        on: {
+                            click: () => {
+                                this.$bvToast.hide(id)
+                            }
+                        },
+                        class: 'btn btn-primary mx-1',
+                        style: 'margin: 0 auto;'
                     },
-                    class: 'btn btn-primary mx-1',
-                    style: 'margin: 0 auto;'
-                },
-                'No'
+                    'No'
                 )
                 const $acceptButton = h(
-                'b-button',
-                {
-                    on: {
-                        click: async () => {
-                            let data = {}
-                            data[key] = data_id
-                            const deleteresponse = await this.$axios.post(path, data)
-                            this.$toast.show(deleteresponse.data.message, {
-                                duration: 1500,
-                                position: 'top-right',
-                                keepOnHover: true,
-                                type: deleteresponse.data.status
-                            })
-                            if (index != null) {
-                                this.selected_images.splice(index, 1)
+                    'b-button',
+                    {
+                        on: {
+                            click: async () => {
+                                let data = {}
+                                data[key] = data_id
+                                const deleteresponse = await this.$axios.post(path, data)
+                                this.$toast.show(deleteresponse.data.message, {
+                                    duration: 1500,
+                                    position: 'top-right',
+                                    keepOnHover: true,
+                                    type: deleteresponse.data.status
+                                })
+                                if (index != null) {
+                                    this.selected_images.splice(index, 1)
+                                }
+                                this.$bvToast.hide(id)
                             }
-                            this.$bvToast.hide(id)
-                        }
+                        },
+                        class: 'btn btn-danger mx-1',
                     },
-                    class: 'btn btn-danger mx-1',
-                },
-                'Yes'
+                    'Yes'
                 )
                 const $buttonContainer = h(
                     'div',
@@ -425,13 +610,13 @@ export default {
         async fetchSubCategories() {
             try {
                 this.innerLoader = true
-                const path = `/fetch-sub-category?category=${this.category_list.find(e => e.id == this.selected_category).category_name}`
+                const path = `/fetch-sub-category?category=${this.category_list.find(e => e.id == this.selected_category).category_name.replaceAll('&', "%26")}`
                 console.log(path);
                 const response = await this.$axios.get(path)
                 if (response.data.code == 401) {
                     await this.logout()
                 }
-                this.sub_category_list = response.data.subCategories.map(e => ({id: e.id, name: e.name}))
+                this.sub_category_list = response.data.subCategories.map(e => ({ id: e.id, name: e.name }))
                 this.innerLoader = false
             } catch (error) {
                 console.log(error);
@@ -636,7 +821,7 @@ export default {
                     keepOnHover: true,
                     type: response.data.status
                 })
-                this.created_product_id = this.update_id ? {id: this.update_id} : response.data.created_product
+                this.created_product_id = this.update_id ? { id: this.update_id } : response.data.created_product
                 await this.saveImage()
                 this.resetForm()
             } catch (error) {
@@ -672,7 +857,7 @@ export default {
                 this.$toast.show(response.data.message, {
                     duration: 1500,
                     position: 'top-right',
-                    keepOnHover: true, 
+                    keepOnHover: true,
                     type: response.data.status
                 })
                 if (response.data.code == 200) {
@@ -730,5 +915,34 @@ export default {
     border-bottom-left-radius: 24px;
     border-top-left-radius: 24px;
     padding: 16px;
+}
+
+.selected_attribute {
+    width: max-content;
+    border: 2px solid #e74c3d;
+    padding: 5px 20px;
+    border-radius: 50px;
+    gap: 15px;
+    background: #ffc1ba;
+    color: white;
+    font-weight: 700;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 6px 4px;
+}
+
+.selected_attribute_container {
+    display: flex;
+    gap: 10px;
+    font-size: 18px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+.attribute_cross_button {
+    background: #f46767;
+    padding: 3px 5px;
+    border-radius: 5px;
 }
 </style>

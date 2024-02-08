@@ -117,6 +117,14 @@ export default {
                             normal_img: '/icons/category-black.svg',
                             active_img: '/icons/category-white.svg'
                         },
+                        {
+                            id: 22,
+                            name: 'attributes',
+                            text: 'attributes',
+                            noSearch: true,
+                            normal_img: '/icons/category-black.svg',
+                            active_img: '/icons/category-white.svg'
+                        },
                     ]
                 },
                 {

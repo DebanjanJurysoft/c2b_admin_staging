@@ -9,6 +9,7 @@
             <Dashboard v-if="selectedMenu.name == 'home'"/>
             <!-- <Category v-if="selectedMenu.name == 'home'"/> -->
             <PrivacyPolicy :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'privacy policy'" />
+            <Attributes :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'attributes'" />
             <Plans :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'plans'" />
             <Vendors :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'vendors'" />
             <Coupons :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'coupons'" />
@@ -47,6 +48,7 @@ import Stores from '../components/stores.vue';
 import Malls from '../components/malls.vue';
 import PrivacyPolicy from '../components/privacy_policy.vue';
 import Notifications from '../components/notifications.vue';
+import Attributes from '../components/categoryAttributes.vue';
 
 export default {
     async beforeCreate() {
@@ -158,7 +160,7 @@ export default {
             this.selectedMenu = selected;
         }
     },
-    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy, Notifications, Reports }
+    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy, Notifications, Reports, Attributes }
 }
 </script>
 
