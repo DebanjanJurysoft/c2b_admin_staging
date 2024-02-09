@@ -10,7 +10,12 @@
                     v-model="filter_selected_category" :options="category_list">
                 </vSelect>
             </div>
-            <table class="table table-hover">
+            <table class="table table-hover" v-if="attribute_list.length == 0">
+                <tr class="text-center">
+                    No Record Found
+                </tr>
+            </table>
+            <table class="table table-hover" v-if="attribute_list.length">
                 <thead>
                     <th style="text-transform: uppercase;">SL No.</th>
                     <th style="text-transform: uppercase;">category</th>

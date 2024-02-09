@@ -51,49 +51,8 @@
                         </div>
                     </div>
                 </div>
-                <template>
-                    <div class="d-flex flex-column align-items-left w-100">
-                        <div class="w-100">
-                            <label class="input-label">Select attributes: </label>
-                        </div>
-                        <div class="w-100">
-                            <vSelect style="width: 100% !important;" label="attribute_name" multiple
-                                v-model="selected_attributes" :options="attributes_list">
-                            </vSelect>
-                        </div>
-                    </div>
-                    <div class="d-flex flex-column align-items-left w-100" v-if="selected_attributes.length">
-                        <div class="w-100">
-                            <label class="input-label">Attributes: </label>
-                        </div>
-                        <div class="w-100" v-for="(attribute, attr_index) in selected_attributes">
-                            <div class="w-100 selected_attribute_container">
-                                <div class="d-flex selected_attribute"
-                                v-for="(selected_data, selected_data_index) in attribute.attributes">
-                                <span>{{ selected_data }}</span>
-                                <i class="fa fa-times attribute_cross_button" @click.prevent="() => {
-                                    attribute.attributes.splice(selected_data_index, 1)
-                                }"></i>
-                                </div>
-                            </div>
-                            <b-form-input :placeholder="attribute.attribute_name" v-model="attribute.attribute"
-                            @input="inputAttribute($event, attr_index)"></b-form-input>
-                        </div>
-                        <div class="w-100">
-                            <div class="w-100">
-                                <label class="input-label">Combinations: </label>
-                            </div>
-                            <div class="py-2 d-flex flex-column" v-for="(attribute_value, attr_val_index) in attribute_values">
-                                <span>{{ Object.keys(attribute_value).filter(e => !['price', 'stock'].includes(e)).map(e => attribute_value[e]).join('-') }}</span>
-                                <div class="d-flex">
-                                    <b-form-input placeholder="Price" v-model="attribute_value.price"></b-form-input>
-                                    <b-form-input placeholder="Stock" v-model="attribute_value.stock"></b-form-input>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-                <!-- <template 
+                
+                <template 
                     v-if="selected_category && !['Food', 'Food Court'].includes(category_list.find(e => e.id == selected_category).category_name)"
                 >
                     <div class="d-flex flex-row w-100">
@@ -102,7 +61,7 @@
                                 <label class="input-label">Product Title: </label>
                             </div>
                             <div class="w-100">
-                                <b-form-input v-model="foodData.title" placeholder="Product Title"></b-form-input>
+                                <b-form-input v-model="otherProductData.title" placeholder="Product Title"></b-form-input>
                             </div>
                         </div>
                     </div>
@@ -114,7 +73,7 @@
                             <div class="w-100">
                                 <b-form-textarea
                                     id="textarea"
-                                    v-model="foodData.description"
+                                    v-model="otherProductData.description"
                                     placeholder="Product Description.."
                                     rows="3"
                                     max-rows="6"
@@ -153,23 +112,56 @@
                         </div>
                     </div>
                     <div class="card d-flex flex-column p-3 mt-3" style="border-radius: 16px;">
-                        <div class="d-flex flex-row w-100">
+                        <template>
                             <div class="d-flex flex-column align-items-left w-100">
                                 <div class="w-100">
-                                    <label class="input-label">Selling Price (₹): </label>
+                                    <label class="input-label">Select attributes: </label>
                                 </div>
                                 <div class="w-100">
-                                    <b-form-input v-model="foodData.price" placeholder="Price"></b-form-input>
+                                    <vSelect style="width: 100% !important;" label="attribute_name" multiple
+                                        v-model="selected_attributes" :options="attributes_list">
+                                    </vSelect>
                                 </div>
                             </div>
-                        </div>
+                            <div class="d-flex flex-column align-items-left w-100" v-if="selected_attributes.length">
+                                <div class="w-100">
+                                    <label class="input-label">Attributes: </label>
+                                </div>
+                                <div class="w-100" v-for="(attribute, attr_index) in selected_attributes">
+                                    <div class="w-100 selected_attribute_container">
+                                        <div class="d-flex selected_attribute"
+                                        v-for="(selected_data, selected_data_index) in attribute.attributes">
+                                        <span>{{ selected_data }}</span>
+                                        <i class="fa fa-times attribute_cross_button" @click.prevent="() => {
+                                            attribute.attributes.splice(selected_data_index, 1)
+                                        }"></i>
+                                        </div>
+                                    </div>
+                                    <b-form-input :placeholder="attribute.attribute_name" v-model="attribute.attribute"
+                                    @input="inputAttribute($event, attr_index)"></b-form-input>
+                                </div>
+                                <div class="w-100" v-if="attribute_values.length">
+                                    <div class="w-100">
+                                        <label class="input-label">Combinations: </label>
+                                    </div>
+                                    <div class="py-2 d-flex flex-column" v-for="(attribute_value, attr_val_index) in attribute_values">
+                                        <span>{{ Object.keys(attribute_value).filter(e => !['price', 'stock'].includes(e)).map(e => attribute_value[e]).join('-') }}</span>
+                                        <div class="d-flex">
+                                            <b-form-input type="number" placeholder="Price" v-model="attribute_value.price"></b-form-input>
+                                            <b-form-input type="number" placeholder="Stock" v-model="attribute_value.stock"></b-form-input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                         <div class="d-flex flex-row w-100">
                             <div class="d-flex flex-column align-items-left w-100">
                                 <div class="w-100">
                                     <label class="input-label">Actual Price (MRP) (₹): </label>
                                 </div>
                                 <div class="w-100">
-                                    <b-form-input placeholder="Compare Price" v-model="foodData.compare_price"></b-form-input>
+                                    <b-form-input placeholder="Compare Price"
+                                        v-model="otherProductData.compare_price"></b-form-input>
                                 </div>
                             </div>
                         </div>
@@ -179,7 +171,7 @@
                                     <label class="input-label">GST (%): </label>
                                 </div>
                                 <div class="w-100">
-                                    <b-form-input placeholder="GST" v-model="foodData.gst"></b-form-input>
+                                    <b-form-input placeholder="GST" v-model="otherProductData.gst"></b-form-input>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +181,7 @@
                                     <label class="input-label">Packing Charges: </label>
                                 </div>
                                 <div class="w-100">
-                                    <b-form-input placeholder="Packing Charges" v-model="foodData.packing_charges"></b-form-input>
+                                    <b-form-input placeholder="Packing Charges" v-model="otherProductData.packing_charges"></b-form-input>
                                 </div>
                             </div>
                         </div>
@@ -199,12 +191,59 @@
                                     <label class="input-label">Weight (In KG): </label>
                                 </div>
                                 <div class="w-100">
-                                    <b-form-input placeholder="Weight (In KG)" v-model="foodData.weight"></b-form-input>
+                                    <b-form-input placeholder="Weight (In KG)" v-model="otherProductData.weight"></b-form-input>
                                 </div>
                             </div>
                         </div>
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
+                                <label class="input-label">Free Delivery: </label>
+                            </div>
+                            <div class="w-100">
+                                <b-form-checkbox v-model="otherProductData.free_delivery" name="check-button" switch>{{ otherProductData.free_delivery ? 'Free Delivery Available' : 'Free Delivery Not Available.' }}</b-form-checkbox>
+                            </div>
+                            <div class="w-100">
+                                <b-form-input :disabled="!otherProductData.free_delivery" placeholder="Free Delivery If More" v-model="otherProductData.free_delivery_if_more"></b-form-input>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
+                                <label class="input-label">Exchange Policy: </label>
+                            </div>
+                            <div class="w-100">
+                                <b-form-checkbox v-model="otherProductData.exchange_available" name="check-button" switch>{{ otherProductData.exchange_available ? 'Exchange Available' : 'Exchange Not Available.' }}</b-form-checkbox>
+                            </div>
+                            <div class="w-100">
+                                <b-form-textarea
+                                    :disabled="!otherProductData.exchange_available"
+                                    id="textarea"
+                                    v-model="otherProductData.exchange_policy"
+                                    placeholder="Exchange Policy."
+                                    rows="3"
+                                    max-rows="6"
+                                ></b-form-textarea>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column align-items-left w-100">
+                            <div class="w-100">
+                                <label class="input-label">Cancellation Policy: </label>
+                            </div>
+                            <div class="w-100">
+                                <b-form-checkbox v-model="otherProductData.cancellation_available" name="check-button" switch>{{ otherProductData.cancellation_available ? 'Cancellation Available' : 'Cancellation Not Available.' }}</b-form-checkbox>
+                            </div>
+                            <div class="w-100">
+                                <b-form-textarea
+                                    :disabled="!otherProductData.cancellation_available"
+                                    id="textarea"
+                                    v-model="otherProductData.cancellation_policy"
+                                    placeholder="Cancellation Policy."
+                                    rows="3"
+                                    max-rows="6"
+                                ></b-form-textarea>
+                            </div>
+                        </div>
                     </div>
-                </template> -->
+                </template>
                 <template
                     v-if="selected_category && ['Food', 'Food Court'].includes(category_list.find(e => e.id == selected_category).category_name)">
                     <div class="d-flex flex-row w-100">
@@ -415,6 +454,22 @@ export default {
                 gst: null,
                 packing_charges: null,
             },
+            otherProductData: {
+                title: null,
+                description: null,
+                files: null,
+                compare_price: null,
+                weight: null,
+                gst: null,
+                packing_charges: null,
+                negociation: false,
+                free_delivery: false,
+                free_delivery_if_more: 0,
+                exchange_available: false,
+                exchange_policy: null,
+                cancellation_available: false,
+                cancellation_policy: null,
+            },
             created_product_id: null,
         }
     },
@@ -423,6 +478,7 @@ export default {
             if (val) {
                 console.log(val);
                 this.fetchSubCategories()
+                this.fetchAttributes()
             }
         },
         async selected_vendor(val) {
@@ -442,6 +498,25 @@ export default {
         }
     },
     methods: {
+        async fetchAttributes() {
+            try {
+                let url = '/fetch-attributes'
+                if (this.category_list.find(e => e.id == this.selected_category).id) {
+                    url = `${url}?category_id=${this.category_list.find(e => e.id == this.selected_category).id}`
+                }
+                const response = await this.$axios.get(url)
+                this.attributes_list = response.data.attributes.map(e => {
+                    return {
+                        id: e.id,
+                        attribute_name: e.attribute_name,
+                        attribute: null,
+                        attributes: []
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
         setAttributeValues(data) {
             this.attribute_values = []
             for (const iterator of data) {
@@ -677,8 +752,186 @@ export default {
                 if (['Food', 'Food Court'].includes(this.category_list.find(e => e.id == this.selected_category).category_name)) {
                     await this.saveFoodOrFoodCour()
                 } else {
-
+                    await this.saveProductData()
                 }
+            } catch (error) {
+                console.log(error);
+            }
+            this.loader = false
+        },
+        async check_product_data(data, type = 'ADD') {
+            try {
+                if (type == 'ADD') {
+                    const productModel = Joi.object({
+                        vendor_id: Joi.number().required(),
+                        name: Joi.string().max(255).required(),
+                        description: Joi.string().max(1000).allow(null).allow(''),
+                        total_price: Joi.number().required(),
+                        packing_charges: Joi.number().allow(null).default(0),
+                        compare_price: Joi.number().required(),
+                        gst: Joi.number().required(),
+                        negociation: Joi.boolean().default(false).required(),
+                        tags: Joi.string().allow(null).allow(''),
+                        free_delivery: Joi.boolean().required().default(false),
+                        free_delivery_if_more: Joi.number().allow(null).allow(0),
+                        exchange_available: Joi.boolean().required().default(true),
+                        exchange_policy: Joi.string().max(1000).allow(null).allow(''),
+                        cancellation_available: Joi.boolean().required().default(true),
+                        cancellation_policy: Joi.string().max(1000).allow(null).allow(''),
+                        stock: Joi.number().integer().required(),
+                        category: Joi.object({
+                            id: Joi.number().integer().required(),
+                            category_name: Joi.string().required(),
+                            table_name: Joi.string().required()
+                        }).required(),
+                        sub_categories: Joi.array().items(Joi.object({
+                            id: Joi.number().integer().required(),
+                            name: Joi.string().required()
+                        })).allow(null).empty(Joi.array().max(0)),
+                        combination: Joi.array().items(Joi.object({
+                            combinations: Joi.array().items(Joi.object({
+                                attribute_id: Joi.number().integer().required(),
+                                attribute_value: Joi.string().required()
+                            })).required(),
+                            combination_name: Joi.string().required(),
+                            price: Joi.number().required(),
+                            stock: Joi.number().required(),
+                        })).required(),
+                        stock: Joi.number().required(),
+                        available: Joi.boolean().default(true).required(),
+                    })
+                    const result = await productModel.validateAsync(data)
+                    return result
+                } else {
+                    const updateProductModel = Joi.object({
+                        vendor_id: Joi.number().required(),
+                        name: Joi.string().max(255).required(),
+                        description: Joi.string().max(1000).allow(null).allow(''),
+                        total_price: Joi.number().required(),
+                        packing_charges: Joi.number().allow(null).default(0),
+                        compare_price: Joi.number().required(),
+                        gst: Joi.number().required(),
+                        negociation: Joi.boolean().default(false).required(),
+                        tags: Joi.string().allow(null).allow(''),
+                        free_delivery: Joi.boolean().required().default(false),
+                        free_delivery_if_more: Joi.number().allow(null).allow(0),
+                        exchange_available: Joi.boolean().required().default(true),
+                        exchange_policy: Joi.string().max(1000).allow(null).allow(''),
+                        cancellation_available: Joi.boolean().required().default(true),
+                        cancellation_policy: Joi.string().max(1000).allow(null).allow(''),
+                        stock: Joi.number().integer().required(),
+                        category: Joi.object({
+                            id: Joi.number().integer().required(),
+                            category_name: Joi.string().required(),
+                            table_name: Joi.string().required()
+                        }).required(),
+                        sub_categories: Joi.array().items(Joi.object({
+                            id: Joi.number().integer().required(),
+                            name: Joi.string().required()
+                        })).allow(null).empty(Joi.array().max(0)),
+                        combination: Joi.array().items(Joi.object({
+                            combinations: Joi.array().items(Joi.object({
+                                attribute_id: Joi.number().integer().required(),
+                                attribute_value: Joi.string().required()
+                            })).required(),
+                            combination_name: Joi.string().required(),
+                            price: Joi.number().required(),
+                            stock: Joi.number().required(),
+                        })).required(),
+                        stock: Joi.number().required(),
+                        available: Joi.boolean().default(true).required(),
+                    })
+                    const result = await updateProductModel.validateAsync(data)
+                    return result
+                }
+            } catch (error) {
+                this.$toast.show(error.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: 'error'
+                })
+                return false
+            }
+        },
+        async saveProductData() {
+            this.loader = true
+            try {
+                const category = this.category_list.find(e => e.id == this.selected_category)
+                delete category.image
+                let addData = this.update_id ? {
+                    product_id: this.update_id,
+                    vendor_id: this.selected_vendor,
+                    name: this.otherProductData.title,
+                    description: this.otherProductData.description,
+                    packing_charges: this.otherProductData.packing_charges,
+                    compare_price: this.otherProductData.compare_price,
+                    gst: this.otherProductData.gst,
+                    category: category,
+                    sub_categories: this.selected_sub_category,
+                    available: true,
+                    negociation: this.otherProductData.negociation,
+                    free_delivery: this.otherProductData.free_delivery,
+                    free_delivery_if_more: this.otherProductData.free_delivery_if_more,
+                    exchange_available: this.otherProductData.exchange_available,
+                    exchange_policy: this.otherProductData.exchange_policy,
+                    cancellation_available: this.otherProductData.cancellation_available,
+                    cancellation_policy: this.otherProductData.cancellation_policy,
+                } : {
+                    vendor_id: this.selected_vendor,
+                    name: this.otherProductData.title,
+                    description: this.otherProductData.description,
+                    packing_charges: this.otherProductData.packing_charges,
+                    compare_price: this.otherProductData.compare_price,
+                    gst: this.otherProductData.gst,
+                    category: category,
+                    sub_categories: this.selected_sub_category,
+                    available: true,
+                    negociation: this.otherProductData.negociation,
+                    free_delivery: this.otherProductData.free_delivery,
+                    free_delivery_if_more: this.otherProductData.free_delivery_if_more,
+                    exchange_available: this.otherProductData.exchange_available,
+                    exchange_policy: this.otherProductData.exchange_policy,
+                    cancellation_available: this.otherProductData.cancellation_available,
+                    cancellation_policy: this.otherProductData.cancellation_policy,
+                }
+                console.log(this.selected_vendor);
+                const addedAttributeData = this.attribute_values.map(attribute_value => {
+                    return {
+                        combinations: Object.keys(attribute_value).filter(e => !['price', 'stock'].includes(e)).map(e => {
+                            return {
+                                attribute_id: this.selected_attributes.find(el => el.attribute_name == e).id,
+                                attribute_value: attribute_value[e]
+                            }
+                        }),
+                        combination_name: Object.keys(attribute_value).filter(e => !['price', 'stock'].includes(e)).map(e => attribute_value[e]).join('-'),
+                        price: attribute_value.price,
+                        stock: attribute_value.stock
+                    }
+                })
+                addData.combination = addedAttributeData
+                addData.total_price = addedAttributeData.sort((a,b) => Number(b.price) - Number(a.price))[0].price
+                addData.stock = addedAttributeData.sort((a,b) => Number(b.price) - Number(a.price))[0].stock
+                const result = await this.check_product_data(addData, this.update_id ? 'EDIT' : 'ADD')
+                console.log(result);
+                if (!result) return
+                const response = await this.$axios({
+                    method: 'post',
+                    url: this.update_id ? '/update-food-without-images' : `/add-product-without-images`,
+                    data: result
+                })
+                if (response.data.code == 401) {
+                    await this.logout()
+                }
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                this.created_product_id = this.update_id ? { id: this.update_id } : response.data.created_product
+                await this.saveImage()
+                this.resetForm()
             } catch (error) {
                 console.log(error);
             }
