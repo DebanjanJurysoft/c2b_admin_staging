@@ -488,6 +488,7 @@ export default {
         },
         async visible(val) {
             this.loader = true
+            console.log('product_data', this.product_data);
             if (val == true) {
                 await this.fetchApprovedVendors()
                 if (this.edit_data) {
@@ -517,7 +518,7 @@ export default {
                 console.log(error);
             }
         },
-        setAttributeValues(data) {
+        setAttributeValues(data) { //Array of array
             this.attribute_values = []
             for (const iterator of data) {
                 let combo = {}
@@ -528,7 +529,7 @@ export default {
                     ...combo,
                     price: null,
                     stock: null
-                })
+                }) // array of objects
             }
         },
         generateCombinations(attributeObjects) {
@@ -653,9 +654,33 @@ export default {
                 description: null,
                 files: null,
                 price: null,
+                hasTime: false,
+                openTime: null,
+                closeTime: null,
                 compare_price: null,
+                weight: null,
                 gst: null,
+                packing_charges: null,
             }
+            this.otherProductData = {
+                title: null,
+                description: null,
+                files: null,
+                compare_price: null,
+                weight: null,
+                gst: null,
+                packing_charges: null,
+                negociation: false,
+                free_delivery: false,
+                free_delivery_if_more: 0,
+                exchange_available: false,
+                exchange_policy: null,
+                cancellation_available: false,
+                cancellation_policy: null,
+            }
+            this.attributes_list = [],
+            this.selected_attributes = [],
+            this.attribute_values = [],
             await this.emitClose()
         },
         async emitClose() {
@@ -804,6 +829,7 @@ export default {
                     return result
                 } else {
                     const updateProductModel = Joi.object({
+                        product_id: Joi.number().required(),
                         vendor_id: Joi.number().required(),
                         name: Joi.string().max(255).required(),
                         description: Joi.string().max(1000).allow(null).allow(''),
@@ -895,7 +921,6 @@ export default {
                     cancellation_available: this.otherProductData.cancellation_available,
                     cancellation_policy: this.otherProductData.cancellation_policy,
                 }
-                console.log(this.selected_vendor);
                 const addedAttributeData = this.attribute_values.map(attribute_value => {
                     return {
                         combinations: Object.keys(attribute_value).filter(e => !['price', 'stock'].includes(e)).map(e => {
@@ -917,7 +942,7 @@ export default {
                 if (!result) return
                 const response = await this.$axios({
                     method: 'post',
-                    url: this.update_id ? '/update-food-without-images' : `/add-product-without-images`,
+                    url: this.update_id ? '/update-product-without-images' : `/add-product-without-images`,
                     data: result
                 })
                 if (response.data.code == 401) {
@@ -1132,27 +1157,85 @@ export default {
             this.loader = true
             this.update_id = data.id
             await this.setVendor(data.vendor_id)
+            await this.fetchCategories()
+            const category = this.category_list.find(e => e.id == data.category_id).category_name
             await this.setCategory(data.category_id)
-            this.selected_sub_category = data?.vendor_sub_category_product_associations?.length ? data.vendor_sub_category_product_associations.map(e => {
-                console.log(e);
-                return {
-                    id: e.sub_category_id,
-                    name: e.vendor_sub_category.name
+            if (['Food', 'Food Court'].includes(this.category_list.find(e => e.category_name == category).category_name)) {
+                this.selected_sub_category = data?.vendor_sub_category_product_associations?.length ? data.vendor_sub_category_product_associations.map(e => {
+                    console.log(e);
+                    return {
+                        id: e.sub_category_id,
+                        name: e.vendor_sub_category.name
+                    }
+                }) : []
+                console.log(this.selected_sub_category);
+                this.selected_food_type = data.food_type
+                this.foodData.title = data.name
+                this.foodData.description = data.description
+                this.foodData.compare_price = data.compare_price
+                this.foodData.price = data.price
+                this.foodData.gst = data.gst
+                this.foodData.hasTime = Boolean(data.has_time)
+                this.foodData.openTime = data.open_time
+                this.foodData.closeTime = data.close_time
+                this.foodData.packing_charges = data.packing_charges
+                this.foodData.weight = data.weight
+                this.selected_images = data.images_of_products
+                return
+            } else {
+                this.selected_sub_category = data?.vendor_sub_category_product_associations?.length ? data.vendor_sub_category_product_associations.map(e => {
+                    return {
+                        id: e.sub_category_id,
+                        name: e.vendor_sub_category.name
+                    }
+                }) : []
+                await this.fetchAttributes()
+                const variants_data = data.product_variants
+                for (const variant of variants_data) {
+                    for (const combo of variant.combination_details) {
+                        const selected_attribute = this.attributes_list.find(e => e.id == combo.attribute_id)
+                        const avl_data = this.selected_attributes.find(e => e == selected_attribute)
+                        if (!avl_data) {
+                            this.selected_attributes.push(selected_attribute)
+                            const avl_index = this.selected_attributes.indexOf(selected_attribute)
+                            if (!this.selected_attributes[avl_index].attributes.find(e => e == combo.attribute_value)) {
+                                this.selected_attributes[avl_index].attributes.push(combo.attribute_value)
+                            }
+                        } else {
+                            const avl_index = this.selected_attributes.indexOf(avl_data)
+                            if (!this.selected_attributes[avl_index].attributes.find(e => e == combo.attribute_value)) {
+                                this.selected_attributes[avl_index].attributes.push(combo.attribute_value)
+                            }
+                        }
+                    }
                 }
-            }) : []
-            console.log(this.selected_sub_category);
-            this.selected_food_type = data.food_type
-            this.foodData.title = data.name
-            this.foodData.description = data.description
-            this.foodData.compare_price = data.compare_price
-            this.foodData.price = data.price
-            this.foodData.gst = data.gst
-            this.foodData.hasTime = Boolean(data.has_time)
-            this.foodData.openTime = data.open_time
-            this.foodData.closeTime = data.close_time
-            this.foodData.packing_charges = data.packing_charges
-            this.foodData.weight = data.weight
-            this.selected_images = data.images_of_products
+                await this.generateCombinations(this.selected_attributes)
+                this.attribute_values.forEach(attribute_value => {
+                    let objectToFind = {}
+                    Object.keys(attribute_value).filter(e => e != 'price' && e != 'stock').forEach(e => {
+                        objectToFind[e] = attribute_value[e]
+                    })
+                    const avl_data = variants_data.find(item => {
+                        return item.combination_details.every(comboItem => objectToFind[comboItem.category_attribute.attribute_name] === comboItem.attribute_value);
+                    });
+                    if (avl_data) {
+                        attribute_value.price = avl_data.price
+                        attribute_value.stock = avl_data.stock
+                    }
+                })
+                this.selected_food_type = data.food_type
+                this.otherProductData.title = data.name
+                this.otherProductData.description = data.description
+                this.otherProductData.compare_price = data.compare_price
+                this.otherProductData.price = data.price
+                this.otherProductData.gst = data.gst
+                this.otherProductData.hasTime = Boolean(data.has_time)
+                this.otherProductData.openTime = data.open_time
+                this.otherProductData.closeTime = data.close_time
+                this.otherProductData.packing_charges = data.packing_charges
+                this.otherProductData.weight = data.weight
+                this.selected_images = data.images_of_products
+            }
             this.loader = false
         },
         async logout() {

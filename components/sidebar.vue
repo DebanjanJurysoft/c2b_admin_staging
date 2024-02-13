@@ -9,7 +9,7 @@
             </div>
             <div class="nav-items-container">
                 <template v-for="(nav, ind) in menues" >
-                    <div class="nav-items d-flex justify-content-between" :class="nav.id == selectedMenu.id ? 'nav-items-active' : nav.collapsable && !nav.active && nav.options.includes(selectedMenu) ? 'nav-items-active' : ''" :key="ind" @click.prevent="setActive(ind)">
+                    <div v-if="nav.has_permission" class="nav-items d-flex justify-content-between" :class="nav.id == selectedMenu.id ? 'nav-items-active' : nav.collapsable && !nav.active && nav.options.includes(selectedMenu) ? 'nav-items-active' : ''" :key="ind" @click.prevent="setActive(ind)">
                         <div>
                             <img :src="`${nav.id == selectedMenu.id ? nav.active_img : nav.collapsable && !nav.active && nav.options.includes(selectedMenu) ? nav.active_img : nav.normal_img}`" alt="image">
                             <span>{{ nav.text }}</span>
@@ -17,7 +17,7 @@
                         <i v-if="nav.collapsable && !nav.active" class="fa fa-angle-down"></i>
                         <i v-if="nav.collapsable && nav.active" class="fa fa-angle-up"></i>
                     </div>
-                    <template v-if="nav.active" v-for="(nav_sub, nav_sub_ind) in nav.options">
+                    <template v-for="(nav_sub, nav_sub_ind) in nav.options" v-if="nav.active && nav_sub.has_permission">
                         <div class="pl-5 nav-items d-flex justify-content-between" :class="nav_sub.id == selectedMenu.id ? 'nav-items-active' : ''" :key="`${ind}X${nav_sub_ind}`" @click.prevent="setActive(ind, nav_sub_ind)">
                         <div>
                             <img :src="`${nav_sub.id == selectedMenu.id ? nav_sub.active_img : nav_sub.normal_img}`" alt="image">
@@ -122,8 +122,8 @@ export default {
                             name: 'attributes',
                             text: 'attributes',
                             noSearch: true,
-                            normal_img: '/icons/category-black.svg',
-                            active_img: '/icons/category-white.svg'
+                            normal_img: '/icons/layer-black.svg',
+                            active_img: '/icons/layer-white.svg'
                         },
                     ]
                 },
@@ -209,6 +209,22 @@ export default {
                         },
                     ]
                 },
+                {
+                    id: 23,
+                    name: 'admins',
+                    text: 'admins',
+                    noSearch: true,
+                    normal_img: '/icons/admin-black.svg',
+                    active_img: '/icons/admin-white.svg'
+                },
+                {
+                    id: 24,
+                    name: 'admin permissions',
+                    text: 'admin permissions',
+                    noSearch: true,
+                    normal_img: '/icons/permission-black.svg',
+                    active_img: '/icons/permission-white.svg'
+                },
             ],
             main_index: 0,
             sub_index: null
@@ -223,6 +239,29 @@ export default {
         }
     },
     methods: {
+        async fetchPermissions() {
+            const response = await this.$axios.get('/get-user', {
+                header: {
+                    authorization: localStorage.getItem('auth._token.local')
+                }
+            })
+            const super_power = response.data.user.super
+            const permissions = response.data.user.permissions
+            let outer_index = 0
+            for (const modules of this.menues) {
+                const available_permissions = super_power ? {has_permission: true} : permissions.find(e => e.module_name == modules.name)
+                this.menues[outer_index].has_permission = available_permissions ? available_permissions.has_permission : false
+                if (modules.collapsable) {
+                    let collaps_index = 0
+                    for (const collaps of modules.options) {
+                        const available_inner_permissions = super_power ? {has_permission: true} : permissions.find(e => e.module_name == collaps.name)
+                        this.menues[outer_index].options[collaps_index].has_permission = available_inner_permissions ? available_inner_permissions.has_permission : false
+                        collaps_index = collaps_index + 1
+                    }
+                }
+                outer_index = outer_index + 1
+            }
+        },
         setActive(ind, sub_ind = null) {
             this.main_index = ind;
             this.sub_index = sub_ind;
@@ -256,7 +295,11 @@ export default {
         async fetchDashBoardData() {
             try {
                 let query = `/get-stats`
-                const response = await this.$axios.get(query)
+                const response = await this.$axios.get(query, {
+                    header: {
+                        authorization: localStorage.getItem('auth._token.local')
+                    }
+                })
                 if (response.data.code == 401) {
                     await this.logout()
                     return false
@@ -326,6 +369,7 @@ export default {
     async mounted() {
         this.loader = true
         await this.fetchDashBoardData()
+        await this.fetchPermissions()
         this.loader = false
     },
     components: { Loader }
