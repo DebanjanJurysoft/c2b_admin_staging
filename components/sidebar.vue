@@ -358,6 +358,16 @@ export default {
                             collaps_index = collaps_index + 1
                         }
                     }
+                    if (modules.collapsable) {
+                        let has_permission = false
+                        for (const collaps of modules.options) {
+                            const available_inner_permissions = permissions.find(e => e.module_name == collaps.name)
+                            if (!has_permission) {
+                                has_permission = available_inner_permissions ? available_inner_permissions.has_permission : false
+                            }
+                        }
+                        this.menues[outer_index].has_permission = has_permission
+                    }
                     outer_index = outer_index + 1
                 }
             } catch (error) {
