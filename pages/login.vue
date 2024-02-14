@@ -87,21 +87,12 @@ export default {
                         password: this.password
                     }
                 })
-                if (this.$auth.loggedIn) {
-                    this.$toast.show('Logged in.', {
-                        duration: 1500,
-                        position: 'top-right',
-                        keepOnHover: true,
-                        type: 'success'
-                    })
-                } else {
-                    this.$toast.show(resp.data.message, {
-                        duration: 1500,
-                        position: 'top-right',
-                        keepOnHover: true,
-                        type: 'error'
-                    })
-                }
+                this.$toast.show('Logged in.', {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: resp.data.status
+                })
             } catch (error) {
                 this.$toast.show(error.message, {
                     duration: 1500,

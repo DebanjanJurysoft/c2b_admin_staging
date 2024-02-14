@@ -1,7 +1,7 @@
 <template>
     <div class="row p-3">
         <div class="col-6 col-md-6 col-sm-12 col-lg-6 d-flex flex-column gap10">
-            <div class="d-flex flex-row card align-items-center justify-content-between p-3" v-for="(admin, admin_index) in admins" :key="admin_index" @click.prevent="selectAnAdmin(admin)">
+            <div class="d-flex flex-row card align-items-center justify-content-between p-3" style="cursor: pointer;" v-for="(admin, admin_index) in admins" :key="admin_index" @click.prevent="selectAnAdmin(admin)">
                 <i class="fa fa-user" ></i>
                 {{ admin.fullname }}({{ admin.email }})
             </div>

@@ -41,6 +41,96 @@ export default {
     data() {
         return {
             loader: true,
+            super_admin_psermissions: [
+                {
+                    module_name: 'home',
+                    has_permission: true
+                },
+                {
+                    module_name: 'vendors',
+                    has_permission: true
+                },
+                {
+                    module_name: 'stores',
+                    has_permission: true
+                },
+                {
+                    module_name: 'malls',
+                    has_permission: true
+                },
+                {
+                    module_name: 'inventory',
+                    has_permission: true
+                },
+                {
+                    module_name: 'products',
+                    has_permission: true
+                },
+                {
+                    module_name: 'banners',
+                    has_permission: true
+                },
+                {
+                    module_name: 'addons',
+                    has_permission: true
+                },
+                {
+                    module_name: 'sub-category',
+                    has_permission: true
+                },
+                {
+                    module_name: 'attributes',
+                    has_permission: true
+                },
+                {
+                    module_name: 'coupons',
+                    has_permission: true
+                },
+                {
+                    module_name: 'orders',
+                    has_permission: true
+                },
+                {
+                    module_name: 'payments',
+                    has_permission: true
+                },
+                {
+                    module_name: 'plans',
+                    has_permission: true
+                },
+                {
+                    module_name: 'notifications',
+                    has_permission: true
+                },
+                {
+                    module_name: 'reports',
+                    has_permission: true
+                },
+                {
+                    module_name: 'customers',
+                    has_permission: true
+                },
+                {
+                    module_name: 'account',
+                    has_permission: true
+                },
+                {
+                    module_name: 'privacy policy',
+                    has_permission: true
+                },
+                {
+                    module_name: 'feedback',
+                    has_permission: true
+                },
+                {
+                    module_name: 'admins',
+                    has_permission: true
+                },
+                {
+                    module_name: 'admin permissions',
+                    has_permission: true
+                },
+            ],
             menues: [
                 {
                     id: 1,
@@ -238,28 +328,40 @@ export default {
             }
         }
     },
+    async beforeCreate() {
+        if (!this.$auth.loggedIn) {
+            // await this.$auth.logout()
+            this.$router.push('/login')
+        }
+    },
     methods: {
         async fetchPermissions() {
-            const response = await this.$axios.get('/get-user', {
-                header: {
-                    authorization: localStorage.getItem('auth._token.local')
+            try {
+                const response = await this.$axios.get('/get-user')
+                if (response.data.code == 401) {
+                    await this.logout()
+                    return false
                 }
-            })
-            const super_power = response.data.user.super
-            const permissions = response.data.user.permissions
-            let outer_index = 0
-            for (const modules of this.menues) {
-                const available_permissions = super_power ? {has_permission: true} : permissions.find(e => e.module_name == modules.name)
-                this.menues[outer_index].has_permission = available_permissions ? available_permissions.has_permission : false
-                if (modules.collapsable) {
-                    let collaps_index = 0
-                    for (const collaps of modules.options) {
-                        const available_inner_permissions = super_power ? {has_permission: true} : permissions.find(e => e.module_name == collaps.name)
-                        this.menues[outer_index].options[collaps_index].has_permission = available_inner_permissions ? available_inner_permissions.has_permission : false
-                        collaps_index = collaps_index + 1
+                const permissions = response.data.user.super ? this.super_admin_psermissions : response.data.user.permissions
+                let outer_index = 0
+                for (const modules of this.menues) {
+                    const available_permissions = permissions.find(e => e.module_name == modules.name)
+                    this.menues[outer_index].has_permission = available_permissions ? available_permissions.has_permission : false
+                    if (modules.collapsable) {
+                        let collaps_index = 0
+                        for (const collaps of modules.options) {
+                            const available_inner_permissions = permissions.find(e => e.module_name == collaps.name)
+                            this.menues[outer_index].options[collaps_index].has_permission = available_inner_permissions ? available_inner_permissions.has_permission : false
+                            if (this.menues[outer_index].options[collaps_index].has_permission) {
+                                this.menues[outer_index].has_permission = true
+                            }
+                            collaps_index = collaps_index + 1
+                        }
                     }
+                    outer_index = outer_index + 1
                 }
-                outer_index = outer_index + 1
+            } catch (error) {
+                console.log(error);
             }
         },
         setActive(ind, sub_ind = null) {
@@ -294,12 +396,9 @@ export default {
         },
         async fetchDashBoardData() {
             try {
+                console.log('fetchDashBoardData');
                 let query = `/get-stats`
-                const response = await this.$axios.get(query, {
-                    header: {
-                        authorization: localStorage.getItem('auth._token.local')
-                    }
-                })
+                const response = await this.$axios.get(query)
                 if (response.data.code == 401) {
                     await this.logout()
                     return false
@@ -368,8 +467,8 @@ export default {
     },
     async mounted() {
         this.loader = true
-        await this.fetchDashBoardData()
         await this.fetchPermissions()
+        await this.fetchDashBoardData()
         this.loader = false
     },
     components: { Loader }
