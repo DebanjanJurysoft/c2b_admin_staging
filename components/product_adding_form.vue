@@ -112,7 +112,7 @@
                         </div>
                     </div>
                     <div class="card d-flex flex-column p-3 mt-3" style="border-radius: 16px;">
-                        <template>
+                        <template v-if="attributes_list.length">
                             <div class="d-flex flex-column align-items-left w-100">
                                 <div class="w-100">
                                     <label class="input-label">Select attributes: </label>
@@ -150,6 +150,30 @@
                                             <b-form-input type="number" placeholder="Price" v-model="attribute_value.price"></b-form-input>
                                             <b-form-input type="number" placeholder="Stock" v-model="attribute_value.stock"></b-form-input>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="d-flex flex-row w-100">
+                                <div class="d-flex flex-column align-items-left w-100">
+                                    <div class="w-100">
+                                        <label class="input-label">Stock: </label>
+                                    </div>
+                                    <div class="w-100">
+                                        <b-form-input placeholder="Stock"
+                                            v-model="otherProductData.stock"></b-form-input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row w-100">
+                                <div class="d-flex flex-column align-items-left w-100">
+                                    <div class="w-100">
+                                        <label class="input-label">Unit Price (Selling Price) (₹): </label>
+                                    </div>
+                                    <div class="w-100">
+                                        <b-form-input placeholder="Unit Price (Selling Price) (₹)"
+                                            v-model="otherProductData.price"></b-form-input>
                                     </div>
                                 </div>
                             </div>
@@ -459,6 +483,8 @@ export default {
                 description: null,
                 files: null,
                 compare_price: null,
+                price: null,
+                stock: null,
                 weight: null,
                 gst: null,
                 packing_charges: null,
@@ -666,6 +692,7 @@ export default {
                 title: null,
                 description: null,
                 files: null,
+                price: null,
                 compare_price: null,
                 weight: null,
                 gst: null,
@@ -934,11 +961,10 @@ export default {
                         stock: attribute_value.stock
                     }
                 })
-                addData.combination = addedAttributeData
-                addData.total_price = addedAttributeData.sort((a,b) => Number(b.price) - Number(a.price))[0].price
-                addData.stock = addedAttributeData.sort((a,b) => Number(b.price) - Number(a.price))[0].stock
+                addData.combination = addedAttributeData.filter(e => e.combination_name && e.combination_name != '').length ? addedAttributeData : []
+                addData.total_price = addedAttributeData.filter(e => e.combination_name && e.combination_name != '').length ? addedAttributeData.sort((a,b) => Number(b.price) - Number(a.price))[0].price : Number(this.otherProductData.price)
+                addData.stock = addedAttributeData.filter(e => e.combination_name && e.combination_name != '').length ? addedAttributeData.sort((a,b) => Number(b.price) - Number(a.price))[0].stock : Number(this.otherProductData.stock)
                 const result = await this.check_product_data(addData, this.update_id ? 'EDIT' : 'ADD')
-                console.log(result);
                 if (!result) return
                 const response = await this.$axios({
                     method: 'post',
@@ -1190,14 +1216,20 @@ export default {
                     }
                 }) : []
                 await this.fetchAttributes()
+                // console.log(this.attributes_list);
                 const variants_data = data.product_variants
                 for (const variant of variants_data) {
                     for (const combo of variant.combination_details) {
+                        // console.log('combo',combo);
+                        // console.log('this.attributes_list',this.attributes_list);
                         const selected_attribute = this.attributes_list.find(e => e.id == combo.attribute_id)
+                        // console.log('combo.attribute_id', combo.attribute_id);
                         const avl_data = this.selected_attributes.find(e => e == selected_attribute)
                         if (!avl_data) {
                             this.selected_attributes.push(selected_attribute)
                             const avl_index = this.selected_attributes.indexOf(selected_attribute)
+                            // console.log('selected_attributes',this.selected_attributes);
+                            // console.log(avl_index);
                             if (!this.selected_attributes[avl_index].attributes.find(e => e == combo.attribute_value)) {
                                 this.selected_attributes[avl_index].attributes.push(combo.attribute_value)
                             }
@@ -1228,6 +1260,7 @@ export default {
                 this.otherProductData.description = data.description
                 this.otherProductData.compare_price = data.compare_price
                 this.otherProductData.price = data.price
+                this.otherProductData.stock = data.available_stocks
                 this.otherProductData.gst = data.gst
                 this.otherProductData.hasTime = Boolean(data.has_time)
                 this.otherProductData.openTime = data.open_time
