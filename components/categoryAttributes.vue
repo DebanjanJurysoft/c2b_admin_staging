@@ -5,7 +5,7 @@
         </div>
         <div v-if="!loader" class="tabs-content">
             <div class="d-flex flex-row-reverse mb-3">
-                <b-button variant="outline-success" @click.prevent="addAttribute"><i class="fa fa-plus"></i></b-button>
+                <button class="button" @click.prevent="addAttribute"><i class="fa fa-plus"></i></button>
                 <vSelect style="width: 100% !important;" class="col-4 mr-2" label="text" 
                     v-model="filter_selected_category" :options="category_list">
                 </vSelect>
@@ -27,9 +27,9 @@
                         <td>{{ attribute_index + 1 }}</td>
                         <td>{{ attribute.category }}</td>
                         <td>{{ attribute.attribute_name }}</td>
-                        <td style="text-align: center;">
-                            <b-button variant="outline-primary" @click.prevent="editData(attribute)"><i class="fa fa-pencil"></i></b-button>
-                            <b-button variant="outline-danger" @click.prevent="removeAttribute(attribute.id)"><i class="fa fa-trash"></i></b-button>
+                        <td class="d-flex justify-content-center lign-items-center gap10">
+                            <button class="button" @click.prevent="editData(attribute)"><i class="fa fa-pencil"></i></button>
+                            <button class="button" @click.prevent="removeAttribute(attribute.id)"><i class="fa fa-trash"></i></button>
                         </td>
                     </tr>
                 </tbody>

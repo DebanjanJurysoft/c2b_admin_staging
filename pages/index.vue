@@ -26,6 +26,7 @@
             <Reports :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'reports'"/>
             <Admins :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'admins'"/>
             <AdminPermissions :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'admin permissions'"/>
+            <Services :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'services'"/>
         </div>
     </div>
 </template>
@@ -53,6 +54,7 @@ import Notifications from '../components/notifications.vue';
 import Attributes from '../components/categoryAttributes.vue';
 import Admins from '../components/admins.vue';
 import AdminPermissions from '../components/admin_permissions.vue';
+import Services from '../components/services.vue';
 
 export default {
     async beforeCreate() {
@@ -164,7 +166,7 @@ export default {
             this.selectedMenu = selected;
         }
     },
-    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy, Notifications, Reports, Attributes, Admins, AdminPermissions }
+    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy, Notifications, Reports, Attributes, Admins, AdminPermissions, Services }
 }
 </script>
 

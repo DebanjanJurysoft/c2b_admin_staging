@@ -107,6 +107,10 @@ export default {
                     has_permission: true
                 },
                 {
+                    module_name: 'services',
+                    has_permission: true
+                },
+                {
                     module_name: 'customers',
                     has_permission: true
                 },
@@ -214,6 +218,14 @@ export default {
                             noSearch: true,
                             normal_img: '/icons/layer-black.svg',
                             active_img: '/icons/layer-white.svg'
+                        },
+                        {
+                            id: 25,
+                            name: 'services',
+                            text: 'services',
+                            noSearch: true,
+                            normal_img: '/icons/services-black.svg',
+                            active_img: '/icons/services-white.svg'
                         },
                     ]
                 },
