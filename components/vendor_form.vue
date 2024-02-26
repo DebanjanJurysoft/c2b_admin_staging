@@ -654,10 +654,10 @@
                             <div class="col-12">
                                 <div class="d-flex flex-row py-3">
                                     <div class="col-6">
-                                        <label class="input-label fontSize18">Available Negociation: </label>
+                                        <label class="input-label fontSize18">Available negotiation: </label>
                                     </div>
                                     <div class="col-6 d-flex flex-row-reverse">
-                                        <b-form-checkbox :disabled="!vendor_data.store.will_Edit" v-model="vendor_data.store.negociation" switch></b-form-checkbox>
+                                        <b-form-checkbox :disabled="!vendor_data.store.will_Edit" v-model="vendor_data.store.negotiation" switch></b-form-checkbox>
                                     </div>
                                 </div>
                             </div>
@@ -1069,7 +1069,7 @@ export default {
                         },
                     ],
                     scheduled_order: false,
-                    negociation: false,
+                    negotiation: false,
                     gst_file: null,
                     fssai_file: null,
                     gst_file_url: null,
@@ -1271,7 +1271,7 @@ export default {
             this.vendor_data.store.lat  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lat : null
             this.vendor_data.store.lng  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.lng : null
             this.vendor_data.store.scheduled_order  = this.vendor_data_for_edit?.store ? Boolean(this.vendor_data_for_edit?.store?.scheduled_order) : false
-            this.vendor_data.store.negociation  = this.vendor_data_for_edit?.store ? Boolean(this.vendor_data_for_edit?.store?.negociation) : false
+            this.vendor_data.store.negotiation  = this.vendor_data_for_edit?.store ? Boolean(this.vendor_data_for_edit?.store?.negotiation) : false
             this.vendor_data.store.packing_charges  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.packing_charges : null
             this.vendor_data.store.conv_fee  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.conv_fee : null
             this.vendor_data.store.gst_file_url  = this.vendor_data_for_edit?.store ? this.vendor_data_for_edit?.store?.gst_file_url : null
@@ -1397,7 +1397,7 @@ export default {
                     alt_mobile: this.vendor_data.store.alt_mobile,
                     email: this.vendor_data.store.email,
                     add1: this.vendor_data.store.add1,
-                    negociation: this.vendor_data.store.negociation,
+                    negotiation: this.vendor_data.store.negotiation,
                     add2: this.vendor_data.store.add2,
                     area: this.vendor_data.store.area,
                     city: this.vendor_data.store.city,
