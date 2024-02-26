@@ -16,6 +16,7 @@
                 <thead>
                     <th style="text-transform: uppercase;">SL No.</th>
                     <th style="text-transform: uppercase;">Service Name</th>
+                    <th style="text-transform: uppercase;">Service Image</th>
                     <th style="text-transform: uppercase;">Price Per Day</th>
                     <th style="text-transform: uppercase;">Price Per Month</th>
                     <th style="text-transform: uppercase; text-align: center;">Action</th>
@@ -24,6 +25,9 @@
                     <tr v-for="(service, service_index) in servicesList">
                         <td>{{ service_index + 1 }}</td>
                         <td>{{ service.name }}</td>
+                        <td>
+                            <img :src="service.image" alt="Service Image" height="38px">
+                        </td>
                         <td>{{ service.per_day_price }}</td>
                         <td>{{ service.per_month_price }}</td>
                         <td class="d-flex justify-content-center lign-items-center gap10">
