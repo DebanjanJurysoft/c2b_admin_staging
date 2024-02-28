@@ -556,6 +556,7 @@ export default {
                     price: null,
                     stock: null
                 }) // array of objects
+                console.log("combinations: ",this.attribute_values);
             }
         },
         generateCombinations(attributeObjects) {
@@ -822,7 +823,7 @@ export default {
                         packing_charges: Joi.number().allow(null).default(0),
                         compare_price: Joi.number().required(),
                         gst: Joi.number().required(),
-                        negociation: Joi.boolean().default(false).required(),
+                        negociation: Joi.boolean().default(false).allow(null),
                         tags: Joi.string().allow(null).allow(''),
                         free_delivery: Joi.boolean().required().default(false),
                         free_delivery_if_more: Joi.number().allow(null).allow(0),
@@ -864,7 +865,7 @@ export default {
                         packing_charges: Joi.number().allow(null).default(0),
                         compare_price: Joi.number().required(),
                         gst: Joi.number().required(),
-                        negociation: Joi.boolean().default(false).required(),
+                        negociation: Joi.boolean().default(false).allow(null),
                         tags: Joi.string().allow(null).allow(''),
                         free_delivery: Joi.boolean().required().default(false),
                         free_delivery_if_more: Joi.number().allow(null).allow(0),
