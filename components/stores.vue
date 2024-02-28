@@ -1466,7 +1466,7 @@ export default {
         exchange: false,
         policies: "",
         packing_charges: "",
-        negociation: false,
+        negotiation: false,
       },
       open_settings: false,
       open_store_image_form: false,
@@ -1559,7 +1559,7 @@ export default {
         free_delivery_if_more: null,
         exchange: false,
         policies: "",
-        negociation: false,
+        negotiation: false,
         packing_charges: null,
       },
     };
