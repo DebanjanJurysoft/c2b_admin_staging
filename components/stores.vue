@@ -425,7 +425,7 @@
                   <div class="d-flex flex-row" style="width: 100% !important">
                     <b-form-checkbox
                       switch
-                      v-model="other_setting_data.negociation"
+                      v-model="other_setting_data.negotiation"
                       ><span
                         class="text-heading"
                         style="
@@ -433,7 +433,7 @@
                           padding-left: 0px !important;
                           font-weight: 500 !important;
                         "
-                        >Negociation Available</span
+                        >negotiation Available</span
                       ></b-form-checkbox
                     >
                   </div>
@@ -729,7 +729,7 @@
                         >
                           <b-form-checkbox
                             switch
-                            v-model="branch_other_settings_data.negociation"
+                            v-model="branch_other_settings_data.negotiation"
                             ><span
                               class="text-heading"
                               style="
@@ -737,7 +737,7 @@
                                 padding-left: 0px !important;
                                 font-weight: 500 !important;
                               "
-                              >Negociation Available</span
+                              >negotiation Available</span
                             ></b-form-checkbox
                           >
                         </div>
@@ -1696,7 +1696,7 @@ export default {
           exchange: Boolean(response.data.store.exchange),
           policies: response.data.store.policies,
           packing_charges: response.data.store.packing_charges,
-          negociation: Boolean(response.data.store.negociation),
+          negotiation: Boolean(response.data.store.negotiation),
         };
       } catch (error) {
         console.log(error);
@@ -1764,7 +1764,7 @@ export default {
           exchange: Boolean(response.data.store.exchange),
           policies: response.data.store.policies,
           packing_charges: response.data.store.packing_charges,
-          negociation: Boolean(response.data.store.negociation),
+          negotiation: Boolean(response.data.store.negotiation),
         };
       } catch (error) {
         console.log(error);
