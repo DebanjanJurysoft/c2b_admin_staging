@@ -50,13 +50,49 @@ import Swal from 'sweetalert2'
 export default {
     data() {
         return {
-            email: null,
-            password: null,
+            email: 'debanjan.d@jurysoft.com',
+            password: '1234',
         } 
     },
-    mounted() {
-        if (this.$auth.loggedIn) {
-            this.$router.push('/')
+    async mounted() {
+        try {
+            const token = localStorage.getItem('token')
+            if (token) {
+                this.$axios.setHeader('Authorization', token)
+                const respo = await this.$axios.get('/get-user')
+                if (respo.data.status == 'success') {
+                    localStorage.setItem('user', JSON.stringify(respo.data.user))
+                    this.$router.push('/')
+                }
+            }
+            localStorage.removeItem('token')
+            const refreshToken = localStorage.getItem('refreshToken')
+            console.log(refreshToken);
+            if (refreshToken) {
+                const resp = await this.$axios({
+                    url: '/get-access-token-admin',
+                    method: 'POST',
+                    data: {
+                        refreshtoken: refreshToken
+                    },
+                })
+                if (resp.data.status == 'success') {
+                    localStorage.setItem('token', resp.data.token)
+                    localStorage.setItem('refreshToken', resp.data.refreshToken)
+                    this.$axios.setHeader('Authorization', resp.data.token)
+                    const respo = await this.$axios.get('/get-user')
+                    if (respo.data.user == 'Session expired') {
+                        localStorage.removeItem('token')
+                        // localStorage.removeItem('refreshToken')
+                        this.$router.push('/login')
+                        return
+                    }
+                    localStorage.setItem('user', JSON.stringify(respo.data.user))
+                    this.$router.push('/')
+                }
+            }
+        } catch (error) {
+            console.log(error);
         }
     },
     methods: {
@@ -81,18 +117,24 @@ export default {
                     })
                     return
                 }
-                const resp = await this.$auth.loginWith('local', {
-                    data: {
-                        email: this.email,
-                        password: this.password
-                    }
+                const resp = await this.$axios.post('/login-admin', {
+                    email: this.email,
+                    password: this.password
                 })
-                this.$toast.show('Logged in.', {
-                    duration: 1500,
-                    position: 'top-right',
-                    keepOnHover: true,
-                    type: resp.data.status
-                })
+                if (resp.data.status == 'success') {
+                    this.$toast.show('Logged in.', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: resp.data.status
+                    })
+                    localStorage.setItem('token', resp.data.token)
+                    localStorage.setItem('refreshToken', resp.data.refreshToken)
+                    this.$axios.setHeader('Authorization', resp.data.token)
+                    const respo = await this.$axios.get('/get-user')
+                    localStorage.setItem('user', JSON.stringify(respo.data.user))
+                    this.$router.push('/')
+                }
             } catch (error) {
                 this.$toast.show(error.message, {
                     duration: 1500,

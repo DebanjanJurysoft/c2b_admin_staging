@@ -147,7 +147,8 @@ export default {
             window.scrollTo(0,0);
         },
         async logout() {
-            await this.$auth.logout()
+            localStorage.removeItem('token')
+            // localStorage.removeItem('refreshToken')
             this.$router.push('/login')
         },
         async fetchCustomers() {

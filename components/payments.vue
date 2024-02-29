@@ -660,7 +660,8 @@ export default {
             this.loader = false
         },
         async logout() {
-            await this.$auth.logout()
+            localStorage.removeItem('token')
+            // localStorage.removeItem('refreshToken')
             this.$router.push('/login')
         },
         async fetchUnpaid(is_paid) {

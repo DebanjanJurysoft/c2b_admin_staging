@@ -57,12 +57,6 @@ import AdminPermissions from '../components/admin_permissions.vue';
 import Services from '../components/services.vue';
 
 export default {
-    async beforeCreate() {
-        if (!this.$auth.loggedIn) {
-            // await this.$auth.logout()
-            this.$router.push('/login')
-        }
-    },
     data() {
         return {
             not_active_timer: null,
@@ -81,6 +75,15 @@ export default {
         };
     },
     async mounted() {
+
+        const token = localStorage.getItem('token')
+        if (!token) {
+            console.log(token);
+            // await this.$auth.logout()
+            this.$router.push('/login')
+        } else {
+            this.$axios.setHeader('Authorization', token)
+        }
 
         // socket.io start
         // await this.$socket.connect()
@@ -144,7 +147,8 @@ export default {
         //     }
         // }, 
         async logout() {
-            await this.$auth.logout()
+            localStorage.removeItem('token')
+            // localStorage.removeItem('refreshToken')
             this.$router.push('/login')
         },
         // async isUsing() { 

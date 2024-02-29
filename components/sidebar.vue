@@ -28,7 +28,7 @@
                 </template>
             </div>
         </div>
-        <span class="logout-button" @click.prevent="logout">
+        <span class="logout-button" @click.prevent="logout(true)">
             <span>logout <i class="fa fa-sign-out"></i></span> 
         </span>
     </div>
@@ -340,12 +340,6 @@ export default {
             }
         }
     },
-    async beforeCreate() {
-        if (!this.$auth.loggedIn) {
-            // await this.$auth.logout()
-            this.$router.push('/login')
-        }
-    },
     methods: {
         async fetchPermissions() {
             try {
@@ -404,9 +398,12 @@ export default {
                 // console.log(selectedMenu);
             }
         },
-        async logout() {
-            await this.$auth.logout();
-            this.$router.push('/login');
+        async logout(force = false) {
+            localStorage.removeItem('token')
+            if (force) {
+                localStorage.removeItem('refreshToken')
+            }
+            this.$router.push('/login')
         },
         collaps(ind) {
             this.menues[ind].active = !this.menues[ind].active;
@@ -489,6 +486,14 @@ export default {
     },
     async mounted() {
         this.loader = true
+        const token = localStorage.getItem('token')
+        if (!token) {
+            console.log(token);
+            // await this.$auth.logout()
+            this.$router.push('/login')
+        } else {
+            this.$axios.setHeader('Authorization', token)
+        }
         await this.fetchPermissions()
         await this.fetchDashBoardData()
         this.loader = false

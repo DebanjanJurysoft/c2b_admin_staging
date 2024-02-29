@@ -235,7 +235,8 @@ export default {
             }
         },
         async logout() {
-            await this.$auth.logout()
+            localStorage.removeItem('token')
+            // localStorage.removeItem('refreshToken')
             this.$router.push('/login')
         },
         async fetchVendors() {

@@ -110,7 +110,8 @@ export default {
             this.select_all = this.users.filter(e => e.selected == true).length == this.users.length
         },
         async logout() {
-            await this.$auth.logout()
+            localStorage.removeItem('token')
+            // localStorage.removeItem('refreshToken')
             this.$router.push('/login')
         },
         async changeTab(tab) {
