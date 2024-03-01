@@ -828,6 +828,11 @@
                                             :label="'bank_name'"
                                             :options="bank_list"
                                         >
+                                        <template slot="list-header">
+                                            <div class="w-100 d-flex justify-content-center">
+                                                <button class="button" @click.prevent="openBankAddingModal" ><i class="fa fa-plus mr-2"></i> Add New</button>
+                                            </div>
+                                        </template>
                                         <!-- <template slot="selected-option" slot-scope="option">
                                             <div class="d-flex flex-row justify-content-between">
                                                 <img :src="option.image_url" alt="Image" />
@@ -879,7 +884,7 @@
                         </div>
                         <div class="d-flex flex-row">
                             <div class="col-6">
-                                    <div class="d-flex flex-column align-items-left">
+                                <div class="d-flex flex-column align-items-left">
                                     <div class="col-12">
                                         <label class="input-label">Cancelled Cheque: </label>
                                     </div>
@@ -906,6 +911,32 @@
                 <button class="prev-button" @click.prevent="goNext" v-if="in_progress_index == progress.filter(e => e.disable === false).length - 1 && !vendor_data.bank.will_Edit">Close <i class='fa fa-times ml-2'></i></button>
             </div>
         </div>
+        <b-modal
+            id="new_bank" 
+            hide-footer 
+            hide-header 
+            no-close-on-backdrop 
+            centered 
+        >
+            <div class="d-flex flex-column gap10">
+                <div class="d-flex justify-content-between">
+                    <span class="h3">Add New Bank</span>
+                    <i class="fa fa-times text-danger" @click.prevent="closeBankAddingModal"></i>
+                </div>
+                <div class="d-flex flex-column align-items-left">
+                    <div class="col-12">
+                        <label class="input-label">Bank Name: </label>
+                    </div>
+                    <div class="col-12">
+                        <b-form-input type="text" v-model="new_bank.bank_name" placeholder="Bank Name" />
+                    </div>
+                </div>
+                <div class="d-flex py-2 gap10 justify-content-center">
+                    <button class="button" @click.prevent="saveBankName"><i class="fa fa-save mr-2"></i>SAVE</button>
+                    <button class="button" @click.prevent="closeBankAddingModal"><i class="fa fa-ban mr-2"></i>CLOSE</button>
+                </div>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -916,6 +947,9 @@ export default {
     components: { vSelect },
     data() {
         return {
+            new_bank: {
+                bank_name: null
+            },
             isEdit: false,
             loader: false,
             in_progress_index: 0,
@@ -1135,6 +1169,45 @@ export default {
         this.loader = false
     },
     methods: {
+        async saveBankName() {
+            try {
+                if (!this.new_bank.bank_name) {
+                    this.$toast.show('Bank name is mandatory.', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'error'
+                    })
+                    return
+                }
+                const form = new FormData()
+                form.append('bank_name', this.new_bank.bank_name)
+                const response = await this.$axios({
+                    method: "POST",
+                    url: '/add-bank',
+                    data: form
+                })
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                await this.closeBankAddingModal()
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        openBankAddingModal() {
+            this.$bvModal.show('new_bank')
+        },
+        async closeBankAddingModal() {
+            this.$bvModal.hide('new_bank')
+            this.new_bank = {
+                bank_name: null
+            }
+            await this.fetchBanks()
+        },
         formatDate(today) {
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
@@ -1305,7 +1378,11 @@ export default {
                     break;
                 case 'Bank':
                     if (this.vendor_data.bank.will_Edit) {
-                        await this.saveBankDetails();
+                        const resp = await this.saveBankDetails();
+                        if (!resp) {
+                            this.loader = false
+                            return
+                        }
                     }
                     break;
                 default:
@@ -1456,6 +1533,15 @@ export default {
         async saveBankDetails() {
             try {
                 const formData = new FormData()
+                if (!this.vendor_data.bank.bank) {
+                    this.$toast.show('Bank has to be selected', {
+                        duration: 1500,
+                        position: 'top-right',
+                        keepOnHover: true,
+                        type: 'error'
+                    })
+                    return false
+                }
                 const createData = {
                     vendor_id: this.created_vendor_id,
                     bank_name: this.vendor_data.bank.bank.bank_name,
@@ -1484,8 +1570,10 @@ export default {
                     keepOnHover: true,
                     type: response.data.status
                 })
+                return true
             } catch (error) {
                 console.log(error);
+                return false
             }
         },
         goPrev() {
