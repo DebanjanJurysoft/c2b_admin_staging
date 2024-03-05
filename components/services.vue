@@ -4,40 +4,99 @@
             <Loader />
         </div>
         <div v-else class="pl-3 pr-3">
-            <div class="d-flex flex-row-reverse py-3 px-3">
-                <button class="button" @click.prevent="showHideModal(true, 'services')"><i class="fa fa-plus"></i></button>
+            <div class="d-flex">
+                <div class="tab-items" @click.prevent="changeTab(tab)" :class="selectedTab.id == tab.id ? 'tab-items-active' : ''" v-for="(tab, index) in tabs" :key="index">
+                    <span>{{ tab.text }}</span>
+                </div>
             </div>
-            <table class="table table-hover" v-if="!servicesList.length">
-                <tr class="text-center">
-                    No Record Found
-                </tr>
-            </table>
-            <table class="table table-hover" v-else>
-                <thead>
-                    <th style="text-transform: uppercase;">SL No.</th>
-                    <th style="text-transform: uppercase;">Service Name</th>
-                    <th style="text-transform: uppercase;">Service Image</th>
-                    <th style="text-transform: uppercase;">Price Per Day</th>
-                    <th style="text-transform: uppercase;">Price Per Month</th>
-                    <th style="text-transform: uppercase; text-align: center;">Action</th>
-                </thead>
-                <tbody>
-                    <tr v-for="(service, service_index) in servicesList">
-                        <td>{{ service_index + 1 }}</td>
-                        <td>{{ service.name }}</td>
-                        <td>
-                            <img :src="service.image" alt="Service Image" height="38px">
-                        </td>
-                        <td>{{ service.per_day_price }}</td>
-                        <td>{{ service.per_month_price }}</td>
-                        <td class="d-flex justify-content-center lign-items-center gap10">
-                            <button class="button" @click.prevent="openEdit(service)"><i class="fa fa-pencil"></i></button>
-                            <button class="button" @click.prevent="removeService(service.id)"><i class="fa fa-trash"></i></button>
-                        </td>
+            <template v-if="selectedTab.id == 1">
+                <div class="d-flex flex-row-reverse py-3 px-3 gap10">
+                    <button class="button" @click.prevent="showHideModal(true, 'services')"><i class="fa fa-plus mr-2"></i>Add</button>
+                    <button class="button" @click.prevent="showBulkUploadOption"><i class="fa fa-list mr-2"></i> Bulk Upload</button>
+                    <button class="button" @click.prevent="downloadSample"><i class="fa fa-download mr-2"></i> Download CSV For Bulk Upload</button>
+                </div>
+                <table class="table table-hover" v-if="!servicesList.length">
+                    <tr class="text-center">
+                        No Record Found
                     </tr>
-                </tbody>
-            </table>
+                </table>
+                <table class="table table-hover" v-else>
+                    <thead>
+                        <th style="text-transform: uppercase;">SL No.</th>
+                        <th style="text-transform: uppercase;">Service Name</th>
+                        <th style="text-transform: uppercase;">Service Image</th>
+                        <th style="text-transform: uppercase;">Price Per Day</th>
+                        <th style="text-transform: uppercase;">Price Per Month</th>
+                        <th style="text-transform: uppercase; text-align: center;">Action</th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(service, service_index) in servicesList">
+                            <td>{{ service_index + 1 }}</td>
+                            <td>{{ service.name }}</td>
+                            <td>
+                                <img :src="service.image" alt="Service Image" height="38px">
+                            </td>
+                            <td>{{ service.per_day_price }}</td>
+                            <td>{{ service.per_month_price }}</td>
+                            <td class="d-flex justify-content-center lign-items-center gap10">
+                                <button class="button" @click.prevent="openEdit(service)"><i class="fa fa-pencil"></i></button>
+                                <button class="button" @click.prevent="removeService(service.id)"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </template>
+            <template v-else-if="selectedTab.id == 2">
+                <div class="d-flex flex-column gap10 py-3 px-3">
+                    <div class="d-flex flex-row-reverse gap10 align-items-center">
+                        <button class="button" @click.prevent="fetchForToday">Today</button>
+                        <b-form-select style="width: max-content;" @change="fetchAllServicesRequestedByCustomers" v-model="selected_customer" :options="customers"></b-form-select>
+                        <b-form-select style="width: max-content;" @change="fetchAllServicesRequestedByCustomers" v-model="selected_service" :options="service_list"></b-form-select>
+                    </div>
+                    <div>
+                        <table class="table table-hover" v-if="requested_services_list.length == 0">
+                            <tr class="text-center">
+                                No Record Found
+                            </tr>
+                        </table>
+                        <table class="main-table" v-else>
+                            <thead>
+                                <th class="heading">SL No.</th>
+                                <th class="heading">Service Name</th>
+                                <th class="heading">Customer Name</th>
+                                <th class="heading">Paid Amount</th>
+                                <th class="heading">Paid Date</th>
+                                <th class="heading">Valid Till Date</th>
+                            </thead>
+                            <tbody>
+                                <tr class="table-rows" v-for="(service_request, req_index) in requested_services_list">
+                                    <td>{{ req_index + 1 }}</td>
+                                    <td>{{ service_request.service.name }}</td>
+                                    <td>{{ service_request.customer.fullname }}</td>
+                                    <td>{{ service_request.payment_amount }}</td>
+                                    <td>{{ new Date(service_request.createdAt).toLocaleDateString() }}</td>
+                                    <td>{{ new Date(service_request.end_date).toLocaleDateString() }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
         </div>
+        <b-modal
+            size="xl"
+            id="bulkUploadServices" 
+            hide-footer 
+            hide-header 
+            no-close-on-backdrop 
+            centered 
+        >
+            <UploadServicesInBulkComponent @setData="setData"/>
+            <div class="d-flex gap10 justify-content-center mt-3">
+                <button class="button" @click.prevent="hideBulkUploadOption"><i class="fa fa-ban mr-2"></i>CLOSE</button>
+                <button class="button" @click.prevent="saveData"><i class="fa fa-save mr-2"></i>SAVE</button>
+            </div>
+        </b-modal>
         <b-modal
             id="services" 
             hide-footer 
@@ -82,7 +141,10 @@
 </template>
 
 <script>
+import UploadServicesInBulkComponent from './uploadServicesInBulkComponent.vue';
+
 export default {
+    components: { UploadServicesInBulkComponent },
     data() {
         return {
             loader: true,
@@ -111,15 +173,105 @@ export default {
                 file2: null,
                 per_day_price: null,
                 per_month_price: null,
-            }
+            },
+            bulkData: [],
+            customers: [],
+            service_list: [],
+            selected_service: null,
+            selected_customer: null,
+            requested_services_list: [],
+            today: false
         }
     },
     async mounted() {
         this.loader = true
         await this.fetchServices()
+        await this.fetchCustomers()
+        await this.fetchAllServicesRequestedByCustomers()
         this.loader = false
     },
     methods: {
+        fetchForToday() {
+            this.today = true
+            this.fetchAllServicesRequestedByCustomers(this.today)
+        },
+        async fetchAllServicesRequestedByCustomers(today = false) {
+            try {
+                let query = `/services/fetch-services-subscription-by-customers`
+                let filter = ''
+                if (today) {
+                    filter = `${filter}today=${today == 1 ? true : false}`
+                }
+                if (this.selected_customer) {
+                    if (filter.length) {
+                        filter = `${filter} user_id=${this.selected_customer}`
+                    } else {
+                        filter = `${filter}user_id=${this.selected_customer}&`
+                    }
+                }
+                if (this.selected_service) {
+                    if (filter.length) {
+                        filter = `${filter} service_id=${this.selected_service}`
+                    } else {
+                        filter = `${filter}service_id=${this.selected_service}`
+                    }
+                }
+                const response = await this.$axios.get(`${query}?${filter.replaceAll(' ', '&')}`)
+                this.requested_services_list = response.data.data
+                this.tabs[1].text = `Service Requests (${response.data.data.length})`
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async fetchCustomers() {
+            const response = await this.$axios.get('/fetch-customers')
+            this.customers = response.data.customers.map(e => {
+                return {
+                    value: e.id,
+                    text: `${e.fullname}`
+                }
+            })
+            this.customers.unshift({
+                value: null,
+                text: 'Select an user.'
+            })
+        },
+        changeTab(tab) {
+            this.selectedTab = tab
+        },
+        setData(data) {
+            this.bulkData = data
+        },
+        async saveData() {
+            try {
+                this.loader = true
+                const response = await this.$axios({
+                    method: 'POST',
+                    url: '/services/bulk-upload',
+                    data: {
+                        services: this.bulkData
+                    }
+                })
+                this.$toast.show(response.data.message, {
+                    duration: 1500,
+                    position: 'top-right',
+                    keepOnHover: true,
+                    type: response.data.status
+                })
+                this.hideBulkUploadOption()
+                await this.fetchServices()
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        showBulkUploadOption() {
+            this.$bvModal.show('bulkUploadServices')
+        },
+        hideBulkUploadOption() {
+            this.setData([])
+            this.$bvModal.hide('bulkUploadServices')
+        },
         showHideModal(show=true, modal='services') {
             if (show) this.$bvModal.show(modal)
             else {
@@ -212,6 +364,14 @@ export default {
             await this.fetchServices()
             this.showHideModal(false, 'services')
         },
+        downloadSample() {
+            var a = window.document.createElement("a");
+            a.href = '/samples/sampleServiceBulkUpload.csv';
+            a.download = 'sample_service_bulk_upload.csv';
+            document.body.appendChild(a);
+            a.click(); // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+            document.body.removeChild(a);
+        },
         async removeService(id) {
             this.deleteService('/services/delete-service', 'service_id', id)
         },
@@ -274,6 +434,17 @@ export default {
                 return false
             }
             this.servicesList = response.data.services
+            this.service_list = response.data.services.map(e => {
+                return {
+                    value: e.id,
+                    text: e.name
+                }
+            })
+            this.service_list.unshift({
+                value: null,
+                text: 'Select a service'
+            })
+            this.tabs[0].text = `Services (${response.data.services.length})`
         },
         async logout() {
             await this.$auth.logout();

@@ -401,33 +401,33 @@ export default {
                         product_quantity: selectedData.full_data.available_stocks ? selectedData.full_data.available_stocks : 1,
                         product_id: selectedData['product id'],
                         product_desc: selectedData.full_data.description,
-                        product_colors: selectedData.full_data.color ? [{
-                            name: selectedData.full_data.color,
-                        }] : null,
+                        // product_colors: selectedData.full_data.color ? [{
+                        //     name: selectedData.full_data.color,
+                        // }] : null,
                         product_image: selectedData.full_data.category_table_association.image,
-                        product_sizes: selectedData.full_data.size ? [{
-                            name: selectedData.full_data.size[0].toUpperCase()
-                        }] : null,
+                        // product_sizes: selectedData.full_data.size ? [{
+                        //     name: selectedData.full_data.size[0].toUpperCase()
+                        // }] : null,
                         product_specification: selectedData.full_data.specifications ? selectedData.full_data.specifications.split(',') : null,
                         product_negotiation: selectedData.full_data.negotiation ? {
                             heading: 'Negotiation',
                             icon: 'fa fa-commenting-o',
                             text: 'Negotiate for the best deal! Chat with the seller to discuss offers, discounts, and customizations before making your purchase.',
                         } : null,
-                        product_delivery_types: [
-                            {
-                                value: true,
-                                text: 'SELF PICKUP'
-                            },
-                            {
-                                value: true,
-                                text: 'DUNZO DELIVERY'
-                            },
-                            {
-                                value: true,
-                                text: 'SELLER DELIVERY'
-                            },
-                        ],
+                        // product_delivery_types: [
+                        //     {
+                        //         value: true,
+                        //         text: 'SELF PICKUP'
+                        //     },
+                        //     {
+                        //         value: true,
+                        //         text: 'DUNZO DELIVERY'
+                        //     },
+                        //     {
+                        //         value: true,
+                        //         text: 'SELLER DELIVERY'
+                        //     },
+                        // ],
                         product_store_address: `${selectedData.full_data.vendor.store.add1},${selectedData.full_data.vendor.store.add2 ? ' ' + selectedData.full_data.vendor.store.add2 : ''}, ${selectedData.full_data.vendor.store.area}, ${selectedData.full_data.vendor.store.city}, ${selectedData.full_data.vendor.store.state}, ${selectedData.full_data.vendor.store.landmark}, ${selectedData.full_data.vendor.store.pincode}`
                     }
                 } else if (this.selected_tab.id == 2) {
@@ -439,33 +439,33 @@ export default {
                         product_quantity: selectedDataA.full_data.available_stocks ? selectedDataA.full_data.available_stocks : 1,
                         product_id: selectedDataA['product id'],
                         product_desc: selectedDataA.full_data.description,
-                        product_colors: selectedDataA.full_data.color ? [{
-                            name: selectedDataA.full_data.color,
-                        }] : null,
+                        // product_colors: selectedDataA.full_data.color ? [{
+                        //     name: selectedDataA.full_data.color,
+                        // }] : null,
                         product_image: selectedDataA.full_data.category_table_association.image,
-                        product_sizes: selectedDataA.full_data.size ? [{
-                            name: selectedDataA.full_data.size[0].toUpperCase()
-                        }] : null,
+                        // product_sizes: selectedDataA.full_data.size ? [{
+                        //     name: selectedDataA.full_data.size[0].toUpperCase()
+                        // }] : null,
                         product_specification: selectedDataA.full_data.specifications ? selectedDataA.full_data.specifications.split(',') : null,
                         product_negotiation: selectedDataA.full_data.negotiation ? {
                             heading: 'Negotiation',
                             icon: 'fa fa-commenting-o',
                             text: 'Negotiate for the best deal! Chat with the seller to discuss offers, discounts, and customizations before making your purchase.',
                         } : null,
-                        product_delivery_types: [
-                            {
-                                value: true,
-                                text: 'SELF PICKUP'
-                            },
-                            {
-                                value: true,
-                                text: 'DUNZO DELIVERY'
-                            },
-                            {
-                                value: true,
-                                text: 'VENDOR DELIVERY'
-                            },
-                        ],
+                        // product_delivery_types: [
+                        //     {
+                        //         value: true,
+                        //         text: 'SELF PICKUP'
+                        //     },
+                        //     {
+                        //         value: true,
+                        //         text: 'DUNZO DELIVERY'
+                        //     },
+                        //     {
+                        //         value: true,
+                        //         text: 'VENDOR DELIVERY'
+                        //     },
+                        // ],
                         product_store_address: `${selectedDataA.full_data.vendor.store.add1},${selectedDataA.full_data.vendor.store.add2 ? ' ' + selectedDataA.full_data.vendor.store.add2 : ''}, ${selectedDataA.full_data.vendor.store.area}, ${selectedDataA.full_data.vendor.store.city}, ${selectedDataA.full_data.vendor.store.state}, ${selectedDataA.full_data.vendor.store.landmark}, ${selectedDataA.full_data.vendor.store.pincode}`
                     }
                 } else if (this.selected_tab.id == 3) { 
@@ -477,33 +477,33 @@ export default {
                         product_quantity: selectedDataR.full_data.available_stocks ? selectedDataR.full_data.available_stocks : 1,
                         product_id: selectedDataR['product id'],
                         product_desc: selectedDataR.full_data.description,
-                        product_colors: selectedDataR.full_data.color ? [{
-                            name: selectedDataR.full_data.color,
-                        }] : null,
+                        // product_colors: selectedDataR.full_data.color ? [{
+                        //     name: selectedDataR.full_data.color,
+                        // }] : null,
                         product_image: selectedDataR.full_data.category_table_association.image,
-                        product_sizes: selectedDataR.full_data.size ? [{
-                            name: selectedDataR.full_data.size[0].toUpperCase()
-                        }] : null,
+                        // product_sizes: selectedDataR.full_data.size ? [{
+                        //     name: selectedDataR.full_data.size[0].toUpperCase()
+                        // }] : null,
                         product_specification: selectedDataR.full_data.specifications ? selectedDataR.full_data.specifications.split(',') : null,
                         product_negotiation: selectedDataR.full_data.negotiation ? {
                             heading: 'Negotiation',
                             icon: 'fa fa-commenting-o',
                             text: 'Negotiate for the best deal! Chat with the seller to discuss offers, discounts, and customizations before making your purchase.',
                         } : null,
-                        product_delivery_types: [
-                            {
-                                value: true,
-                                text: 'SELF PICKUP'
-                            },
-                            {
-                                value: true,
-                                text: 'DUNZO DELIVERY'
-                            },
-                            {
-                                value: true,
-                                text: 'VENDOR DELIVERY'
-                            },
-                        ],
+                        // product_delivery_types: [
+                        //     {
+                        //         value: true,
+                        //         text: 'SELF PICKUP'
+                        //     },
+                        //     {
+                        //         value: true,
+                        //         text: 'DUNZO DELIVERY'
+                        //     },
+                        //     {
+                        //         value: true,
+                        //         text: 'VENDOR DELIVERY'
+                        //     },
+                        // ],
                         product_store_address: `${selectedDataR.full_data.vendor.store.add1},${selectedDataR.full_data.vendor.store.add2 ? ' '+selectedDataR.full_data.vendor.store.add2 : ''}, ${selectedDataR.full_data.vendor.store.area}, ${selectedDataR.full_data.vendor.store.city}, ${selectedDataR.full_data.vendor.store.state}, ${selectedDataR.full_data.vendor.store.landmark}, ${selectedDataR.full_data.vendor.store.pincode}`
                     }
                 }
