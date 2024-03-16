@@ -51,6 +51,10 @@ export default {
                     has_permission: true
                 },
                 {
+                    module_name: 'service_provider',
+                    has_permission: true
+                },
+                {
                     module_name: 'stores',
                     has_permission: true
                 },
@@ -159,11 +163,12 @@ export default {
                     active_img: '/icons/shop-white.svg'
                 },
                 {
-                    id: 19,
-                    name: 'malls',
-                    text: 'malls',
-                    normal_img: '/icons/malls-black.svg',
-                    active_img: '/icons/malls-white.svg'
+                    id: 26,
+                    name: 'service_provider',
+                    text: 'service provider',
+                    noSearch: true,
+                    normal_img: '/icons/service_provider-black.svg',
+                    active_img: '/icons/service_provider-white.svg'
                 },
                 {
                     id: 4,
@@ -228,6 +233,13 @@ export default {
                             active_img: '/icons/services-white.svg'
                         },
                     ]
+                },
+                {
+                    id: 19,
+                    name: 'malls',
+                    text: 'malls',
+                    normal_img: '/icons/malls-black.svg',
+                    active_img: '/icons/malls-white.svg'
                 },
                 {
                     id: 17,
