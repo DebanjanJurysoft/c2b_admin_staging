@@ -41,17 +41,14 @@
                                     <span class="text-heading" style="padding: 0px !important; width: 90% !important; max-width: 90% !important; min-width: 90% !important; padding-left: 0px !important;">{{ cust_plan_benefit.text }}</span>
                                 </div>
                                 <div class="d-flex flex-row gap10">
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading"><strong class="pr-2"><strong>Price:</strong></strong>{{ `₹ ${cust_plan.price} ${cust_plan.per_month_payment ? '/ Month' : ''}` }}</span>
+                                    <div class="w50 d-flex flex-row align-items-center justify-content-between">
+                                        <span class="text-heading"><strong class="pr-2"><strong>Price:</strong></strong>{{ `₹ ${cust_plan.price}` }}</span>
                                     </div>
-                                    <div class="w50 d-flex flex-row" v-if="cust_plan.pay_at_a_time_available">
-                                        <span class="text-heading"><strong class="pr-2"><strong>Yearly Price:</strong></strong>{{ `₹ ${cust_plan.pay_at_a_time_price} / Year` }}</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-row justify-content-center gap10">
                                     <div class="d-flex flex-row">
                                         <span class="text-heading"><strong class="pr-2"><strong>GST (%):</strong></strong>{{ `${cust_plan.gst} %` }}</span>
                                     </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-left gap10">
                                     <div class="d-flex flex-row">
                                         <span class="text-heading"><strong class="pr-2"><strong>Subscribers:</strong></strong>{{ cust_plan.sub_count }}</span>
                                     </div>
@@ -84,26 +81,10 @@
                                             <i class="fa fa-plus"></i>
                                         </span>
                                     </div>
-                                </div>
+                                </div>                                
                                 <div class="d-flex flex-row gap10 mt-2">
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading"><strong><strong>Per Month Payment</strong></strong></span>
-                                        <b-checkbox v-model="cust_plan.per_month_payment" switch></b-checkbox>
-                                    </div>
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading w40"><strong class="pr-2"><strong>Price:</strong></strong></span>
-                                        <b-form-input class="w60" v-model="cust_plan.price"></b-form-input>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-row gap10 mt-2">
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading"><strong><strong>Yearly Payment</strong></strong></span>
-                                        <b-checkbox v-model="cust_plan.pay_at_a_time_available" switch></b-checkbox>
-                                    </div>
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading w40"><strong class="pr-2"><strong>Price:</strong></strong></span>
-                                        <b-form-input class="w60" v-model="cust_plan.pay_at_a_time_price"></b-form-input>
-                                    </div>
+                                    <span class="text-heading" style="width: 50% !important; max-width: 50% !important; min-width: 50% !important;"><strong><strong>Price (₹)</strong></strong></span>
+                                   <b-form-input v-model="cust_plan.price" placeholder="Price (₹)"></b-form-input>
                                 </div>
                                 <div class="d-flex flex-row gap10 mt-2">
                                     <span class="text-heading" style="width: 50% !important; max-width: 50% !important; min-width: 50% !important;"><strong><strong>GST (%)</strong></strong></span>
@@ -159,18 +140,15 @@
                                     <span class="text-heading" style="padding: 0px !important; width: 90% !important; max-width: 90% !important; min-width: 90% !important; padding-left: 0px !important;">{{ vend_plan_benefit.text }}</span>
                                 </div>
                                 <div class="d-flex flex-row gap10">
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading"><strong class="pr-2"><strong>Price:</strong></strong>{{ `₹ ${vend_plan.price} ${vend_plan.per_month_payment ? '/ Month' : ''}` }}</span>
+                                    <div class="w50 d-flex flex-row align-items-center justify-content-between">
+                                        <span class="text-heading"><strong class="pr-2"><strong>Price:</strong></strong>{{ `₹ ${vend_plan.price} ` }}</span>
                                     </div>
-                                    <div class="w50 d-flex flex-row" v-if="vend_plan.pay_at_a_time_available">
-                                        <span class="text-heading"><strong class="pr-2"><strong>Yearly Price:</strong></strong>{{ `₹ ${vend_plan.pay_at_a_time_price} / Year` }}</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="d-flex flex-row justify-content-center gap10">
                                     <div class="d-flex flex-row">
                                         <span class="text-heading"><strong class="pr-2"><strong>GST (%):</strong></strong>{{ `${vend_plan.gst} %` }}</span>
                                     </div>
+                                </div>
+                                
+                                <div class="d-flex flex-row justify-content-right gap10">
                                     <div class="d-flex flex-row">
                                         <span class="text-heading"><strong class="pr-2"><strong>Subscribers:</strong></strong>{{ vend_plan.sub_count }}</span>
                                     </div>
@@ -205,24 +183,8 @@
                                     </div>
                                 </div>
                                 <div class="d-flex flex-row gap10 mt-2">
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading"><strong><strong>Per Month Payment</strong></strong></span>
-                                        <b-checkbox v-model="vend_plan.per_month_payment" switch></b-checkbox>
-                                    </div>
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading w40"><strong class="pr-2"><strong>Price:</strong></strong></span>
-                                        <b-form-input class="w60" v-model="vend_plan.price"></b-form-input>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-row gap10 mt-2">
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading"><strong><strong>Yearly Payment</strong></strong></span>
-                                        <b-checkbox v-model="vend_plan.pay_at_a_time_available" switch></b-checkbox>
-                                    </div>
-                                    <div class="w50 d-flex flex-row align-items-center justify-content-center">
-                                        <span class="text-heading w40"><strong class="pr-2"><strong>Price:</strong></strong></span>
-                                        <b-form-input class="w60" v-model="vend_plan.pay_at_a_time_price"></b-form-input>
-                                    </div>
+                                    <span class="text-heading" style="width: 50% !important; max-width: 50% !important; min-width: 50% !important;"><strong><strong>Price (₹)</strong></strong></span>
+                                   <b-form-input v-model="vend_plan.price" placeholder="Price (₹)"></b-form-input>
                                 </div>
                                 <div class="d-flex flex-row gap10 mt-2">
                                     <span class="text-heading" style="width: 50% !important; max-width: 50% !important; min-width: 50% !important;"><strong><strong>GST (%)</strong></strong></span>
@@ -343,12 +305,9 @@ export default {
                         name: e.name,
                         price: e.price,
                         enable_edit: false,
-                        per_month_payment: e.per_month_payment,
                         duration_in_days: e.duration_in_days,
                         gst: e.gst,
                         sub_count: e.plans_subscribers.length,
-                        pay_at_a_time_available: e.pay_at_a_time_available,
-                        pay_at_a_time_price: e.pay_at_a_time_price,
                         color: e.color,
                         benefits: e.plan_benefits.map(el => ({id: el.id, text: el.benefit})),
                     }
@@ -359,12 +318,9 @@ export default {
                         name: e.name,
                         price: e.price,
                         enable_edit: false,
-                        per_month_payment: e.per_month_payment,
                         duration_in_days: e.duration_in_days,
                         gst: e.gst,
                         sub_count: e.plans_subscribers.length,
-                        pay_at_a_time_available: e.pay_at_a_time_available,
-                        pay_at_a_time_price: e.pay_at_a_time_price,
                         color: e.color,
                         benefits: e.plan_benefits.map(el => ({id: el.id, text: el.benefit})),
                     }
@@ -417,9 +373,6 @@ export default {
                     name: null,
                     price: null,
                     enable_edit: true,
-                    per_month_payment: false,
-                    pay_at_a_time_available: false,
-                    pay_at_a_time_price: null,
                     duration_in_days: 28,
                     color: "#ffffff",
                     benefits: [
@@ -434,9 +387,6 @@ export default {
                     name: null,
                     price: null,
                     enable_edit: true,
-                    per_month_payment: false,
-                    pay_at_a_time_available: false,
-                    pay_at_a_time_price: null,
                     duration_in_days: 28,
                     color: "#ffffff",
                     benefits: [
@@ -448,16 +398,17 @@ export default {
             }
         },
         async openEdit(cust_plan, cust_index) {
+            console.log(cust_index);
             if (cust_plan.enable_edit) {
                 if (cust_plan.id == null) {
                     this.customer_plans_list.splice(cust_index, 1)
                 } else {
                     this.loader = true
                     await this.fetchPlans()
+                    this.customer_plans_list[cust_index].enable_edit = false
+                    this.customer_plan_edit_id = null
                     this.loader = false
                 }
-                this.customer_plans_list[cust_index].enable_edit = false
-                this.customer_plan_edit_id = null
                 return
             }
             this.customer_plan_edit_id = cust_plan.id
