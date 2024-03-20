@@ -71,6 +71,20 @@ export default {
                     even_image: '/icons/pie-fill.svg',
                     overlay: false
                 },
+                {
+                    name: 'Vendor Subscription Report',
+                    callBackFunction: this.fetchVendorSubscriptionData,
+                    odd_image: '/icons/pie-empty.svg',
+                    even_image: '/icons/pie-fill.svg',
+                    overlay: false
+                },
+                {
+                    name: 'Customer Service Report',
+                    callBackFunction: this.fetchServiceReportData,
+                    odd_image: '/icons/pie-empty.svg',
+                    even_image: '/icons/pie-fill.svg',
+                    overlay: false
+                },
             ]
         }
     }, 
@@ -166,6 +180,112 @@ export default {
                         }
                     })
                 }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        isExpired(dateString) {
+            const providedDate = new Date(dateString);
+            const currentDate = new Date();
+            if (providedDate > currentDate) {
+                return false;
+            } else {
+                return true;
+            }
+        },
+        async fetchServiceReportData() {
+            try {
+                this.loader = true
+                const response = await this.$axios.get('/services/fetch-services-subscription-by-customers')
+                const data = await response.data.data.map(e => {
+                    
+                    return {
+                        'Service Name': e.service.name,
+                        'Customer Name': e.customer.fullname,
+                        'Customer E-Mail': e.customer.email ? e.customer.email : 'N/A',
+                        'Payment Ref ID': e.payment_ref_id,
+                        'Payment Amount': e.payment_amount,
+                        'Subscription Type': e.subscription_type,
+                        'Is Expired': this.isExpired(e.end_date),
+                        'Expiry Date': new Date(e.end_date).toLocaleDateString(),
+                    }
+                })
+                const rows = await Promise.all(data)
+                const heading = [
+                    'Service Name',
+                    'Customer Name',
+                    'Customer E-Mail',
+                    'Payment Ref ID',
+                    'Payment Amount',
+                    'Subscription Type',
+                    'Is Expired',
+                    'Expiry Date',
+                ]
+                let filename = `CustomerServiceSubscriptionData.csv`
+                let csv = papaparse.unparse({ data: rows, fields: heading });
+                if (csv == null) return;
+                var blob = new Blob([csv]);
+                if (window.navigator.msSaveOrOpenBlob)
+                    // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+                    window.navigator.msSaveBlob(blob, args.filename);
+                else {
+                    var a = window.document.createElement("a");
+                    a.href = window.URL.createObjectURL(blob, { type: "text/plain" });
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click(); // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+                    document.body.removeChild(a);
+                }
+                this.loader = false
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async fetchVendorSubscriptionData() {
+            try {
+                this.loader = true
+                const response = await this.$axios.get('/subscription-report?user_type=VENDOR')
+                const data = await response.data.subscriptions.map(e => {
+                    var today = new Date();
+                    var givenDate = new Date(e.subscription_end_date);
+                    var difference = givenDate - today;
+                    var daysDifference = Math.ceil(difference / (1000 * 60 * 60 * 24));
+                    return {
+                        'Vendor Name': `${e.vendor.first_name} ${e.vendor.last_name}`,
+                        'Store Name': `${e.store.name}`,
+                        'Subscription ID': e.subscription_id,
+                        'Plan Name': e.plan.name,
+                        'Start Date': e.subscription_start_date,
+                        'End Date': e.subscription_end_date,
+                        'Days Left': daysDifference,
+                    }
+                })
+                const rows = await Promise.all(data)
+                const heading = [
+                    'Vendor Name',
+                    'Store Name',
+                    'Subscription ID',
+                    'Plan Name',
+                    'Start Date',
+                    'End Date',
+                    'Days Left',
+                ]
+                let filename = `VendorSubcriptionData.csv`
+                let csv = papaparse.unparse({ data: rows, fields: heading });
+                if (csv == null) return;
+                var blob = new Blob([csv]);
+                if (window.navigator.msSaveOrOpenBlob)
+                    // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+                    window.navigator.msSaveBlob(blob, args.filename);
+                else {
+                    var a = window.document.createElement("a");
+                    a.href = window.URL.createObjectURL(blob, { type: "text/plain" });
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click(); // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+                    document.body.removeChild(a);
+                }
+                this.loader = false
             } catch (error) {
                 console.log(error);
             }
