@@ -28,7 +28,7 @@
                             </b-form-checkbox>
                         </th>
                         <th class="heading">SL</th>
-                        <th class="heading">vendor name</th>
+                        <th class="heading">{{selected_tab == 'VENDOR' ? 'vendor name' : 'customer name'}}</th>
                         <th class="heading" v-if="selected_tab == 'VENDOR'">store name</th>
                     </thead>
                 <tbody>

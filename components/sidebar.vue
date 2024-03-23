@@ -449,6 +449,9 @@ export default {
                 const {
                     vendor_approval,
                     available_stores,
+                    availableCategpries,
+                    availableServices,
+                    availableAttributes,
                     available_products,
                     available_banners,
                     available_addons,
@@ -461,6 +464,7 @@ export default {
                     coupons,
                     // rejected_vendors,
                 } = response.data.stats
+                console.log(response.data.stats);
                 this.menues.forEach(e => {
                     if (e.options && e.options.length) {
                         e.options.forEach((el, ind) => {
@@ -475,6 +479,15 @@ export default {
                             }
                             if (el.name == 'products') {
                                 el.text = `products (${available_products})`
+                            }
+                            if (el.name == 'category') {
+                                el.text = `category (${availableCategpries})`
+                            }
+                            if (el.name == 'attributes') {
+                                el.text = `attributes (${availableAttributes})`
+                            }
+                            if (el.name == 'services') {
+                                el.text = `services (${availableServices})`
                             }
                         })
                     }
