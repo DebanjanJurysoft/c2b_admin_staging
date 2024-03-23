@@ -20,6 +20,7 @@
             <Banners :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'banners'"/>
             <Addons :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'addons'"/>
             <Category :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'sub-category'"/>
+            <Categories :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'category'"/>
             <Stores :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'stores'"/>
             <Malls :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'malls'"/>
             <Notifications :searchText="selectedMenu.searchText" @reloadDashboard="reloadDashboard" v-if="selectedMenu.name == 'notifications'"/>
@@ -57,6 +58,7 @@ import Admins from '../components/admins.vue';
 import AdminPermissions from '../components/admin_permissions.vue';
 import Services from '../components/services.vue';
 import ServiceProviders from '../components/serviceProviders.vue';
+import Categories from '../components/categories.vue';
 
 export default {
     data() {
@@ -172,7 +174,7 @@ export default {
             this.selectedMenu = selected;
         }
     },
-    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy, Notifications, Reports, Attributes, Admins, AdminPermissions, Services, ServiceProviders }
+    components: { Sidebar, Topbar, Dashboard, Vendors, Products, Orders, Payments, Customers, Vendor_form, Category, Banners, Addons, Stores, Coupons, Plans, Malls, PrivacyPolicy, Notifications, Reports, Attributes, Admins, AdminPermissions, Services, ServiceProviders, Categories }
 }
 </script>
 

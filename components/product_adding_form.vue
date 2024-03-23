@@ -1195,7 +1195,7 @@ export default {
                         name: e.vendor_sub_category.name
                     }
                 }) : []
-                console.log(this.selected_sub_category);
+                console.log('1198', data);
                 this.selected_food_type = data.food_type
                 this.foodData.title = data.name
                 this.foodData.description = data.description

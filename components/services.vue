@@ -312,7 +312,7 @@ export default {
                 })
                 return
             }
-            if (!this.singleData.per_day_price || !`${this.singleData.per_day_price}`.trim()) {
+            if (this.singleData.per_day_price == null || !`${this.singleData.per_day_price}`.trim()) {
                 this.$toast.show('Enter a service cost per day.', {
                     duration: 1500,
                     position: 'top-right',
@@ -321,7 +321,7 @@ export default {
                 })
                 return
             }
-            if (!this.singleData.per_month_price || !`${this.singleData.per_month_price}`.trim()) {
+            if (this.singleData.per_month_price == null || !`${this.singleData.per_month_price}`.trim()) {
                 this.$toast.show('Enter a service cost per month.', {
                     duration: 1500,
                     position: 'top-right',

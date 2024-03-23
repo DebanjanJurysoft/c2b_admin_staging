@@ -83,6 +83,10 @@ export default {
                     has_permission: true
                 },
                 {
+                    module_name: 'category',
+                    has_permission: true
+                },
+                {
                     module_name: 'attributes',
                     has_permission: true
                 },
@@ -209,12 +213,20 @@ export default {
                         //     active_img: '/icons/category-white.svg'
                         // },
                         {
+                            id: 26,
+                            name: 'category',
+                            text: 'category',
+                            noSearch: true,
+                            normal_img: '/icons/category-black.svg',
+                            active_img: '/icons/category-white.svg'
+                        },
+                        {
                             id: 13,
                             name: 'sub-category',
                             text: 'sub-category',
                             noSearch: true,
-                            normal_img: '/icons/category-black.svg',
-                            active_img: '/icons/category-white.svg'
+                            normal_img: '/icons/sub-category-black.svg',
+                            active_img: '/icons/sub-category-white.svg'
                         },
                         {
                             id: 22,
