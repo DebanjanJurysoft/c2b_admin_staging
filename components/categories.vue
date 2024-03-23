@@ -129,7 +129,6 @@ export default {
         async createNewCategory() {
             try {
                 const formData = new FormData()
-                formData.append('category_id', this.category_form.category_id)
                 formData.append('category_name', this.category_form.category_name)
                 formData.append('category_image', this.category_form.category_image)
                 const response = await this.$axios({
