@@ -1,0 +1,16 @@
+version: '1'
+
+services:
+  app:
+    # container_name: c2btestingadmin
+    build: .
+    # image: close2buy_admin_staging
+    restart: unless-stopped
+    ports:
+      - "5050:5050"
+    expose:
+      - 5050
+    # volumes:
+    #   - .:/app
+    # environment:
+    #   - NODE_ENV=production
